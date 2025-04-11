@@ -49,3 +49,19 @@ jobs:
 
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
+
+      - name: Clean up old images
+        if: success()
+        run: |
+          # List digests of all images except the current one
+          CURRENT_SHA=${{ github.sha }}
+          echo "Current image SHA: $CURRENT_SHA"
+
+          # List all image digests except the current one and 'latest' tag if it exists
+          IMAGE_DIGESTS=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image --format="get(digest)" | grep -v "$(gcloud artifacts docker images describe us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:$CURRENT_SHA --format='get(digest)')")
+
+          # Delete each old image digest
+          for DIGEST in $IMAGE_DIGESTS; do
+            echo "Deleting image with digest: $DIGEST"
+            gcloud artifacts docker images delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image@$DIGEST --quiet
+          done
