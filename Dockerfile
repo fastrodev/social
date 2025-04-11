@@ -10,7 +10,6 @@ EXPOSE 8080
 WORKDIR /app
 COPY --from=builder /app .
 RUN deno info
-RUN echo "Origin storage contents:" && ls -la /deno-dir/location_data || echo "Directory doesn't exist or is empty"
-RUN deno install --entrypoint main.ts
+RUN echo "Checking origin storage location:" && ls -la /deno-dir/ || true
 RUN deno cache main.ts
-CMD ["task", "start"]
+CMD ["deno", "task", "start"]

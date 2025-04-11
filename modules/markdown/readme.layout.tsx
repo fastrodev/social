@@ -29,7 +29,7 @@ export default function (
         <link href="/markdown.css" rel="stylesheet" />
       </head>
       <body class="bg-gray-950 text-white">
-        <main class={"container max-w-4xl px-6 py-10 mx-auto"}>
+        <main class="container max-w-4xl px-6 py-10 mx-auto">
           <div>
             <a
               href="/"
