@@ -5,6 +5,7 @@ COPY . .
 RUN deno task build
 RUN deno install --entrypoint main.ts
 RUN deno cache main.ts
+RUN deno info
 
 # Production stage
 FROM denoland/deno:latest
