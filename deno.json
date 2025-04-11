@@ -1,0 +1,30 @@
+{
+  "lock": false,
+  "tasks": {
+    "dev": "ENV=DEVELOPMENT deno run -A --unstable-kv --watch main.ts",
+    "start": "ENV=PRODUCTION deno run -A --unstable-kv main.ts",
+    "build": "deno run -A --unstable-kv main.ts --build ",
+    "test": "rm -rf .hydrate && rm -rf cov && deno test -A --unstable-kv --coverage=cov && deno coverage cov",
+    "coverage": "deno coverage cov --lcov > cov.lcov"
+  },
+  "lint": {
+    "rules": {
+      "tags": [
+        "recommended"
+      ]
+    }
+  },
+  "imports": {
+    "@app/": "./",
+    "preact": "npm:preact@^10.26.0",
+    "@preact/signals": "npm:@preact/signals@^2.0.1",
+    "preact-render-to-string": "npm:preact-render-to-string@^6.5.13",
+    "preact/jsx-runtime": "npm:preact@10.26.0/jsx-runtime",
+    "fastro/": "https://raw.githubusercontent.com/fastrodev/fastro/v0.94.5/"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "nodeModulesDir": "auto"
+}
