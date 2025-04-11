@@ -53,15 +53,35 @@ jobs:
       - name: Clean up old images
         if: success()
         run: |
-          # List digests of all images except the current one
+          # Current image SHA
           CURRENT_SHA=${{ github.sha }}
           echo "Current image SHA: $CURRENT_SHA"
 
-          # List all image digests except the current one and 'latest' tag if it exists
-          IMAGE_DIGESTS=$(gcloud artifacts docker images list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image --format="get(digest)" | grep -v "$(gcloud artifacts docker images describe us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:$CURRENT_SHA --format='get(digest)')")
+          # Ensure we have proper permissions
+          gcloud config set artifacts/location us-central1
 
-          # Delete each old image digest
-          for DIGEST in $IMAGE_DIGESTS; do
-            echo "Deleting image with digest: $DIGEST"
-            gcloud artifacts docker images delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image@$DIGEST --quiet
-          done
+          # List all tags with version creation time
+          echo "Listing all available images:"
+          gcloud artifacts docker tags list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+            --sort-by=~CREATE_TIME \
+            --format="table[box](tag, create_time)"
+
+          # Keep current image and delete older ones
+          # First get all tags except current one
+          echo "Finding tags to delete..."
+          OLD_TAGS=$(gcloud artifacts docker tags list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+            --format="value(tag)" | grep -v "^${CURRENT_SHA}$" || echo "")
+
+          if [ -z "$OLD_TAGS" ]; then
+            echo "No old tags found to delete"
+          else
+            # Delete each old tag
+            for TAG in $OLD_TAGS; do
+              echo "Deleting image with tag: $TAG"
+              gcloud artifacts docker tags delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:$TAG --quiet || echo "Failed to delete tag $TAG"
+            done
+          fi
+
+          # Run garbage collection to remove untagged images
+          echo "Running garbage collection to clean up untagged images"
+          gcloud artifacts docker images prune --force --async us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image || echo "Prune command failed but continuing"
