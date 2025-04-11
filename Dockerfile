@@ -3,6 +3,7 @@ FROM denoland/deno:latest AS builder
 WORKDIR /app
 COPY . .
 RUN deno install --entrypoint main.ts
+RUN deno task build
 
 # Production stage
 FROM denoland/deno:latest
