@@ -4,6 +4,7 @@ WORKDIR /app
 COPY . .
 RUN deno install --entrypoint main.ts
 RUN deno task build
+RUN deno cache main.ts
 
 # Production stage
 FROM denoland/deno:latest
