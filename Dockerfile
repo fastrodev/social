@@ -10,6 +10,6 @@ EXPOSE 8080
 WORKDIR /app
 COPY --from=builder /app .
 RUN deno info
-RUN echo "Checking origin storage location:" && ls -la /deno-dir/ || true
+RUN echo "Checking origin storage location:" && ls -la /deno-dir/location_data/ || true
 RUN deno cache main.ts
 CMD ["deno", "task", "start"]
