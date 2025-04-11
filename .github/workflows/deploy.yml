@@ -84,4 +84,8 @@ jobs:
 
           # Run garbage collection to remove untagged images
           echo "Running garbage collection to clean up untagged images"
-          gcloud artifacts docker images prune --force --async us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image || echo "Prune command failed but continuing"
+          gcloud artifacts docker images list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+            --filter="NOT tags:*" --format="value(version)" | while read -r DIGEST; do
+            echo "Deleting untagged image: $DIGEST"
+            gcloud artifacts docker images delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image@$DIGEST --quiet || echo "Failed to delete untagged image $DIGEST"
+          done
