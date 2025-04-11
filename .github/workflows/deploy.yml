@@ -46,6 +46,7 @@ jobs:
           region: us-central1
           env_vars: |
             ENV=PRODUCTION
+          flags: --allow-unauthenticated
 
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
