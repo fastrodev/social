@@ -44,7 +44,10 @@ jobs:
           service: deno-service
           image: us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:${{ github.sha }}
           region: us-central1
-          env_vars: ENV=PRODUCTION
+          env_vars: |
+            ENV=PRODUCTION
+            DENO_KV_PATH_KEY=./sqlite.db
+
           flags: --allow-unauthenticated
 
       - name: Show Output
