@@ -13,4 +13,4 @@ WORKDIR /app
 COPY --from=builder /app .
 RUN deno cache main.ts
 RUN deno cache scripts/db-sync.ts
-CMD ["/bin/bash", "-c", "deno run scripts/db-sync.ts & deno task start"]
+CMD ["/bin/bash", "-c", "deno run --allow-env --allow-read --allow-write --allow-net scripts/db-sync.ts & deno task start"]
