@@ -46,7 +46,7 @@ jobs:
           region: us-central1
           env_vars: |
             ENV=PRODUCTION
-            DENO_KV_PATH_KEY=./sqlite.db
+            DENO_KV_PATH=/app/db/sqlite.db
 
           flags: --allow-unauthenticated
 
