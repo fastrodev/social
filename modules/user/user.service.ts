@@ -92,27 +92,32 @@ export async function createUserService(user: User) {
 }
 
 export async function updateUserService(user: User) {
-  const [
-    usersKey,
-    usersByEmailKey,
-    usersByUsernameKey,
-    userByMobileKey,
-    usersByFirstnameKey,
-  ] = createUserKey(user);
+  try {
+    const [
+      usersKey,
+      usersByEmailKey,
+      usersByUsernameKey,
+      userByMobileKey,
+      usersByFirstnameKey,
+    ] = createUserKey(user);
 
-  const res = await kv.atomic()
-    .check({ key: usersKey, versionstamp: null })
-    .check({ key: usersByEmailKey, versionstamp: null })
-    .check({ key: usersByUsernameKey, versionstamp: null })
-    .check({ key: userByMobileKey, versionstamp: null })
-    .set(usersKey, user)
-    .set(usersByEmailKey, user)
-    .set(userByMobileKey, user)
-    .set(usersByUsernameKey, user)
-    .set(usersByFirstnameKey, user)
-    .commit();
-
-  if (!res.ok) throw new Error("Failed to update user");
+    const res = await kv.atomic()
+      .check({ key: usersKey, versionstamp: null })
+      .check({ key: usersByEmailKey, versionstamp: null })
+      .check({ key: usersByUsernameKey, versionstamp: null })
+      .check({ key: userByMobileKey, versionstamp: null })
+      .set(usersKey, user)
+      .set(usersByEmailKey, user)
+      .set(userByMobileKey, user)
+      .set(usersByUsernameKey, user)
+      .set(usersByFirstnameKey, user)
+      .commit();
+    if (!res.ok) throw new Error("Failed to update user");
+    return res;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
+  }
 }
 
 export async function deleteUserService(userId: string) {
