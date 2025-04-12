@@ -170,5 +170,45 @@ export async function updateUserService(user: User) {
 }
 
 export async function deleteUserService(userId: string) {
-  await kv.delete(["users", userId]);
+  try {
+    // Retrieve the existing user to get all related keys
+    const existingUser = await kv.get<User>(["users", userId]);
+    if (!existingUser.value) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+
+    const user = existingUser.value;
+
+    const [
+      usersKey,
+      usersByEmailKey,
+      usersByUsernameKey,
+      userByMobileKey,
+      usersByFirstnameKey,
+    ] = createUserKey(user);
+
+    // Perform atomic deletion of all related keys
+    const res = await kv.atomic()
+      .check({ key: usersKey, versionstamp: existingUser.versionstamp }) // Ensure the user exists
+      .delete(usersKey)
+      .delete(usersByEmailKey)
+      .delete(usersByUsernameKey)
+      .delete(userByMobileKey)
+      .delete(usersByFirstnameKey)
+      .commit();
+
+    if (!res.ok) {
+      throw new Error("Failed to delete user due to a conflict or other issue");
+    }
+
+    return res;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error deleting user:", error.message);
+      throw new Error(`Failed to delete user: ${error.message}`);
+    } else {
+      console.error("Unknown error deleting user:", error);
+      throw new Error("Failed to delete user due to an unknown error");
+    }
+  }
 }
