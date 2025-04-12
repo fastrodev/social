@@ -5,3 +5,6 @@ services:
     image: deno-image
     ports:
       - "8080:8080"
+    environment:
+      - ENV=PRODUCTION
+      - DENO_KV_PATH=/app/db/sqlite.db
