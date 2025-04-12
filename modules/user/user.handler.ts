@@ -12,21 +12,32 @@ import { createUserSchema, updateUserSchema } from "./user.schemas.ts";
 import { z } from "zod";
 
 export async function getAllUsers(_req: HttpRequest, ctx: Context) {
-  const [users, cursor] = await getAllUserService();
-  if (!users) {
+  try {
+    const [users, cursor] = await getAllUserService();
+    if (!users) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.NotFound,
+          message: STATUS_TEXT[STATUS_CODE.NotFound],
+        },
+        STATUS_CODE.NotFound,
+      );
+    }
+
+    return ctx.send(
+      { data: users, cursor, status: STATUS_CODE.OK },
+      STATUS_CODE.OK,
+    );
+  } catch (error) {
+    console.error("Error fetching all users:", error);
     return ctx.send(
       {
-        status: STATUS_CODE.NotFound,
-        message: STATUS_TEXT[STATUS_CODE.NotFound],
+        status: STATUS_CODE.InternalServerError,
+        message: STATUS_TEXT[STATUS_CODE.InternalServerError],
       },
-      STATUS_CODE.NotFound,
+      STATUS_CODE.InternalServerError,
     );
   }
-
-  return ctx.send(
-    { data: users, cursor, status: STATUS_CODE.OK },
-    STATUS_CODE.OK,
-  );
 }
 
 const userIdSchema = z.string().min(1, "userId is required");
@@ -58,8 +69,7 @@ export async function getUserByUserIdHandler(req: HttpRequest, ctx: Context) {
       );
     }
 
-    console.error("Error fetching user:", error);
-
+    console.error("Error fetching user by ID:", error);
     return ctx.send(
       {
         status: STATUS_CODE.InternalServerError,
@@ -89,14 +99,14 @@ export async function createUserHandler(req: HttpRequest, ctx: Context) {
       return ctx.send(
         {
           status: STATUS_CODE.BadRequest,
-          message: error.errors.map((e) => e.message).join(", "),
+          message: error.errors.map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", "),
         },
         STATUS_CODE.BadRequest,
       );
     }
 
     console.error("Error creating user:", error);
-
     return ctx.send(
       {
         status: STATUS_CODE.InternalServerError,
@@ -126,14 +136,14 @@ export async function updateUserHandler(req: HttpRequest, ctx: Context) {
       return ctx.send(
         {
           status: STATUS_CODE.BadRequest,
-          message: error.errors.map((e) => e.message).join(", "),
+          message: error.errors.map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", "),
         },
         STATUS_CODE.BadRequest,
       );
     }
 
     console.error("Error updating user:", error);
-
     return ctx.send(
       {
         status: STATUS_CODE.InternalServerError,
@@ -145,20 +155,37 @@ export async function updateUserHandler(req: HttpRequest, ctx: Context) {
 }
 
 export async function deleteUserHandler(req: HttpRequest, ctx: Context) {
-  const userId = req.params?.userId;
-  if (!userId) {
-    return ctx.send({
-      status: STATUS_CODE.BadRequest,
-      message: STATUS_TEXT[STATUS_CODE.BadRequest],
-    }, STATUS_CODE.BadRequest);
-  }
+  try {
+    const userId = userIdSchema.parse(req.params?.userId);
 
-  await deleteUserService(userId);
-  return ctx.send(
-    {
-      status: STATUS_CODE.OK,
-      message: STATUS_TEXT[STATUS_CODE.OK],
-    },
-    STATUS_CODE.OK,
-  );
+    await deleteUserService(userId);
+
+    return ctx.send(
+      {
+        status: STATUS_CODE.OK,
+        message: STATUS_TEXT[STATUS_CODE.OK],
+      },
+      STATUS_CODE.OK,
+    );
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: error.errors.map((e) => `${e.path.join(".")}: ${e.message}`)
+            .join(", "),
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+
+    console.error("Error deleting user:", error);
+    return ctx.send(
+      {
+        status: STATUS_CODE.InternalServerError,
+        message: STATUS_TEXT[STATUS_CODE.InternalServerError],
+      },
+      STATUS_CODE.InternalServerError,
+    );
+  }
 }
