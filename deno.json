@@ -5,7 +5,8 @@
     "start": "ENV=PRODUCTION deno run -A --unstable-kv main.ts",
     "build": "deno run -A --unstable-kv main.ts --build ",
     "test": "rm -rf .hydrate && rm -rf cov && deno test -A --unstable-kv --coverage=cov && deno coverage cov",
-    "coverage": "deno coverage cov --lcov > cov.lcov"
+    "coverage": "deno coverage cov --lcov > cov.lcov",
+    "cmd": "deno run -A --unstable-kv utils/cmd.ts"
   },
   "lint": {
     "rules": {
@@ -15,7 +16,7 @@
     }
   },
   "imports": {
-    "@google-cloud/storage": "npm:@google-cloud/storage@^6.10.0",
+    "@google-cloud/storage": "npm:@google-cloud/storage@^7.16.0",
     "cssnano": "npm:cssnano@^6.0.1",
     "postcss": "npm:postcss@^8.4.35",
     "autoprefixer": "npm:autoprefixer@^10.4.16",

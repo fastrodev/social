@@ -50,9 +50,57 @@ export async function getUserByUserIdHandler(req: HttpRequest, ctx: Context) {
 }
 
 export async function createUserHandler(req: HttpRequest, ctx: Context) {
-  const user = await req.parseBody<User>();
   try {
+    const user = await req.parseBody<User>();
+
+    if (!user.user_name) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "user_name is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.password) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "password is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.first_name) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "first_name is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.email) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "email is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.mobile) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "mobile is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+
     await createUserService(user);
+
     return ctx.send(
       {
         status: STATUS_CODE.Created,
@@ -61,7 +109,8 @@ export async function createUserHandler(req: HttpRequest, ctx: Context) {
       STATUS_CODE.Created,
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error creating user:", error);
+
     return ctx.send(
       {
         status: STATUS_CODE.InternalServerError,
@@ -75,7 +124,46 @@ export async function createUserHandler(req: HttpRequest, ctx: Context) {
 export async function updateUserHandler(req: HttpRequest, ctx: Context) {
   try {
     const user = await req.parseBody<User>();
+
+    if (!user.id) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "id is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.user_name) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "user_name is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.email) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "email is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+    if (!user.mobile) {
+      return ctx.send(
+        {
+          status: STATUS_CODE.BadRequest,
+          message: "mobile is required",
+        },
+        STATUS_CODE.BadRequest,
+      );
+    }
+
     await updateUserService(user);
+
     return ctx.send(
       {
         status: STATUS_CODE.OK,
@@ -84,7 +172,8 @@ export async function updateUserHandler(req: HttpRequest, ctx: Context) {
       STATUS_CODE.OK,
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error updating user:", error);
+
     return ctx.send(
       {
         status: STATUS_CODE.InternalServerError,

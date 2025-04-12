@@ -26,3 +26,10 @@ async function getKvInstance(path?: string): Promise<Deno.Kv> {
 }
 
 export const kv = await getKvInstance(path);
+
+export async function reset() {
+  const iter = kv.list({ prefix: [] });
+  const promises = [];
+  for await (const res of iter) promises.push(kv.delete(res.key));
+  await Promise.all(promises);
+}
