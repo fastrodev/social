@@ -18,12 +18,12 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
-          project_id: replix-394315
+          project_id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: replix-394315
+          project_id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Authorize Docker push
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
@@ -32,22 +32,21 @@ jobs:
         run: docker compose -f docker-compose.yml build
 
       - name: Tag Docker image
-        run: docker tag deno-image us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:${{ github.sha }}
+        run: docker tag deno-image us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:${{ github.sha }}
 
       - name: Push Docker image
-        run: docker push us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:${{ github.sha }}
+        run: docker push us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:${{ github.sha }}
 
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: deno-service
-          image: us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:${{ github.sha }}
+          image: us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:${{ github.sha }}
           region: us-central1
           env_vars: |
             ENV=PRODUCTION
             DENO_KV_PATH=/app/db/sqlite.db
-
           flags: --allow-unauthenticated
 
       - name: Show Output
@@ -65,30 +64,27 @@ jobs:
 
           # List all tags with version creation time
           echo "Listing all available images:"
-          gcloud artifacts docker tags list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+          gcloud artifacts docker tags list us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
             --sort-by=~CREATE_TIME \
             --format="table[box](tag, create_time)"
 
           # Keep current image and delete older ones
-          # First get all tags except current one
           echo "Finding tags to delete..."
-          OLD_TAGS=$(gcloud artifacts docker tags list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+          OLD_TAGS=$(gcloud artifacts docker tags list us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
             --format="value(tag)" | grep -v "^${CURRENT_SHA}$" || echo "")
 
           if [ -z "$OLD_TAGS" ]; then
             echo "No old tags found to delete"
           else
-            # Delete each old tag
             for TAG in $OLD_TAGS; do
               echo "Deleting image with tag: $TAG"
-              gcloud artifacts docker tags delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image:$TAG --quiet || echo "Failed to delete tag $TAG"
+              gcloud artifacts docker tags delete us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:$TAG --quiet || echo "Failed to delete tag $TAG"
             done
           fi
 
-          # Run garbage collection to remove untagged images
           echo "Running garbage collection to clean up untagged images"
-          gcloud artifacts docker images list us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image \
+          gcloud artifacts docker images list us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
             --filter="NOT tags:*" --format="value(version)" | while read -r DIGEST; do
             echo "Deleting untagged image: $DIGEST"
-            gcloud artifacts docker images delete us-central1-docker.pkg.dev/replix-394315/deno-repository/deno-cloudrun-image@$DIGEST --quiet || echo "Failed to delete untagged image $DIGEST"
+            gcloud artifacts docker images delete us-central1-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image@$DIGEST --quiet || echo "Failed to delete untagged image $DIGEST"
           done
