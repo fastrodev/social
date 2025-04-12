@@ -3,6 +3,7 @@
 BUCKET_NAME="${GCS_BUCKET}"
 DB_PATH="/app/db/sqlite.db"
 BACKUP_PATH="/app/db/sqlite.db.backup"
+LAST_MODIFIED_FILE="/app/db/last_modified"
 
 # Function for timestamped logging
 log_message() {
@@ -14,6 +15,8 @@ upload_to_gcs() {
     log_message "Uploading database to GCS bucket: $BUCKET_NAME"
     if gsutil cp $DB_PATH gs://$BUCKET_NAME/sqlite.db; then
         log_message "Database successfully synced to GCS"
+        # Record successful upload time
+        date +%s > "$LAST_MODIFIED_FILE"
     else
         log_message "ERROR: Failed to sync database to GCS"
     fi
@@ -29,27 +32,29 @@ download_from_gcs() {
     fi
 }
 
-# Function to compare files with file info
-compare_files() {
-    log_message "DB file info: $(ls -la $DB_PATH)"
-    log_message "Backup file info: $(ls -la $BACKUP_PATH)"
+# Function to check if database has been accessed
+check_db_accessed() {
+    # Get current timestamp of database file
+    local current_db_time=$(stat -c %Y "$DB_PATH")
     
-    DB_SIZE=$(stat -c%s "$DB_PATH")
-    BACKUP_SIZE=$(stat -c%s "$BACKUP_PATH")
-    
-    log_message "DB size: $DB_SIZE bytes, Backup size: $BACKUP_SIZE bytes"
-    
-    if [ "$DB_SIZE" != "$BACKUP_SIZE" ]; then
-        log_message "Size difference detected"
-        return 1
+    # Check if we have a stored last modified time
+    if [ -f "$LAST_MODIFIED_FILE" ]; then
+        local last_upload_time=$(cat "$LAST_MODIFIED_FILE")
+        
+        log_message "Last upload time: $(date -d @$last_upload_time)"
+        log_message "Current DB time: $(date -d @$current_db_time)"
+        
+        # If DB was accessed after our last upload
+        if (( current_db_time > last_upload_time )); then
+            log_message "Database has been modified since last upload"
+            return 0  # Return success (database modified)
+        fi
+    else
+        log_message "No previous upload timestamp found"
+        return 0  # Return success (force upload)
     fi
     
-    if ! cmp -s "$DB_PATH" "$BACKUP_PATH"; then
-        log_message "Content difference detected"
-        return 1
-    fi
-    
-    return 0
+    return 1  # Return failure (no modification)
 }
 
 # Trap termination signals to sync before shutdown
@@ -59,20 +64,13 @@ log_message "Starting database sync service (PID: $$)"
 log_message "Database path: $DB_PATH"
 log_message "GCS bucket: $BUCKET_NAME"
 
-# Force initial upload regardless of comparison
+# Force initial upload
 log_message "Forcing initial upload to GCS"
 if [ -f $DB_PATH ]; then
     upload_to_gcs
 else
     log_message "Database file not found locally"
     download_from_gcs
-fi
-
-# Create initial backup
-if [ -f $DB_PATH ]; then
-    log_message "Creating initial backup of database"
-    cp $DB_PATH $BACKUP_PATH
-    log_message "Initial backup created"
 fi
 
 # For debugging
@@ -86,13 +84,10 @@ while true; do
     log_message "Check #$iteration: Checking for database changes..."
     
     if [ -f $DB_PATH ]; then
-        # Use enhanced comparison function
-        if ! compare_files; then
+        # Check if database has been accessed/modified
+        if check_db_accessed; then
             log_message "Changes detected in database"
             upload_to_gcs
-            log_message "Creating new backup"
-            cp $DB_PATH $BACKUP_PATH
-            log_message "Backup updated"
         else
             log_message "No changes detected in this check"
         fi
