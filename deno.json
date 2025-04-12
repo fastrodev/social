@@ -15,6 +15,7 @@
     }
   },
   "imports": {
+    "@google-cloud/storage": "npm:@google-cloud/storage@^6.10.0",
     "cssnano": "npm:cssnano@^6.0.1",
     "postcss": "npm:postcss@^8.4.35",
     "autoprefixer": "npm:autoprefixer@^10.4.16",
