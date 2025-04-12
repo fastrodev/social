@@ -5,7 +5,6 @@ const BUCKET_NAME = Deno.env.get("GCS_BUCKET") || "your-bucket-name";
 const DB_PATH = "/app/db/sqlite.db";
 const WAL_PATH = "/app/db/sqlite.db-wal";
 const SHM_PATH = "/app/db/sqlite.db-shm";
-const BACKUP_PATH = "/app/db/sqlite.db.backup";
 
 const storage = new Storage();
 const bucket = storage.bucket(BUCKET_NAME);
@@ -49,7 +48,6 @@ async function uploadToGCS() {
   await uploadFile(DB_PATH, "sqlite.db");
   await uploadFile(WAL_PATH, "sqlite.db-wal");
   await uploadFile(SHM_PATH, "sqlite.db-shm");
-  await uploadFile(BACKUP_PATH, "sqlite.db.backup");
   console.log("Upload to GCS completed.");
 }
 
@@ -59,9 +57,9 @@ async function downloadFromGCS() {
   await downloadFile("sqlite.db", DB_PATH);
   await downloadFile("sqlite.db-wal", WAL_PATH);
   await downloadFile("sqlite.db-shm", SHM_PATH);
-  await downloadFile("sqlite.db.backup", BACKUP_PATH);
   console.log("Download from GCS completed.");
 }
+
 async function syncLoop() {
   console.log("Starting database sync service...");
   while (true) {
