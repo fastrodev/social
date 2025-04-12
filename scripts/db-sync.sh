@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUCKET_NAME="replix-394315-db-bucket"
+BUCKET_NAME="${GCS_BUCKET}"
 DB_PATH="/app/db/sqlite.db"
 BACKUP_PATH="/app/db/sqlite.db.backup"
 
