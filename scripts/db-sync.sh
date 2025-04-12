@@ -75,7 +75,6 @@ upload_to_gcs() {
         log_message "All database files successfully synced to GCS"
     fi
 }
-
 # Download all files from GCS
 download_from_gcs() {
     log_message "Downloading SQLite database files from GCS bucket: $BUCKET_NAME"
@@ -88,14 +87,10 @@ download_from_gcs() {
         download_success=false
     fi
     
-    # Download WAL file
-    gsutil cp "gs://$BUCKET_NAME/sqlite.db-wal" "$WAL_PATH" 2>/dev/null || log_message "Note: WAL file not found in bucket"
-    
-    # Download SHM file
-    gsutil cp "gs://$BUCKET_NAME/sqlite.db-shm" "$SHM_PATH" 2>/dev/null || log_message "Note: SHM file not found in bucket"
-    
-    # Download backup file
-    gsutil cp "gs://$BUCKET_NAME/sqlite.db.backup" "$BACKUP_PATH" 2>/dev/null || log_message "Note: Backup file not found in bucket"
+    # Download WAL, SHM, and backup files silently (suppress error messages)
+    gsutil cp "gs://$BUCKET_NAME/sqlite.db-wal" "$WAL_PATH" 2>/dev/null
+    gsutil cp "gs://$BUCKET_NAME/sqlite.db-shm" "$SHM_PATH" 2>/dev/null
+    gsutil cp "gs://$BUCKET_NAME/sqlite.db.backup" "$BACKUP_PATH" 2>/dev/null
     
     if [ "$download_success" = true ]; then
         log_message "Database files successfully downloaded from GCS"
