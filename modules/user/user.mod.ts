@@ -12,6 +12,6 @@ export function userModule(s: Fastro) {
   s.get("/api/user/:userId", getUserByUserIdHandler);
   s.post("/api/user", createUserHandler);
   s.put("/api/user", updateUserHandler);
-  s.delete("/api/user", deleteUserHandler);
+  s.delete("/api/user/:userId", deleteUserHandler);
   return s;
 }
