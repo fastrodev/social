@@ -1,15 +1,14 @@
 # Build stage
-FROM denoland/deno:2.1.11 AS builder
+FROM denoland/deno:2.2.8 AS builder
 WORKDIR /app
 RUN mkdir -p /app/db
 COPY . .
-# Install and build
 RUN deno task build
-RUN deno install --entrypoint main.ts
 
 # Production stage
-FROM denoland/deno:2.1.11
+FROM denoland/deno:2.2.8
 EXPOSE 8080
 WORKDIR /app
 COPY --from=builder /app .
+RUN deno cache main.ts
 CMD ["deno", "task", "start"]
