@@ -1,6 +1,7 @@
 # Build stage
 FROM denoland/deno:2.1.11 AS builder
 WORKDIR /app
+RUN mkdir -p /app/db
 COPY . .
 # Install and build
 RUN deno task build
