@@ -48,7 +48,6 @@ jobs:
             ENV=PRODUCTION
             DENO_KV_PATH=/app/db/sqlite.db
             GCS_BUCKET=${{ vars.GCS_BUCKET }}
-            PORT=8080
           flags: --allow-unauthenticated
 
       - name: Show Output
