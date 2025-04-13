@@ -8,3 +8,4 @@ services:
     environment:
       - ENV=PRODUCTION
       - DENO_KV_PATH=/app/db/sqlite.db
+      - PORT=8080

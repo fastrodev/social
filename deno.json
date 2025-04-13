@@ -18,18 +18,17 @@
   "imports": {
     "zod": "npm:zod@^3.24.2",
     "zod/": "npm:zod@^3.24.2/",
-    "@google-cloud/storage": "npm:@google-cloud/storage@^7.16.0",
     "cssnano": "npm:cssnano@^6.0.1",
     "postcss": "npm:postcss@^8.4.35",
     "autoprefixer": "npm:autoprefixer@^10.4.16",
     "tailwindcss": "npm:tailwindcss@^3.3.2",
     "tailwindcss/": "npm:tailwindcss@^3.3.2/",
-    "@app/": "./",
     "preact": "npm:preact@^10.26.5",
     "@preact/signals": "npm:@preact/signals@^2.0.3",
     "preact-render-to-string": "npm:preact-render-to-string@^6.5.13",
     "preact/jsx-runtime": "npm:preact@10.26.5/jsx-runtime",
-    "fastro/": "https://raw.githubusercontent.com/fastrodev/fastro/v0.94.5/"
+    "fastro/": "https://raw.githubusercontent.com/fastrodev/fastro/v0.94.5/",
+    "@app/": "./"
   },
   "compilerOptions": {
     "jsx": "react-jsx",

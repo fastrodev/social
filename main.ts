@@ -12,5 +12,5 @@ s.group(indexModule);
 s.group(userModule);
 s.group(markdownModule);
 s.serve({
-  port: 8080,
+  port: Number(Deno.env.get("PORT")) || 8000,
 });

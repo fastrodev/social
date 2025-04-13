@@ -1,12 +1,12 @@
 # Build stage
-FROM denoland/deno:2.2.8 AS builder
+FROM denoland/deno:2.1.12 AS builder
 WORKDIR /app
 RUN mkdir -p /app/db
 COPY . .
 RUN deno task build
 
 # Production stage
-FROM denoland/deno:2.2.8
+FROM denoland/deno:2.1.12
 
 EXPOSE 8080
 WORKDIR /app

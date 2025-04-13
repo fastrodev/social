@@ -1,12 +1,26 @@
 export function indexService() {
+  const titles = [
+    "Welcome to the Community",
+    "Your Journey Starts Here",
+    "Connect and Collaborate",
+    "Discover Together",
+    "Build Something Amazing",
+    "Join the Conversation",
+    "Ready to Create?",
+    "Let's Get Started",
+    "Dive Into Development",
+    "Code, Connect, Create",
+    "The Future is Here",
+    "Welcome Aboard!",
+    "A New Social Experience",
+    "The Beginning of Something Great",
+    "Expand Your Network",
+  ];
+
+  const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+
   return {
-    title: "Hello World",
+    title: randomTitle,
     description: "A journey of a thousand miles begins with a single step",
-    youtube: "https://www.youtube.com/embed/cZc4Jn5nK3k",
-    image:
-      "https://avatars.githubusercontent.com/u/84224795?s=400&u=a53076f3dac46609e2837bef9980ae22ecd86e62&v=4",
-    start: Deno.env.get("ENV") === "DEVELOPMENT"
-      ? "http://localhost:8000/readme"
-      : "https://fastro.dev/docs/start",
   };
 }

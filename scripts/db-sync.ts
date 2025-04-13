@@ -1,4 +1,4 @@
-import { Storage } from "@google-cloud/storage";
+import { Storage } from "npm:@google-cloud/storage@^7.16.0";
 
 // Konfigurasi
 const BUCKET_NAME = Deno.env.get("GCS_BUCKET") || "your-bucket-name";
@@ -74,8 +74,8 @@ async function syncLoop() {
     }
 
     await uploadToGCS();
-    console.log("Waiting 30 seconds until next sync...");
-    await new Promise((resolve) => setTimeout(resolve, 30000));
+    console.log("Waiting 60 seconds until next sync...");
+    await new Promise((resolve) => setTimeout(resolve, 60000));
   }
 }
 
