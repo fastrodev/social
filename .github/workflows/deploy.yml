@@ -52,6 +52,12 @@ jobs:
             GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
           flags: --allow-unauthenticated
 
+      - name: Debug Environment Variables
+        run: |
+          echo "GCS_BUCKET value exists: ${{ vars.GCS_BUCKET != '' }}"
+          echo "GH_CLIENT_ID secret exists: ${{ secrets.GH_CLIENT_ID != '' }}"
+          echo "GH_CLIENT_SECRET secret exists: ${{ secrets.GH_CLIENT_SECRET != '' }}"
+
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
 
