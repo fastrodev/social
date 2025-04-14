@@ -1,0 +1,7 @@
+# Environment files
+
+.env .env.* *.local
+
+# Development files
+
+README.md CHANGELOG.md docker-compose.yml Dockerfile .dockerign

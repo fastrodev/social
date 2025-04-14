@@ -9,7 +9,7 @@ import { Context, Fastro, HttpRequest } from "fastro/mod.ts";
 import { STATUS_CODE } from "fastro/core/server/deps.ts";
 
 const redirectUri = Deno.env.get("REDIRECT_URI") ??
-  "http://localhost:8000/callback";
+  "http://localhost:8000/auth/callback";
 
 const GITHUB_CLIENT_ID = Deno.env.get("GITHUB_CLIENT_ID");
 const GITHUB_CLIENT_SECRET = Deno.env.get("GITHUB_CLIENT_SECRET");
@@ -57,14 +57,8 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
           <p>Signed in: {JSON.stringify(hasSessionIdCookie)}</p>
           <p>
             {hasSessionIdCookie
-              ? <a href="/signout">Sign out</a>
-              : <a href="/signin">Sign in</a>}
-          </p>
-
-          <p>
-            <a href="https://github.com/fastrodev/fastro/blob/main/modules/auth/mod.tsx">
-              Source code
-            </a>
+              ? <a href="/auth/github/signout">Sign out</a>
+              : <a href="/auth/github/signin">Sign in</a>}
           </p>
         </div>
       </body>
@@ -78,7 +72,7 @@ export const signinHandler = async (req: Request) => {
   return await signIn(req);
 };
 
-async function getUser(accessToken: string) {
+async function getGithubUser(accessToken: string) {
   const response = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `token ${accessToken}`,
@@ -104,7 +98,7 @@ export const callbackHandler = async (req: HttpRequest, ctx: Context) => {
     const { response, sessionId, tokens } = await handleCallback(
       req,
     );
-    const user = await getUser(tokens.accessToken);
+    const user = await getGithubUser(tokens.accessToken);
     const registeredUser = await findUserByLogin(ctx, user.login);
     if (!registeredUser) {
       const id = ulid();
@@ -133,13 +127,7 @@ export const signoutHandler = async (req: HttpRequest, ctx: Context) => {
       store.delete(sessionId);
       await store.commit();
     }
-    await signOut(req);
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: "/",
-      },
-    });
+    return await signOut(req);
   }
 };
 
@@ -151,7 +139,7 @@ export const signoutHandler = async (req: HttpRequest, ctx: Context) => {
  */
 export default function authModule(f: Fastro) {
   return f.get("/auth", indexHandler)
-    .get("/signin", signinHandler)
-    .get("/callback", callbackHandler)
-    .get("/signout", signoutHandler);
+    .get("/auth/github/signin", signinHandler)
+    .get("/auth/signout", signoutHandler)
+    .get("/auth/callback", callbackHandler);
 }
