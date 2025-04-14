@@ -114,8 +114,31 @@ export const callbackHandler = async (req: HttpRequest, ctx: Context) => {
       login: user.login,
     }, { expireIn: DAY });
     return response;
-  } catch {
-    return new Response(null, { status: STATUS_CODE.InternalServerError });
+  } catch (err: unknown) {
+    console.error("Auth callback error:", err);
+    console.error("Request URL:", req.url);
+
+    // Safe error details extraction
+    const errorDetails = {
+      message: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+      name: err instanceof Error ? err.name : undefined,
+    };
+
+    console.error("Error details:", errorDetails);
+
+    // You could also log to a monitoring service here
+
+    return new Response(
+      JSON.stringify({
+        error: "Authentication failed",
+        message: errorDetails.message,
+      }),
+      {
+        status: STATUS_CODE.InternalServerError,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 };
 
