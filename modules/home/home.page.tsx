@@ -3,6 +3,7 @@ import { useEffect, useState } from "preact/hooks";
 import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
+import { HexaIcon } from "@app/components/icons/hexa.tsx";
 
 interface Post {
   id: string;
@@ -159,20 +160,10 @@ export default function Home({ data }: PageProps<{
           style={{ backgroundColor: themeStyles.background }}
         />
 
-        {/* Dot pattern only on non-mobile */}
+        {/* Hexagonal Grid Background - Applied to entire page */}
         {!isMobile && (
-          <div className="absolute inset-0 z-[1]">
-            <div
-              className="absolute inset-0"
-              style={{
-                backgroundImage: `
-                  radial-gradient(${
-                  isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"
-                } 1px, transparent 1px)
-                `,
-                backgroundSize: "20px 20px",
-              }}
-            />
+          <div className="fixed inset-0 z-0 opacity-20">
+            <HexaIcon />
           </div>
         )}
       </div>
