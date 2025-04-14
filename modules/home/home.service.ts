@@ -12,6 +12,7 @@ interface Post {
   timestamp: string;
   author: string;
   commentCount?: number;
+  views?: number;
 }
 
 export async function createPost(input: PostInput): Promise<Post> {
@@ -57,14 +58,15 @@ export async function getPosts(limit = 20): Promise<Post[]> {
     commentCounts.set(postId, (commentCounts.get(postId) || 0) + 1);
   }
 
-  // Add comment counts to posts
-  const postsWithComments = postsResults.map((post) => ({
+  // Add comment counts and ensure views property to posts
+  const postsWithMetadata = postsResults.map((post) => ({
     ...post,
     commentCount: commentCounts.get(post.id) || 0,
+    views: post.views || 0, // Ensure views property exists with default 0
   }));
 
   // Sort posts by timestamp (newest first)
-  const posts = postsWithComments
+  const posts = postsWithMetadata
     .sort((a, b) =>
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
@@ -87,7 +89,22 @@ export async function getPostById(id: string): Promise<Post | null> {
       return null;
     }
 
-    return result.value;
+    // Create a new post object with the view count incremented
+    const post = result.value;
+    const updatedPost = {
+      ...post,
+      views: (post.views || 0) + 1,
+    };
+
+    // Update the post with the new view count
+    const updateResult = await kv.set(primaryKey, updatedPost);
+    if (!updateResult.ok) {
+      console.warn("Failed to update view count for post:", id);
+      // Still return the post even if view count update fails
+      return post;
+    }
+
+    return updatedPost;
   } catch (error) {
     console.error("Error fetching post:", error);
     return null;
@@ -106,19 +123,45 @@ export async function deletePostById(id: string): Promise<boolean> {
   }
 
   try {
-    // Delete the post
-    await kv.delete(primaryKey);
+    // First, get all comments for this post
+    const commentsToDelete: string[] = [];
+    const commentsIterator = kv.list<Comment>({ prefix: ["comments"] });
 
-    // Verify the deletion was successful
-    const checkAfterDelete = await kv.get<Post>(primaryKey);
-    if (checkAfterDelete.value) {
-      console.log("Post still exists after deletion attempt");
+    for await (const entry of commentsIterator) {
+      if (entry.value.postId === id) {
+        commentsToDelete.push(entry.key[1] as string); // Get the comment ID
+      }
+    }
+
+    console.log(
+      `Found ${commentsToDelete.length} comments to delete for post ${id}`,
+    );
+
+    // Create atomic operation that deletes both the post and all its comments
+    let atomic = kv.atomic();
+
+    // Add post deletion to the atomic operation
+    atomic = atomic.delete(primaryKey);
+
+    // Add all comment deletions to the atomic operation
+    for (const commentId of commentsToDelete) {
+      atomic = atomic.delete(["comments", commentId]);
+    }
+
+    // Execute the atomic operation
+    const result = await atomic.commit();
+
+    if (!result.ok) {
+      console.error("Failed to delete post and its comments atomically");
       return false;
     }
 
+    console.log(
+      `Successfully deleted post ${id} and ${commentsToDelete.length} associated comments`,
+    );
     return true;
   } catch (error) {
-    console.error("Error deleting post:", error);
+    console.error("Error deleting post and its comments:", error);
     return false;
   }
 }

@@ -4,6 +4,9 @@ import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
+import { CommentIcon } from "@app/components/icons/comment.tsx";
+import { ViewIcon } from "@app/components/icons/view.tsx";
+import { DeleteIcon } from "@app/components/icons/delete.tsx";
 
 interface Post {
   id: string;
@@ -11,6 +14,8 @@ interface Post {
   timestamp: string;
   author: string;
   commentCount?: number;
+  viewCount?: number;
+  views?: number; // Adding this to match what's returned from the backend
 }
 
 export default function Home({ data }: PageProps<{
@@ -161,11 +166,13 @@ export default function Home({ data }: PageProps<{
         />
 
         {/* Hexagonal Grid Background - Applied to entire page */}
-        {!isMobile && (
-          <div className="fixed inset-0 z-0 opacity-20">
-            <HexaIcon />
-          </div>
-        )}
+        <div
+          className={`fixed inset-0 z-0 ${
+            isMobile ? "opacity-10" : "opacity-20"
+          }`}
+        >
+          <HexaIcon />
+        </div>
       </div>
 
       {/* Content Layer */}
@@ -192,10 +199,10 @@ export default function Home({ data }: PageProps<{
             isDark={isDark}
           />
 
-          <main className="max-w-2xl mx-auto px-4">
+          <main className="max-w-2xl mx-auto px-3 sm:px-4">
             {/* Post creation card - reduced blur effects */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 mb-4 border ${themeStyles.cardBorder} ${
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} ${
                 !isMobile ? "backdrop-blur-lg" : ""
               }`}
             >
@@ -223,18 +230,22 @@ export default function Home({ data }: PageProps<{
                   </p>
                 </div>
 
-                <div className="flex justify-start w-full">
-                  {submitSuccess && (
-                    <div className="bg-green-500/20 text-green-500 px-4 py-2 rounded-lg">
-                      Post created successfully!
+                {submitSuccess || isSubmitting
+                  ? (
+                    <div className="flex justify-start w-full">
+                      {submitSuccess && (
+                        <div className="bg-green-500/20 text-green-500 px-4 py-2 rounded-lg">
+                          Post created successfully!
+                        </div>
+                      )}
+                      {isSubmitting && (
+                        <div className="bg-blue-500/20 text-blue-500 px-4 py-2 rounded-lg">
+                          Posting...
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {isSubmitting && (
-                    <div className="bg-blue-500/20 text-blue-500 px-4 py-2 rounded-lg">
-                      Posting...
-                    </div>
-                  )}
-                </div>
+                  )
+                  : ""}
               </form>
             </div>
 
@@ -245,7 +256,7 @@ export default function Home({ data }: PageProps<{
                   posts.map((post) => (
                     <div
                       key={post.id}
-                      className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} relative ${
+                      className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 border ${themeStyles.cardBorder} relative ${
                         !isMobile ? "backdrop-blur-lg" : ""
                       } ${
                         !isMobile
@@ -258,29 +269,14 @@ export default function Home({ data }: PageProps<{
                         <button
                           type="button"
                           onClick={() => handleDeletePost(post.id)}
-                          className={`absolute top-4 right-4 p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+                          className={`absolute top-4 right-3 sm:right-4 p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
                             isDark
                               ? "text-gray-400 hover:text-gray-200"
                               : "text-gray-500 hover:text-gray-700"
                           }`}
                           aria-label="Delete post"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6">
-                            </path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                          </svg>
+                          <DeleteIcon />
                         </button>
                       )}
 
@@ -308,30 +304,14 @@ export default function Home({ data }: PageProps<{
                       </a>
 
                       {/* Comment count indicator - only shown when comments exist */}
-                      <div className="mt-4 pt-3 border-t border-gray-700/30 flex items-center">
+                      <div className="mt-4 pt-3 border-t border-gray-700/30 flex items-center justify-between">
                         <a
                           href={`/post/${post.id}`}
                           className={`flex items-center gap-x-1 ${themeStyles.footer} hover:${
                             themeStyles.link.split(" ")[0]
                           }`}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="icon icon-tabler icons-tabler-outline icon-tabler-message-2"
-                          >
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M8 9h8" />
-                            <path d="M8 13h6" />
-                            <path d="M9 18h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-3l-3 3l-3 -3z" />
-                          </svg>
+                          <CommentIcon />
                           <span>
                             {post.commentCount
                               ? (
@@ -346,6 +326,16 @@ export default function Home({ data }: PageProps<{
                               )}
                           </span>
                         </a>
+
+                        {/* Views/Comments icon on the right */}
+                        <div
+                          className={`flex items-center gap-x-2 ${themeStyles.footer}`}
+                        >
+                          <span className="flex items-center">
+                            <ViewIcon />
+                            {post.views || post.viewCount || 0}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))

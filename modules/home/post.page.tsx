@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
+import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 
 interface Post {
   id: string;
@@ -204,8 +205,19 @@ export default function Post({ data }: PageProps<{
           <main className="max-w-2xl mx-auto px-4">
             {/* Post Detail Card */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-3 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4 relative`}
             >
+              {/* Three dots menu */}
+              <div className="absolute top-3 right-3 sm:top-6 sm:right-6">
+                <button
+                  type="button"
+                  className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
+                  aria-label="Post options"
+                >
+                  <VDotsIcon />
+                </button>
+              </div>
+
               {/* Post author info */}
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
@@ -236,7 +248,7 @@ export default function Post({ data }: PageProps<{
               >
                 <form
                   onSubmit={handleCommentSubmit}
-                  className="flex items-start space-x-2 sm:space-x-3 mb-6 mt-6"
+                  className="flex items-start space-x-3 sm:space-x-3 mb-6 mt-6"
                 >
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                     {data.isLogin ? data.author?.charAt(0).toUpperCase() : "?"}
@@ -287,7 +299,7 @@ export default function Post({ data }: PageProps<{
                       comments.map((comment) => (
                         <div
                           key={comment.id}
-                          className={`flex space-x-2 sm:space-x-3 ${themeStyles.text} items-baseline`}
+                          className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-baseline`}
                         >
                           <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                             {comment.author.charAt(0).toUpperCase()}
