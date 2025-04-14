@@ -62,16 +62,25 @@ async function downloadFromGCS() {
 
 async function syncLoop() {
   console.log("Starting database sync service...");
+  let firstRun = true;
 
   if (!(await fileExists(DB_PATH))) {
     console.log(
       "Main database file not found locally. Downloading from GCS...",
     );
     await downloadFromGCS();
+    firstRun = true;
   }
 
   while (true) {
     try {
+      // If this is the first run after downloading, wait before uploading
+      if (firstRun) {
+        console.log("Waiting for initial sync interval before first upload...");
+        await new Promise((resolve) => setTimeout(resolve, 10 * 60000));
+        firstRun = false;
+      }
+
       console.log("Syncing database files...");
       await uploadToGCS();
 
