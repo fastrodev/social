@@ -17,10 +17,24 @@ export function indexService() {
     "Expand Your Network",
   ];
 
+  const descriptions = [
+    "A journey of a thousand miles begins with a single step",
+    "Great things start from small beginnings",
+    "Every expert was once a beginner",
+    "Innovation happens at the intersection of ideas",
+    "The best way to predict the future is to create it",
+    "Alone we can do so little; together we can do so much",
+    "Collaboration is the key to unlocking potential",
+    "Your next great connection could change everything",
+    "Dreams become reality when we work together",
+    "Today's ideas become tomorrow's innovations",
+  ];
+
   const randomTitle = titles[Math.floor(Math.random() * titles.length)];
+  const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
 
   return {
     title: randomTitle,
-    description: "A journey of a thousand miles begins with a single step",
+    description: randomDescription,
   };
 }
