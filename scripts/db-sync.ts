@@ -1,4 +1,4 @@
-import { Storage } from "npm:@google-cloud/storage@^7.16.0";
+import { Storage } from "google-cloud/storage";
 
 // Konfigurasi
 const BUCKET_NAME = Deno.env.get("GCS_BUCKET") || "your-bucket-name";
@@ -62,24 +62,42 @@ async function downloadFromGCS() {
 
 async function syncLoop() {
   console.log("Starting database sync service...");
+
+  if (!(await fileExists(DB_PATH))) {
+    console.log(
+      "Main database file not found locally. Downloading from GCS...",
+    );
+    await downloadFromGCS();
+  }
+
   while (true) {
-    console.log("Syncing database files...");
+    try {
+      console.log("Syncing database files...");
+      await uploadToGCS();
 
-    // Cek apakah file utama ada, jika tidak, unduh dari GCS
-    if (!(await fileExists(DB_PATH))) {
+      console.log("Waiting 10 minutes until next sync...");
+      await new Promise((resolve) => setTimeout(resolve, 10 * 60000));
+    } catch (error) {
+      console.error("Error during database sync:", error);
+      if (error instanceof Error) {
+        console.error(`Error details: ${error.message}`);
+        if (error.stack) console.error(`Stack: ${error.stack}`);
+      }
+
+      // Implement exponential backoff for retries
+      const backoffTime = 30000; // 30 seconds
       console.log(
-        "Main database file not found locally. Downloading from GCS...",
+        `Encountered an error. Retrying in ${backoffTime / 1000} seconds...`,
       );
-      await downloadFromGCS();
-    }
 
-    await uploadToGCS();
-    console.log("Waiting 60 seconds until next sync...");
-    await new Promise((resolve) => setTimeout(resolve, 60000));
+      // Wait shorter time before retry on error
+      await new Promise((resolve) => setTimeout(resolve, backoffTime));
+    }
   }
 }
 
 // Mulai loop sinkronisasi
 syncLoop().catch((err) => {
   console.error("Error in sync loop:", err);
+  console.error("Fatal error in sync process. Service terminated.");
 });

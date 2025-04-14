@@ -2,23 +2,17 @@
 FROM denoland/deno:2.1.12 AS builder
 WORKDIR /app
 RUN mkdir -p /app/db
-
-# Accept build arguments
 ARG GITHUB_CLIENT_ID
 ARG GITHUB_CLIENT_SECRET
 ARG REDIRECT_URI
-
-# Set as environment variables for the build process
 ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
 ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
 ENV REDIRECT_URI=${REDIRECT_URI}
-
 COPY . .
 RUN deno task build
 
 # Production stage
 FROM denoland/deno:2.1.12
-
 EXPOSE 8080
 WORKDIR /app
 COPY --from=builder /app .
