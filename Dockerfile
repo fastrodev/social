@@ -2,6 +2,15 @@
 FROM denoland/deno:2.1.12 AS builder
 WORKDIR /app
 RUN mkdir -p /app/db
+
+# Accept build arguments
+ARG GITHUB_CLIENT_ID
+ARG GITHUB_CLIENT_SECRET
+
+# Set as environment variables for the build process
+ENV GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+ENV GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+
 COPY . .
 RUN deno task build
 
