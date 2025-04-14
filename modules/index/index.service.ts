@@ -31,10 +31,15 @@ export function indexService() {
   ];
 
   const randomTitle = titles[Math.floor(Math.random() * titles.length)];
-  const randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+  const randomDescription =
+    descriptions[Math.floor(Math.random() * descriptions.length)];
+
+  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev/";
+  const imageUrl = baseUrl + "social.jpeg";
 
   return {
     title: randomTitle,
     description: randomDescription,
+    image: imageUrl,
   };
 }

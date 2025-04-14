@@ -36,11 +36,14 @@ export default async function postDetailHandler(
     });
   }
 
+  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev/";
+  const imageUrl = baseUrl + "social.jpeg";
+
   return await ctx.render({
     title: `Post by ${post.author}`,
     description: post.content.substring(0, 150) +
       (post.content.length > 150 ? "..." : ""),
-    image: "https://fastro.deno.dev/fastro.jpeg",
+    image: imageUrl,
     isLogin,
     avatar_url,
     html_url,

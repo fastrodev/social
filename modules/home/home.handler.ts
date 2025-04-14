@@ -40,10 +40,13 @@ export default async function homeHandler(req: HttpRequest, ctx: Context) {
   // },
   //  */
 
+  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev/";
+  const imageUrl = baseUrl + "social.jpeg";
+
   return await ctx.render({
     title: "Home",
     description: "Share your thoughts and connect with others",
-    image: "https://fastro.deno.dev/fastro.jpeg",
+    image: imageUrl,
     isLogin,
     avatar_url,
     html_url,

@@ -3,12 +3,18 @@ import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
+import { HexaIcon } from "@app/components/icons/hexa.tsx";
+import { CommentIcon } from "@app/components/icons/comment.tsx";
+import { ViewIcon } from "@app/components/icons/view.tsx";
+
+
 
 interface Post {
   id: string;
   content: string;
   timestamp: string;
   author: string;
+  views?: number;
 }
 
 interface Comment {
@@ -154,7 +160,7 @@ export default function Post({ data }: PageProps<{
 
   return (
     <div className="relative min-h-screen">
-      {/* Background Layer */}
+      {/* Background Layer - simplified for mobile */}
       <div className="fixed inset-0 z-0">
         {/* Solid Background */}
         <div
@@ -162,19 +168,13 @@ export default function Post({ data }: PageProps<{
           style={{ backgroundColor: themeStyles.background }}
         />
 
-        {/* Subtle Dot Pattern */}
-        <div className="absolute inset-0 z-[1]">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `
-                radial-gradient(${
-                isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"
-              } 1px, transparent 1px)
-              `,
-              backgroundSize: "20px 20px",
-            }}
-          />
+        {/* Hexagonal Grid Background - Applied to entire page */}
+        <div
+          className={`fixed inset-0 z-0 ${
+            isDark ? "opacity-20" : "opacity-10"
+          }`}
+        >
+          <HexaIcon />
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export default function Post({ data }: PageProps<{
           {isDark ? "☀️" : "🌙"}
         </button>
 
-        <div className="max-w-xl mx-auto backdrop-blur-lg">
+        <div className="max-w-xl mx-auto">
           <Header
             isLogin={data.isLogin}
             avatar_url={data.avatar_url}
@@ -235,16 +235,30 @@ export default function Post({ data }: PageProps<{
 
               {/* Post content */}
               <div
-                className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-6`}
+                className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-4`}
               >
                 {post.content}
               </div>
 
+              {/* Stats section with top and bottom borders */}
+              <div className={`flex items-center justify-between py-3 space-x-4 border-t border-b ${isDark ? 'border-gray-700/50' : 'border-gray-200/70'} mb-4`}>
+                <div className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}>
+                  <span className="flex items-center">
+                    <CommentIcon />
+                    {comments.length} {comments.length === 1 ? "comment" : "comments"}
+                  </span>
+                </div>
+                <div className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}>
+                  <span className="flex items-center">
+                    <ViewIcon />
+                    {post.views || 0} views
+                  </span>
+                </div>
+              </div>
+
               {/* Comments section with improved responsiveness */}
               <div
-                className={`mt-4 sm:mt-6 border-t ${
-                  isDark ? "border-gray-700" : "border-gray-200"
-                } pt-3 sm:pt-4`}
+                className={`mt-2 sm:mt-4 pt-0`}
               >
                 <form
                   onSubmit={handleCommentSubmit}
@@ -256,7 +270,7 @@ export default function Post({ data }: PageProps<{
                   <div className="flex-grow min-w-0">
                     <textarea
                       placeholder={data.isLogin
-                        ? "Add a comment... (press Enter to submit)"
+                        ? "Add a comment..."
                         : "Login to comment"}
                       value={commentText}
                       onInput={handleTextChange}
@@ -322,13 +336,7 @@ export default function Post({ data }: PageProps<{
                         </div>
                       ))
                     )
-                    : (
-                      <div
-                        className={`text-center py-4 ${themeStyles.text} opacity-70`}
-                      >
-                        No comments yet. Be the first to comment!
-                      </div>
-                    )}
+                    : null}
                 </div>
               </div>
             </div>

@@ -1,4 +1,4 @@
-export function CommentIcon() {
+export function ClipIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,12 +10,10 @@ export function CommentIcon() {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      className="w-5 h-5 mr-2"
+      className="w-5 h-5"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M8 9h8" />
-      <path d="M8 13h6" />
-      <path d="M9 18h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-3l-3 3l-3 -3z" />
+      <path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a3 3 0 0 0 -6 -6l-6.5 6.5a4.5 4.5 0 0 0 9 9l6.5 -6.5" />
     </svg>
   );
 }

@@ -28,7 +28,7 @@ export default function layout(
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://fastro.dev" />
+        <meta property="og:url" content="https://social.fastro.dev" />
         <meta
           property="og:title"
           content={`${data.title} | Fastro`}
@@ -39,7 +39,7 @@ export default function layout(
 
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://fastro.dev" />
+        <meta property="twitter:url" content="https://social.fastro.dev" />
         <meta
           property="twitter:title"
           content={`${data.title} | Fastro`}
@@ -60,7 +60,7 @@ export default function layout(
         <link href="/styles.css" rel="stylesheet" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-        <link rel="canonical" href="https://fastro.dev" />
+        <link rel="canonical" href="https://social.fastro.dev" />
       </head>
       <body id="root">
         {children}

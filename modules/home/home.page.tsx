@@ -7,6 +7,7 @@ import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
+import { ClipIcon } from "@app/components/icons/clip.tsx";
 
 interface Post {
   id: string;
@@ -207,7 +208,7 @@ export default function Home({ data }: PageProps<{
               }`}
             >
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
+                <div className="relative">
                   <textarea
                     placeholder="What's on your mind?"
                     value={postContent}
@@ -217,17 +218,34 @@ export default function Home({ data }: PageProps<{
                     rows={4}
                     className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                   />
-                  {/* Add hint text for keyboard shortcuts */}
-                  <p
-                    className={`text-xs mt-1 ${themeStyles.footer} hidden sm:block`}
-                  >
-                    Press Enter to submit, Shift+Enter for new line
-                  </p>
-                  <p
-                    className={`text-xs mt-1 ${themeStyles.footer} block sm:hidden`}
-                  >
-                    Enter to send
-                  </p>
+                  <div className="mt-2 flex justify-between items-center">
+                    <div>
+                      {/* Add hint text for keyboard shortcuts */}
+                      <p
+                        className={`text-xs ${themeStyles.footer} hidden sm:block`}
+                      >
+                        Press Enter to submit, Shift+Enter for new line
+                      </p>
+                      <p
+                        className={`text-xs ${themeStyles.footer} block sm:hidden`}
+                      >
+                        Enter to send
+                      </p>
+                    </div>
+                    {/* Attachment button using flex instead of absolute positioning */}
+                    <button
+                      type="button"
+                      disabled
+                      className={`p-1.5 rounded-full ${
+                        isDark
+                          ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                      } transition-colors`}
+                      aria-label="Add attachment"
+                    >
+                      <ClipIcon />
+                    </button>
+                  </div>
                 </div>
 
                 {submitSuccess || isSubmitting
@@ -307,7 +325,7 @@ export default function Home({ data }: PageProps<{
                       <div className="mt-4 pt-3 border-t border-gray-700/30 flex items-center justify-between">
                         <a
                           href={`/post/${post.id}`}
-                          className={`flex items-center gap-x-1 ${themeStyles.footer} hover:${
+                          className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
                             themeStyles.link.split(" ")[0]
                           }`}
                         >
@@ -329,11 +347,11 @@ export default function Home({ data }: PageProps<{
 
                         {/* Views/Comments icon on the right */}
                         <div
-                          className={`flex items-center gap-x-2 ${themeStyles.footer}`}
+                          className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
                         >
                           <span className="flex items-center">
                             <ViewIcon />
-                            {post.views || post.viewCount || 0}
+                            {post.views || post.viewCount || 0} views
                           </span>
                         </div>
                       </div>
