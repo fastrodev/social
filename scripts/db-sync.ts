@@ -5,6 +5,7 @@ const BUCKET_NAME = Deno.env.get("GCS_BUCKET") || "your-bucket-name";
 const DB_PATH = "/app/db/sqlite.db";
 const WAL_PATH = "/app/db/sqlite.db-wal";
 const SHM_PATH = "/app/db/sqlite.db-shm";
+const SYNC_INTERVAL_MS = 10 * 60000; // 10 minutes in milliseconds
 
 const storage = new Storage();
 const bucket = storage.bucket(BUCKET_NAME);
@@ -77,7 +78,7 @@ async function syncLoop() {
       // If this is the first run after downloading, wait before uploading
       if (firstRun) {
         console.log("Waiting for initial sync interval before first upload...");
-        await new Promise((resolve) => setTimeout(resolve, 10 * 60000));
+        await new Promise((resolve) => setTimeout(resolve, SYNC_INTERVAL_MS));
         firstRun = false;
       }
 
@@ -85,7 +86,7 @@ async function syncLoop() {
       await uploadToGCS();
 
       console.log("Waiting 10 minutes until next sync...");
-      await new Promise((resolve) => setTimeout(resolve, 10 * 60000));
+      await new Promise((resolve) => setTimeout(resolve, SYNC_INTERVAL_MS));
     } catch (error) {
       console.error("Error during database sync:", error);
       if (error instanceof Error) {
