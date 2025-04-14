@@ -32,7 +32,8 @@ jobs:
         run: |
           docker compose -f docker-compose.yml build \
             --build-arg GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }} \
-            --build-arg GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
+            --build-arg GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }} \
+            --build-arg REDIRECT_URI=${{ vars.REDIRECT_URI }}
 
       - name: Tag Docker image
         run: docker tag deno-image ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:${{ github.sha }}
@@ -53,6 +54,7 @@ jobs:
             GCS_BUCKET=${{ vars.GCS_BUCKET }}
             GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
             GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
+            REDIRECT_URI=${{ vars.REDIRECT_URI }}
           flags: --allow-unauthenticated
 
       - name: Debug Environment Variables
@@ -60,6 +62,7 @@ jobs:
           echo "GCS_BUCKET value exists: ${{ vars.GCS_BUCKET != '' }}"
           echo "GH_CLIENT_ID secret exists: ${{ secrets.GH_CLIENT_ID != '' }}"
           echo "GH_CLIENT_SECRET secret exists: ${{ secrets.GH_CLIENT_SECRET != '' }}"
+          echo "REDIRECT_URI value exists: ${{ vars.REDIRECT_URI != '' }}"
 
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
