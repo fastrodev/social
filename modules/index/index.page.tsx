@@ -1,11 +1,11 @@
 import { PageProps } from "fastro/core/server/types.ts";
 import { Header } from "@app/components/header.tsx";
 import { Footer } from "@app/components/footer.tsx";
-import { GithubIcon } from "@app/components/icon/github.tsx";
-import { GoogleIcon } from "@app/components/icon/google.tsx";
-import { WhatsAppIcon } from "@app/components/icon/whatsapp.tsx";
-import { HexaIcon } from "@app/components/icon/hexa.tsx";
-import { RibbonIcon } from "@app/components/icon/ribbon.tsx";
+import { GithubIcon } from "@app/components/icons/github.tsx";
+import { GoogleIcon } from "@app/components/icons/google.tsx";
+import { WhatsAppIcon } from "@app/components/icons/whatsapp.tsx";
+import { HexaIcon } from "@app/components/icons/hexa.tsx";
+import { RibbonIcon } from "@app/components/icons/ribbon.tsx";
 
 export default function Index({ data }: PageProps<
   {
