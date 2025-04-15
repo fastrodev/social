@@ -7,8 +7,6 @@ import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 
-
-
 interface Post {
   id: string;
   content: string;
@@ -241,14 +239,23 @@ export default function Post({ data }: PageProps<{
               </div>
 
               {/* Stats section with top and bottom borders */}
-              <div className={`flex items-center justify-between py-3 space-x-4 border-t border-b ${isDark ? 'border-gray-700/50' : 'border-gray-200/70'} mb-4`}>
-                <div className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}>
+              <div
+                className={`flex items-center justify-between py-3 space-x-4 border-t border-b ${
+                  isDark ? "border-gray-700/50" : "border-gray-200/70"
+                } mb-4`}
+              >
+                <div
+                  className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}
+                >
                   <span className="flex items-center">
                     <CommentIcon />
-                    {comments.length} {comments.length === 1 ? "comment" : "comments"}
+                    {comments.length}{" "}
+                    {comments.length === 1 ? "comment" : "comments"}
                   </span>
                 </div>
-                <div className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}>
+                <div
+                  className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}
+                >
                   <span className="flex items-center">
                     <ViewIcon />
                     {post.views || 0} views
@@ -313,21 +320,32 @@ export default function Post({ data }: PageProps<{
                       comments.map((comment) => (
                         <div
                           key={comment.id}
-                          className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-baseline`}
+                          className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start`}
                         >
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                          <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                             {comment.author.charAt(0).toUpperCase()}
                           </div>
                           <div
-                            className={`flex-grow rounded-lg`}
+                            className={`flex-grow`}
                           >
-                            <div className="flex justify-between items-baseline mb-2">
-                              <span className="font-medium">
-                                {comment.author}
-                              </span>
-                              <span className={`text-xs ${themeStyles.footer}`}>
-                                {formatDate(comment.timestamp)}
-                              </span>
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  {comment.author}
+                                </span>
+                                <span
+                                  className={`text-xs ${themeStyles.footer}`}
+                                >
+                                  {formatDate(comment.timestamp)}
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
+                                aria-label="Comment options"
+                              >
+                                <VDotsIcon />
+                              </button>
                             </div>
                             <p className="whitespace-pre-wrap text-sm">
                               {comment.content}
