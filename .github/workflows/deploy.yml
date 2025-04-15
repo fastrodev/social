@@ -55,7 +55,7 @@ jobs:
             GITHUB_CLIENT_ID=${{ secrets.GH_CLIENT_ID }}
             GITHUB_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }}
             REDIRECT_URI=${{ vars.REDIRECT_URI }}
-          flags: --allow-unauthenticated
+          flags: --allow-unauthenticated --memory=1Gi
 
       - name: Debug Environment Variables
         run: |
