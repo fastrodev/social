@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
@@ -18,8 +18,9 @@ interface Post {
   avatar: string;
   commentCount?: number;
   viewCount?: number;
-  views?: number; // Adding this to match what's returned from the backend
-  isMarkdown?: boolean; // Add this field
+  views?: number;
+  isMarkdown?: boolean;
+  image?: string; // Add this field for image URL
 }
 
 export default function Home({ data }: PageProps<{
@@ -41,6 +42,9 @@ export default function Home({ data }: PageProps<{
   const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [showPreviewMode, setShowPreviewMode] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Detect mobile devices
   useEffect(() => {
@@ -67,6 +71,79 @@ export default function Home({ data }: PageProps<{
     }
   };
 
+  const handleFileSelect = async (
+    e: JSX.TargetedEvent<HTMLInputElement, Event>,
+  ) => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
+
+    // Check if file is an image
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file (JPEG, PNG, etc.)");
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      // Generate a unique filename
+      const extension = file.name.split(".").pop();
+      const filename = `uploads/${Date.now()}-${
+        Math.random()
+          .toString(36)
+          .substring(2, 15)
+      }.${extension}`;
+
+      // Get a signed URL from our API
+      const signedUrlResponse = await fetch("/api/signed-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filename }),
+      });
+
+      if (!signedUrlResponse.ok) {
+        throw new Error("Failed to get signed URL");
+      }
+
+      const { signedUrl } = await signedUrlResponse.json();
+
+      // Upload the file using the signed URL
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      // Extract the public URL from the signed URL (remove query parameters)
+      const publicUrl = signedUrl.split("?")[0];
+      setImageUrl(publicUrl);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleAttachmentClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveImage = () => {
+    setImageUrl(null);
+  };
+
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
 
@@ -83,6 +160,7 @@ export default function Home({ data }: PageProps<{
         body: JSON.stringify({
           content: postContent,
           isMarkdown: true,
+          image: imageUrl,
         }),
       });
 
@@ -90,6 +168,7 @@ export default function Home({ data }: PageProps<{
         const newPost = await response.json();
         setPosts([newPost, ...posts]);
         setPostContent("");
+        setImageUrl(null);
         setSubmitSuccess(true);
 
         // Reset success message after 3 seconds
@@ -106,12 +185,10 @@ export default function Home({ data }: PageProps<{
     }
   };
 
-  // Handle text field change
   const handleChange = (e: { currentTarget: { value: string } }) => {
     setPostContent(e.currentTarget.value);
   };
 
-  // Add keyboard handling for Enter submission
   const handleKeyDown = (
     e: JSX.TargetedEvent<HTMLTextAreaElement, KeyboardEvent>,
   ) => {
@@ -126,7 +203,6 @@ export default function Home({ data }: PageProps<{
     }
   };
 
-  // Handle post deletion
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this post?")) {
       return;
@@ -147,12 +223,10 @@ export default function Home({ data }: PageProps<{
     }
   };
 
-  // Toggle theme
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
 
-  // Theme styles with performance optimizations
   const themeStyles = {
     background: isDark ? "#0f172a" : "#f8fafc",
     cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
@@ -168,7 +242,6 @@ export default function Home({ data }: PageProps<{
       ? "text-purple-400 hover:text-purple-300"
       : "text-purple-600 hover:text-purple-500",
     cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-    // Simplified shadows for mobile
     cardGlow: isMobile
       ? isDark ? "shadow-md" : "shadow-sm"
       : isDark
@@ -178,15 +251,11 @@ export default function Home({ data }: PageProps<{
 
   return (
     <div className="relative min-h-screen">
-      {/* Background Layer - simplified for mobile */}
       <div className="fixed inset-0 z-0">
-        {/* Solid Background */}
         <div
           className="absolute inset-0"
           style={{ backgroundColor: themeStyles.background }}
         />
-
-        {/* Hexagonal Grid Background - Applied to entire page */}
         <div
           className={`fixed inset-0 z-0 ${
             isMobile ? "opacity-10" : "opacity-20"
@@ -196,9 +265,7 @@ export default function Home({ data }: PageProps<{
         </div>
       </div>
 
-      {/* Content Layer */}
       <div className="relative z-10 min-h-screen">
-        {/* Theme toggle button */}
         <button
           type="button"
           onClick={toggleTheme}
@@ -222,7 +289,6 @@ export default function Home({ data }: PageProps<{
           />
 
           <main className="max-w-2xl mx-auto px-3 sm:px-4">
-            {/* Post creation card - reduced blur effects */}
             <div
               className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} ${
                 !isMobile ? "backdrop-blur-lg" : ""
@@ -294,19 +360,48 @@ export default function Home({ data }: PageProps<{
                         Enter to send
                       </p>
                     </div>
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      accept="image/jpeg,image/png,image/gif"
+                      className="hidden"
+                    />
+
                     <button
                       type="button"
-                      disabled
+                      onClick={handleAttachmentClick}
                       className={`p-1.5 rounded-full ${
                         isDark
                           ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
                           : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
                       } transition-colors`}
                       aria-label="Add attachment"
+                      disabled={uploadingImage}
                     >
-                      <ClipIcon />
+                      {uploadingImage
+                        ? <span className="animate-pulse">⏳</span>
+                        : <ClipIcon />}
                     </button>
                   </div>
+
+                  {imageUrl && (
+                    <div className="mt-3 relative">
+                      <img
+                        src={imageUrl}
+                        alt="Uploaded preview"
+                        className="max-h-60 w-auto rounded-lg object-contain bg-gray-100/10"
+                      />
+                      <button
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 bg-gray-800/70 hover:bg-gray-700 text-white rounded-full p-1"
+                        aria-label="Remove image"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {submitSuccess || isSubmitting
@@ -328,7 +423,6 @@ export default function Home({ data }: PageProps<{
               </form>
             </div>
 
-            {/* Posts list - performance optimized */}
             <div className="space-y-4 mb-8">
               {posts.length > 0
                 ? (
@@ -343,7 +437,6 @@ export default function Home({ data }: PageProps<{
                           : ""
                       }`}
                     >
-                      {/* Delete button - only visible to post author */}
                       {data.isLogin && data.author === post.author && (
                         <button
                           type="button"
@@ -361,7 +454,6 @@ export default function Home({ data }: PageProps<{
 
                       <div className="flex items-center mb-3">
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                          {/* {post.author.charAt(0).toUpperCase()} */}
                           <img
                             src={post.avatar}
                             alt={post.author}
@@ -378,8 +470,16 @@ export default function Home({ data }: PageProps<{
                         </div>
                       </div>
 
-                      {/* Make the content clickable to view details */}
                       <a href={`/post/${post.id}`} className="block">
+                        {post.image && (
+                          <div className="mb-3">
+                            <img
+                              src={post.image}
+                              alt="Post attachment"
+                              className="rounded-lg max-h-80 w-full object-contain"
+                            />
+                          </div>
+                        )}
                         <div
                           className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert ${
                             post.content.length > 1000
@@ -401,7 +501,6 @@ export default function Home({ data }: PageProps<{
                         )}
                       </a>
 
-                      {/* Comment count indicator - only shown when comments exist */}
                       <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
                         <a
                           href={`/post/${post.id}`}
@@ -425,7 +524,6 @@ export default function Home({ data }: PageProps<{
                           </span>
                         </a>
 
-                        {/* Views/Comments icon on the right */}
                         <div
                           className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
                         >

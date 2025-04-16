@@ -43,7 +43,8 @@ export async function generateSignedUrl(
       expires: Date.now() + 15 * 60 * 1000,
       contentType: "application/octet-stream",
     };
-    const bucketName: string = Deno.env.get("BUCKET_NAME") || "";
+    const bucketName: string = Deno.env.get("BUCKET_NAME") ||
+      "replix-394315-file";
     const storageClient = new Storage();
     const [url] = await storageClient
       .bucket(bucketName)
