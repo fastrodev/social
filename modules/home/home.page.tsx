@@ -8,6 +8,7 @@ import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { ClipIcon } from "@app/components/icons/clip.tsx";
+import { marked } from "marked";
 
 interface Post {
   id: string;
@@ -18,6 +19,7 @@ interface Post {
   commentCount?: number;
   viewCount?: number;
   views?: number; // Adding this to match what's returned from the backend
+  isMarkdown?: boolean; // Add this field
 }
 
 export default function Home({ data }: PageProps<{
@@ -38,6 +40,7 @@ export default function Home({ data }: PageProps<{
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [showPreviewMode, setShowPreviewMode] = useState(false);
 
   // Detect mobile devices
   useEffect(() => {
@@ -51,7 +54,19 @@ export default function Home({ data }: PageProps<{
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Handle post submission
+  const renderMarkdown = (content: string) => {
+    try {
+      const html = marked.parse(content, {
+        // Remove mangle and headerIds options as they don't exist in the type definition
+      });
+
+      return { __html: typeof html === "string" ? html : String(html) };
+    } catch (e) {
+      console.error("Markdown parsing error:", e);
+      return { __html: content };
+    }
+  };
+
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
 
@@ -65,7 +80,10 @@ export default function Home({ data }: PageProps<{
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: postContent }),
+        body: JSON.stringify({
+          content: postContent,
+          isMarkdown: true,
+        }),
       });
 
       if (response.ok) {
@@ -212,18 +230,59 @@ export default function Home({ data }: PageProps<{
             >
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="relative">
-                  <textarea
-                    placeholder="What's on your mind?"
-                    value={postContent}
-                    onInput={handleChange}
-                    onKeyDown={handleKeyDown}
-                    required
-                    rows={4}
-                    className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
-                  />
-                  <div className="mt-2 flex justify-between items-center">
+                  <div className="flex justify-between items-center mb-2">
+                    <div className={`flex items-center ${themeStyles.text}`}>
+                      <button
+                        type="button"
+                        onClick={() => setShowPreviewMode(!showPreviewMode)}
+                        className={`text-xs px-2 py-1 rounded border ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700 border-gray-600"
+                            : "text-gray-700 hover:bg-gray-200 border-gray-300"
+                        }`}
+                      >
+                        {showPreviewMode ? "Edit" : "Preview"}
+                      </button>
+                    </div>
+
+                    <a
+                      href="https://www.markdownguide.org/cheat-sheet/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-xs ${themeStyles.link}`}
+                    >
+                      Markdown Help
+                    </a>
+                  </div>
+
+                  {showPreviewMode
+                    ? (
+                      <div
+                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} min-h-[100px] max-h-[400px] overflow-y-auto`}
+                      >
+                        {postContent && (
+                          <div
+                            className="markdown-preview prose prose-sm dark:prose-invert"
+                            dangerouslySetInnerHTML={renderMarkdown(
+                              postContent,
+                            )}
+                          />
+                        )}
+                      </div>
+                    )
+                    : (
+                      <textarea
+                        placeholder="What's on your mind? (Markdown supported)"
+                        value={postContent}
+                        onInput={handleChange}
+                        onKeyDown={handleKeyDown}
+                        required
+                        rows={4}
+                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                      />
+                    )}
+                  <div className="mt-0 flex justify-between items-center">
                     <div>
-                      {/* Add hint text for keyboard shortcuts */}
                       <p
                         className={`text-xs ${themeStyles.footer} hidden sm:block`}
                       >
@@ -235,7 +294,6 @@ export default function Home({ data }: PageProps<{
                         Enter to send
                       </p>
                     </div>
-                    {/* Attachment button using flex instead of absolute positioning */}
                     <button
                       type="button"
                       disabled
@@ -322,11 +380,12 @@ export default function Home({ data }: PageProps<{
 
                       {/* Make the content clickable to view details */}
                       <a href={`/post/${post.id}`} className="block">
-                        <p
-                          className={`${themeStyles.text} whitespace-pre-wrap mb-3`}
-                        >
-                          {post.content}
-                        </p>
+                        <div
+                          className={`${themeStyles.text} whitespace-pre-wrap mb-3 markdown-content prose prose-sm dark:prose-invert`}
+                          dangerouslySetInnerHTML={renderMarkdown(
+                            post.content,
+                          )}
+                        />
                       </a>
 
                       {/* Comment count indicator - only shown when comments exist */}

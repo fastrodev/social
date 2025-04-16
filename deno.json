@@ -16,6 +16,7 @@
     }
   },
   "imports": {
+    "marked": "npm:marked@^15.0.8",
     "google-cloud/storage": "npm:@google-cloud/storage@^7.16.0",
     "zod": "npm:zod@^3.24.2",
     "zod/": "npm:zod@^3.24.2/",

@@ -6,6 +6,7 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
+import { marked } from "marked";
 
 interface Post {
   id: string;
@@ -14,6 +15,7 @@ interface Post {
   author: string;
   views?: number;
   avatar?: string;
+  isMarkdown?: boolean;
 }
 
 interface Comment {
@@ -160,6 +162,19 @@ export default function Post({ data }: PageProps<{
     setCommentText(e.currentTarget.value);
   };
 
+  const renderMarkdown = (content: string) => {
+    try {
+      const html = marked.parse(content, {
+        // Avoid deprecated options
+      });
+
+      return { __html: typeof html === "string" ? html : String(html) };
+    } catch (e) {
+      console.error("Markdown parsing error:", e);
+      return { __html: content };
+    }
+  };
+
   // Theme styles
   const themeStyles = {
     background: isDark ? "#0f172a" : "#f8fafc",
@@ -273,11 +288,11 @@ export default function Post({ data }: PageProps<{
                 </div>
               </div>
 
-              {/* Post content */}
-              <div
-                className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-4`}
-              >
-                {post.content}
+              <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
+                <div
+                  className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-4`}
+                  dangerouslySetInnerHTML={renderMarkdown(post.content)}
+                />
               </div>
 
               {/* Stats section with top and bottom borders */}
