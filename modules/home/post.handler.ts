@@ -122,6 +122,7 @@ export default async function postDetailHandler(
   }
 
   const image = post.image || imageUrl;
+  console.log("post", post);
   return await ctx.render({
     title,
     description: seoDescription,
