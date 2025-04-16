@@ -287,15 +287,20 @@ export default function Home({ data }: PageProps<{
   const handleKeyDown = (
     e: JSX.TargetedEvent<HTMLTextAreaElement, KeyboardEvent>,
   ) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
+    // Only override Enter key behavior on non-mobile devices (desktop)
+    if (!isMobile && e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Prevent newline on desktop Enter
 
       if (postContent.trim()) {
+        // Trigger form submission
         handleSubmit({
           preventDefault: () => {},
+          currentTarget: e.currentTarget.form, // Pass the form if needed by handleSubmit
         } as unknown as JSX.TargetedEvent<HTMLFormElement, Event>);
       }
     }
+    // On mobile: Let Enter key behave normally (insert newline).
+    // On desktop: Shift+Enter also behaves normally (insert newline) because we don't preventDefault.
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -449,36 +454,48 @@ export default function Home({ data }: PageProps<{
                       >
                         Press Enter to submit, Shift+Enter for new line
                       </p>
-                      <p
-                        className={`text-xs ${themeStyles.footer} block sm:hidden`}
-                      >
-                        Enter to send
-                      </p>
                     </div>
 
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileSelect}
-                      accept="image/jpeg,image/png,image/gif"
-                      className="hidden"
-                    />
+                    <div className="flex items-center gap-2">
+                      {/* Wrapper for buttons */}
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileSelect}
+                        accept="image/jpeg,image/png,image/gif"
+                        className="hidden"
+                      />
 
-                    <button
-                      type="button"
-                      onClick={handleAttachmentClick}
-                      className={`p-1.5 rounded-full ${
-                        isDark
-                          ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                      } transition-colors`}
-                      aria-label="Add attachment"
-                      disabled={uploadingImage}
-                    >
-                      {uploadingImage
-                        ? <span className="animate-pulse">⏳</span>
-                        : <ClipIcon />}
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleAttachmentClick}
+                        className={`p-1.5 rounded-full ${
+                          isDark
+                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                        } transition-colors`}
+                        aria-label="Add attachment"
+                        disabled={uploadingImage}
+                      >
+                        {uploadingImage
+                          ? <span className="animate-pulse">⏳</span>
+                          : <ClipIcon />}
+                      </button>
+
+                      {/* Mobile Post Button */}
+                      <button
+                        type="submit"
+                        className={`sm:hidden px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                          isDark
+                            ? "bg-purple-600 hover:bg-purple-700 text-white"
+                            : "bg-purple-500 hover:bg-purple-600 text-white"
+                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        disabled={isSubmitting || uploadingImage ||
+                          !postContent.trim()}
+                      >
+                        Post
+                      </button>
+                    </div>
                   </div>
 
                   {imageUrl && (
