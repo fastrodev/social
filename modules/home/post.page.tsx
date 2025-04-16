@@ -129,7 +129,7 @@ export default function Post({ data }: PageProps<{
 
       if (response.ok) {
         const newComment = await response.json();
-        setComments([newComment, ...comments]);
+        setComments([...comments, newComment]);
         setCommentText("");
       } else {
         console.error("Failed to submit comment");
@@ -333,58 +333,11 @@ export default function Post({ data }: PageProps<{
                 </div>
               </div>
 
-              {/* Comments section with improved responsiveness */}
-              <div
-                className={`mt-2 sm:mt-4 pt-0`}
-              >
-                <form
-                  onSubmit={handleCommentSubmit}
-                  className="flex items-start space-x-4 sm:space-x-6 mb-6 mt-6"
-                >
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                    {data.isLogin
-                      ? (
-                        <img
-                          src={data.avatar_url}
-                          alt={post.author}
-                          className="w-full h-full rounded-full"
-                        />
-                      )
-                      : "?"}
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <textarea
-                      placeholder={data.isLogin
-                        ? "Add a comment..."
-                        : "Login to comment"}
-                      value={commentText}
-                      onInput={handleTextChange}
-                      onKeyDown={handleKeyDown}
-                      rows={2}
-                      disabled={!data.isLogin}
-                      className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                        !data.isLogin ? "opacity-60 cursor-not-allowed" : ""
-                      }`}
-                    />
-                    {data.isLogin && (
-                      <>
-                        <p
-                          className={`text-xs mt-1 ${themeStyles.footer} hidden sm:block`}
-                        >
-                          Press Enter to submit, Shift+Enter for new line
-                        </p>
-                        <p
-                          className={`text-xs mt-1 ${themeStyles.footer} block sm:hidden`}
-                        >
-                          Enter to send
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </form>
-
+              {/* Comments section */}
+              <div className={`mt-2 sm:mt-4 pt-0`}>
                 {/* Display comments */}
-                <div className="space-y-4">
+                <div className="space-y-4 mb-6">
+                  {/* Added mb-6 for spacing before input */}
                   {isLoading
                     ? (
                       // Skeleton loaders with fixed alignment
@@ -491,6 +444,67 @@ export default function Post({ data }: PageProps<{
                       </div>
                     )}
                 </div>
+
+                {/* Comment Input Form */}
+                {data.isLogin
+                  ? (
+                    <form
+                      onSubmit={handleCommentSubmit}
+                      className="flex items-start space-x-4 sm:space-x-6 mt-6 pt-6 border-t" // Added mt-6, pt-6 and border-t
+                      style={{
+                        borderColor: isDark
+                          ? "rgba(255,255,255,0.1)"
+                          : "rgba(0,0,0,0.1)",
+                      }} // Subtle border color
+                    >
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                        <img
+                          src={data.avatar_url}
+                          alt="Your avatar"
+                          className="w-full h-full rounded-full"
+                        />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <textarea
+                          placeholder="Add a comment..."
+                          value={commentText}
+                          onInput={handleTextChange}
+                          onKeyDown={handleKeyDown}
+                          rows={2}
+                          className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                        />
+                        {/* Submit Button (Optional but recommended) */}
+                        <div className="flex justify-end mt-2">
+                          <button
+                            type="submit"
+                            disabled={!commentText.trim() || _isSubmitting}
+                            className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors ${themeStyles.button} ${
+                              (!commentText.trim() || _isSubmitting)
+                                ? "opacity-50 cursor-not-allowed"
+                                : ""
+                            }`}
+                          >
+                            Comment
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )
+                  : (
+                    <div
+                      className={`text-center py-4 ${themeStyles.text} opacity-70 text-sm mt-6 pt-6 border-t`} // Added mt-6, pt-6 and border-t
+                      style={{
+                        borderColor: isDark
+                          ? "rgba(255,255,255,0.1)"
+                          : "rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      Please{" "}
+                      <a href="/login" className={themeStyles.link}>login</a>
+                      {" "}
+                      to comment.
+                    </div>
+                  )}
               </div>
             </div>
           </main>
