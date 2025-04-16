@@ -16,10 +16,11 @@ export interface GenerateSignedUrlResponse {
  * The signed URL is generated using the Google Cloud Storage client library.
  *
  * @param filename
+ * @param contentType
  * @returns { signedUrl: string }
  * @throws {Error} If the signed URL generation fails
  * @example
- * const { signedUrl } = await generateSignedUrl("example.txt");
+ * const { signedUrl } = await generateSignedUrl("example.txt", "application/octet-stream");
  * const file = yourFileInput.files[0];
  * await fetch(signedUrl, {
  *   method: 'PUT',
@@ -35,14 +36,15 @@ export interface GenerateSignedUrlResponse {
 // Use this URL to upload a file (frontend example with fetch)
 export async function generateSignedUrl(
   filename: string,
+  contentType: string, // Add contentType parameter
 ): Promise<GenerateSignedUrlResponse> {
   try {
     const options = {
       version: "v4" as const,
       action: "write" as const,
-      expires: Date.now() + 15 * 60 * 1000,
-      contentType: "application/octet-stream",
-      // Add these extension headers to be signed with the URL
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+      // Use the provided contentType
+      contentType: contentType,
       extensionHeaders: {
         "x-goog-content-length-range": "0,10485760", // 10MB max
       },
@@ -51,13 +53,10 @@ export async function generateSignedUrl(
     const bucketName: string = Deno.env.get("BUCKET_NAME") ||
       "replix-394315-file";
 
-    // Use Cloud Run's built-in authentication
-    // This avoids the need for explicit key file
     const storageClient = new Storage();
 
-    // Log for debugging
     console.log(
-      `Attempting to generate signed URL for bucket: ${bucketName}, file: ${filename}`,
+      `Generating signed URL for bucket: ${bucketName}, file: ${filename}, contentType: ${contentType}`,
     );
 
     const [url] = await storageClient
@@ -69,7 +68,7 @@ export async function generateSignedUrl(
       signedUrl: url,
     };
   } catch (error) {
-    console.error("Detailed error:", error);
+    console.error("Detailed error generating signed URL:", error);
     throw new Error(
       `Failed to generate signed URL: ${
         error instanceof Error ? error.message : String(error)

@@ -102,7 +102,8 @@ export default function Home({ data }: PageProps<{
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ filename }),
+        // Send both filename and contentType
+        body: JSON.stringify({ filename, contentType: file.type }),
       });
 
       if (!signedUrlResponse.ok) {

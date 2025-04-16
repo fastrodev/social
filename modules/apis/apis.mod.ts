@@ -2,29 +2,33 @@ import { Fastro } from "fastro/core/server/types.ts";
 import { generateSignedUrl } from "../../utils/signed-url.ts";
 
 export function apisModule(s: Fastro) {
-  // API endpoint to get a signed URL for file uploads
   s.post("/api/signed-url", async (req, res) => {
     try {
-      // Get filename from request body
-      const { filename } = await req.json();
+      const body = await req.json();
+      // Destructure both filename and contentType
+      const { filename, contentType } = body;
 
       if (!filename || typeof filename !== "string") {
-        res.send({
-          error: "Filename is required and must be a string",
-        }, 400);
-        return;
+        return res.send({
+          error: "Invalid request: filename is required",
+        });
+      }
+      // Also validate contentType (optional but recommended)
+      if (!contentType || typeof contentType !== "string") {
+        return res.status(400).send({
+          error: "Invalid request: contentType is required",
+        });
       }
 
-      // Generate signed URL
-      const signedUrlResponse = await generateSignedUrl(filename);
+      // Pass contentType to the generation function
+      const signedUrlResponse = await generateSignedUrl(filename, contentType);
 
-      // Return the signed URL
       return res.send({
         signedUrl: signedUrlResponse.signedUrl,
       });
     } catch (error) {
       console.error("Error generating signed URL:", error);
-      return res.status(500).json({
+      return res.status(500).send({
         error: "Failed to generate signed URL",
       });
     }
