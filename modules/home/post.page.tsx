@@ -317,7 +317,7 @@ export default function Post({ data }: PageProps<{
                     {data.isLogin
                       ? (
                         <img
-                          src={post.avatar}
+                          src={data.avatar_url}
                           alt={post.author}
                           className="w-full h-full rounded-full"
                         />
