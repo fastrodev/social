@@ -18,7 +18,9 @@ export function apisModule(s: Fastro) {
       const signedUrlResponse = await generateSignedUrl(filename);
 
       // Return the signed URL
-      return res.json(signedUrlResponse);
+      return res.send({
+        signedUrl: signedUrlResponse.signedUrl,
+      });
     } catch (error) {
       console.error("Error generating signed URL:", error);
       return res.status(500).json({
