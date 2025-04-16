@@ -4,6 +4,7 @@ import { kv } from "@app/utils/db.ts";
 interface PostInput {
   content: string;
   author: string;
+  avatar?: string;
 }
 
 interface Post {
@@ -13,6 +14,7 @@ interface Post {
   author: string;
   commentCount?: number;
   views?: number;
+  avatar?: string;
 }
 
 export async function createPost(input: PostInput): Promise<Post> {
@@ -22,6 +24,7 @@ export async function createPost(input: PostInput): Promise<Post> {
     content: input.content,
     timestamp: new Date().toISOString(),
     author: input.author,
+    avatar: input.avatar,
   };
 
   const primaryKey = ["posts", id];
@@ -46,6 +49,7 @@ export async function getPosts(limit = 20): Promise<Post[]> {
   const iterator = kv.list<Post>({ prefix: ["posts"] });
 
   for await (const entry of iterator) {
+    console.log("Post entry:", entry);
     postsResults.push(entry.value);
   }
 
@@ -171,6 +175,7 @@ interface CommentInput {
   content: string;
   postId: string;
   author: string;
+  avatar?: string;
 }
 
 interface Comment {
@@ -179,6 +184,7 @@ interface Comment {
   postId: string;
   timestamp: string;
   author: string;
+  avatar?: string;
 }
 
 // Create a new comment
@@ -190,6 +196,7 @@ export async function createComment(input: CommentInput): Promise<Comment> {
     postId: input.postId,
     timestamp: new Date().toISOString(),
     author: input.author,
+    avatar: input.avatar,
   };
 
   const primaryKey = ["comments", id];

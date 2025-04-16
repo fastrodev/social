@@ -13,6 +13,7 @@ interface Post {
   timestamp: string;
   author: string;
   views?: number;
+  avatar?: string;
 }
 
 interface Comment {
@@ -21,6 +22,7 @@ interface Comment {
   postId: string;
   timestamp: string;
   author: string;
+  avatar: string;
 }
 
 export default function Post({ data }: PageProps<{
@@ -219,7 +221,11 @@ export default function Post({ data }: PageProps<{
               {/* Post author info */}
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  {post.author.charAt(0).toUpperCase()}
+                  <img
+                    src={post.avatar}
+                    alt={post.author}
+                    className="w-full h-full rounded-full"
+                  />
                 </div>
                 <div className="ml-4">
                   <p className={`font-medium text-lg ${themeStyles.text}`}>
@@ -272,7 +278,15 @@ export default function Post({ data }: PageProps<{
                   className="flex items-start space-x-3 sm:space-x-3 mb-6 mt-6"
                 >
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                    {data.isLogin ? data.author?.charAt(0).toUpperCase() : "?"}
+                    {data.isLogin
+                      ? (
+                        <img
+                          src={post.avatar}
+                          alt={post.author}
+                          className="w-full h-full rounded-full"
+                        />
+                      )
+                      : "?"}
                   </div>
                   <div className="flex-grow min-w-0">
                     <textarea
@@ -309,52 +323,84 @@ export default function Post({ data }: PageProps<{
                 <div className="space-y-4">
                   {isLoading
                     ? (
-                      <div
-                        className={`text-center py-4 ${themeStyles.text} opacity-70`}
-                      >
-                        Loading comments...
-                      </div>
-                    )
-                    : comments.length > 0
-                    ? (
-                      comments.map((comment) => (
+                      // Skeleton loaders for smoother transition
+                      Array(3).fill(0).map((_, index) => (
                         <div
-                          key={comment.id}
-                          className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start`}
+                          key={`skeleton-${index}`}
+                          className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start animate-pulse`}
                         >
-                          <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                            {comment.author.charAt(0).toUpperCase()}
+                          <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-gray-600/30 rounded-full flex-shrink-0">
                           </div>
-                          <div
-                            className={`flex-grow`}
-                          >
+                          <div className={`flex-grow`}>
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex flex-col">
-                                <span className="font-medium">
-                                  {comment.author}
-                                </span>
-                                <span
-                                  className={`text-xs ${themeStyles.footer}`}
-                                >
-                                  {formatDate(comment.timestamp)}
-                                </span>
+                                <div className="h-4 w-24 bg-gray-600/30 rounded">
+                                </div>
+                                <div className="h-3 w-16 bg-gray-600/20 rounded mt-1">
+                                </div>
                               </div>
-                              <button
-                                type="button"
-                                className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
-                                aria-label="Comment options"
-                              >
-                                <VDotsIcon />
-                              </button>
+                              <div className="h-6 w-6 bg-gray-600/20 rounded-full">
+                              </div>
                             </div>
-                            <p className="whitespace-pre-wrap text-sm">
-                              {comment.content}
-                            </p>
+                            <div className="h-4 w-full bg-gray-600/30 rounded mt-2">
+                            </div>
+                            <div className="h-4 w-3/4 bg-gray-600/30 rounded mt-2">
+                            </div>
                           </div>
                         </div>
                       ))
                     )
-                    : null}
+                    : comments.length > 0
+                    ? (
+                      <div className="transition-opacity duration-300 ease-in-out">
+                        {comments.map((comment) => (
+                          <div
+                            key={comment.id}
+                            className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start mb-4`}
+                          >
+                            {/* Comment content remains the same */}
+                            <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                              <img
+                                src={comment.avatar}
+                                alt={comment.author}
+                                className="w-full h-full rounded-full"
+                              />
+                            </div>
+                            <div className={`flex-grow`}>
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {comment.author}
+                                  </span>
+                                  <span
+                                    className={`text-xs ${themeStyles.footer}`}
+                                  >
+                                    {formatDate(comment.timestamp)}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
+                                  aria-label="Comment options"
+                                >
+                                  <VDotsIcon />
+                                </button>
+                              </div>
+                              <p className="whitespace-pre-wrap text-sm">
+                                {comment.content}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                    : (
+                      <div
+                        className={`text-center py-4 ${themeStyles.text} opacity-70`}
+                      >
+                        No comments yet. Be the first to comment!
+                      </div>
+                    )}
                 </div>
               </div>
             </div>

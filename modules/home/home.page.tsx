@@ -14,6 +14,7 @@ interface Post {
   content: string;
   timestamp: string;
   author: string;
+  avatar: string;
   commentCount?: number;
   viewCount?: number;
   views?: number; // Adding this to match what's returned from the backend
@@ -300,7 +301,12 @@ export default function Home({ data }: PageProps<{
 
                       <div className="flex items-center mb-4">
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                          {post.author.charAt(0).toUpperCase()}
+                          {/* {post.author.charAt(0).toUpperCase()} */}
+                          <img
+                            src={post.avatar}
+                            alt={post.author}
+                            className="w-full h-full rounded-full"
+                          />
                         </div>
                         <div className="ml-3">
                           <p className={`font-medium ${themeStyles.text}`}>

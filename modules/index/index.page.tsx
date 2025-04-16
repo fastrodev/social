@@ -38,9 +38,10 @@ export default function Index({ data }: PageProps<
       <div className="flex flex-col min-h-screen relative z-10">
         <Header />
 
+        {/* Main Content Section */}
         <section className="flex-grow flex items-center justify-center">
-          <div className="px-4 mx-auto max-w-8xl text-center">
-            <h1 className="mb-4 mx-auto max-w-3xl text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl dark:text-white glow-purple">
+          <div className="px-4 mx-auto max-w-5xl text-center">
+            <h1 className="mb-4 mx-auto max-w-3xl text-4xl font-extrabold tracking-tight leading-none text-white dark:text-white glow-purple">
               {data.title}
             </h1>
             <p className="mb-8 mx-auto max-w-3xl text-lg font-normal text-white lg:text-xl dark:text-gray-100">

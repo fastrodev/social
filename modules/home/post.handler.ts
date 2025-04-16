@@ -36,8 +36,8 @@ export default async function postDetailHandler(
     });
   }
 
-  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev/";
-  const imageUrl = baseUrl + "social.jpeg";
+  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
+  const imageUrl = baseUrl + "/social.jpeg";
 
   return await ctx.render({
     title: `Post by ${post.author}`,
@@ -49,5 +49,7 @@ export default async function postDetailHandler(
     html_url,
     author,
     post,
+    brand: Deno.env.get("BRAND") || "Fastro Social",
+    url: `${baseUrl}/post/${id}`,
   });
 }

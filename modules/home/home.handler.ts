@@ -40,8 +40,8 @@ export default async function homeHandler(req: HttpRequest, ctx: Context) {
   // },
   //  */
 
-  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev/";
-  const imageUrl = baseUrl + "social.jpeg";
+  const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
+  const imageUrl = baseUrl + "/social.jpeg";
 
   return await ctx.render({
     title: "Home",
@@ -52,6 +52,8 @@ export default async function homeHandler(req: HttpRequest, ctx: Context) {
     html_url,
     author,
     posts,
+    brand: Deno.env.get("BRAND") || "Fastro Social",
+    url: baseUrl,
   });
 }
 
@@ -75,6 +77,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     const post = await createPost({
       content,
       author: username,
+      avatar: ses?.avatar_url,
     });
 
     return new Response(JSON.stringify(post), {
@@ -177,6 +180,7 @@ export async function commentHandler(req: HttpRequest, ctx: Context) {
       content,
       postId,
       author: username,
+      avatar: ses?.avatar_url,
     });
 
     return new Response(JSON.stringify(comment), {

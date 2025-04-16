@@ -1,5 +1,5 @@
 # Build stage
-FROM denoland/deno:2.1.12 AS builder
+FROM denoland/deno:2.2.10 AS builder
 WORKDIR /app
 RUN mkdir -p /app/db
 ARG GITHUB_CLIENT_ID
@@ -12,7 +12,7 @@ COPY . .
 RUN deno task build
 
 # Production stage
-FROM denoland/deno:2.1.12
+FROM denoland/deno:2.2.10
 EXPOSE 8080
 WORKDIR /app
 COPY --from=builder /app .

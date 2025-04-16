@@ -2,7 +2,14 @@ import { LayoutProps } from "fastro/mod.ts";
 
 export default function layout(
   { data, children }: LayoutProps<
-    { title: string; description: string; image: string }
+    {
+      title: string;
+      description: string;
+      image: string;
+      url: string;
+      author: string;
+      brand: string;
+    }
   >,
 ) {
   return (
@@ -13,12 +20,12 @@ export default function layout(
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <title>{data.title} | Fastro</title>
+        <title>{data.title} | {data.brand}</title>
 
         {/* Primary Meta Tags */}
         <meta
           name="title"
-          content={`${data.title} | Fastro`}
+          content={`${data.title} | ${data.brand}`}
         />
         <meta name="description" content={data.description} />
         <meta
@@ -26,23 +33,26 @@ export default function layout(
           content="fastro, post, social media, content sharing"
         />
 
+        {data.author && <meta name="author" content={data.author} />}
+        {data.author && <meta property="og:type" content="profile" />}
+
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://social.fastro.dev" />
+        <meta property="og:url" content={data.url} />
         <meta
           property="og:title"
-          content={`${data.title} | Fastro`}
+          content={`${data.title} | ${data.brand}`}
         />
         <meta property="og:description" content={data.description} />
         <meta property="og:image" content={data.image} />
-        <meta property="og:site_name" content="Fastro" />
+        <meta property="og:site_name" content={data.brand} />
 
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://social.fastro.dev" />
+        <meta property="twitter:url" content={data.url} />
         <meta
           property="twitter:title"
-          content={`${data.title} | Fastro`}
+          content={`${data.title} | ${data.brand}`}
         />
         <meta property="twitter:description" content={data.description} />
         <meta property="twitter:image" content={data.image} />
@@ -60,7 +70,7 @@ export default function layout(
         <link href="/styles.css" rel="stylesheet" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-        <link rel="canonical" href="https://social.fastro.dev" />
+        <link rel="canonical" href={data.url} />
       </head>
       <body id="root">
         {children}
