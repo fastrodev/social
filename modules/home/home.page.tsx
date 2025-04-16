@@ -126,6 +126,8 @@ export default function Home({ data }: PageProps<{
         method: "PUT",
         headers: {
           "Content-Type": file.type,
+          // Add this header back, matching the one in signed-url.ts
+          "x-goog-content-length-range": "0,10485760",
         },
         body: file,
       });
