@@ -8,6 +8,8 @@ import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { ClipIcon } from "@app/components/icons/clip.tsx";
+import { SubmitIcon } from "@app/components/icons/submit.tsx"; // Make sure this path is correct
+import { VDotsIcon } from "@app/components/icons/vdots.tsx"; // Import the VdotsIcon
 import { marked } from "marked";
 
 interface Post {
@@ -424,16 +426,24 @@ export default function Home({ data }: PageProps<{
                   {showPreviewMode
                     ? (
                       <div
-                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} min-h-[100px] max-h-[400px] overflow-y-auto`}
+                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} min-h-[100px] max-h-[400px] overflow-y-auto`}
                       >
-                        {postContent && (
-                          <div
-                            className="markdown-preview prose prose-sm dark:prose-invert"
-                            dangerouslySetInnerHTML={renderMarkdown(
-                              postContent,
-                            )}
-                          />
-                        )}
+                        {postContent
+                          ? (
+                            <div
+                              className="markdown-preview prose prose-sm dark:prose-invert max-w-none p-3"
+                              dangerouslySetInnerHTML={renderMarkdown(
+                                postContent,
+                              )}
+                            />
+                          )
+                          : (
+                            <div
+                              className={`p-4 text-sm opacity-70`}
+                            >
+                              Nothing to preview yet.
+                            </div>
+                          )}
                       </div>
                     )
                     : (
@@ -485,15 +495,17 @@ export default function Home({ data }: PageProps<{
                       {/* Mobile Post Button */}
                       <button
                         type="submit"
-                        className={`sm:hidden px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                        className={`sm:hidden p-1.5 rounded-full text-sm font-medium transition-colors ${
+                          // Changed to rounded-full
                           isDark
-                            ? "bg-purple-600 hover:bg-purple-700 text-white"
-                            : "bg-purple-500 hover:bg-purple-600 text-white"
+                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30" // Matched attachment button styles
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30" // Matched attachment button styles
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                         disabled={isSubmitting || uploadingImage ||
                           !postContent.trim()}
+                        aria-label="Submit post" // Added aria-label for accessibility
                       >
-                        Post
+                        <SubmitIcon />
                       </button>
                     </div>
                   </div>
@@ -549,18 +561,26 @@ export default function Home({ data }: PageProps<{
                           : ""
                       }`}
                     >
-                      {data.isLogin && data.author === post.author && (
+                      {data.isLogin && ( // Show icon only if logged in
                         <button
                           type="button"
-                          onClick={() => handleDeletePost(post.id)}
+                          onClick={data.author === post.author
+                            ? () => handleDeletePost(post.id)
+                            : undefined} // Only set onClick for author
                           className={`absolute top-4 right-3 sm:right-4 p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
                             isDark
                               ? "text-gray-400 hover:text-gray-200"
                               : "text-gray-500 hover:text-gray-700"
-                          }`}
-                          aria-label="Delete post"
+                          } ${
+                            data.author !== post.author ? "cursor-pointer" : ""
+                          }`} // Add cursor-pointer for vdots
+                          aria-label={data.author === post.author
+                            ? "Delete post"
+                            : "More options"}
                         >
-                          <DeleteIcon />
+                          {data.author === post.author
+                            ? <DeleteIcon />
+                            : <VDotsIcon />}
                         </button>
                       )}
 

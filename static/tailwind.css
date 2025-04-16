@@ -75,7 +75,6 @@ pre {
 .markdown-preview h1 {
     font-size: 1.35rem;
     font-weight: 700;
-    margin-top: 1.2rem;
     margin-bottom: 0.5rem;
     letter-spacing: -0.01em;
 }
@@ -84,7 +83,6 @@ pre {
 .markdown-preview h2 {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-top: 1rem;
     margin-bottom: 0.4rem;
     letter-spacing: -0.01em;
 }
@@ -93,7 +91,6 @@ pre {
 .markdown-preview h3 {
     font-size: 1.1rem;
     font-weight: 600;
-    margin-top: 0.8rem;
     margin-bottom: 0.3rem;
 }
 
@@ -101,7 +98,6 @@ pre {
 .markdown-preview h4 {
     font-size: 1rem;
     font-weight: 600;
-    margin-top: 0.7rem;
     margin-bottom: 0.3rem;
 }
 
@@ -109,7 +105,6 @@ pre {
 .markdown-preview h5 {
     font-size: 0.95rem;
     font-weight: 500;
-    margin-top: 0.6rem;
     margin-bottom: 0.2rem;
 }
 
@@ -117,7 +112,6 @@ pre {
 .markdown-preview h6 {
     font-size: 0.9rem;
     font-weight: 500;
-    margin-top: 0.5rem;
     margin-bottom: 0.2rem;
     color: rgba(75, 85, 99, 1);
 }
