@@ -42,44 +42,31 @@ function extractPostTitle(
   const headerMatch = content.match(/^#+\s+(.+)$/m);
 
   if (headerMatch && headerMatch[1]) {
-    // Clean the header text
-    const headerTitle = headerMatch[1]
-      .replace(/[*_`~>]+/g, "")
-      .trim();
+    // Return the header text exactly as is, only trimming whitespace
+    const headerTitle = headerMatch[1].trim();
 
     return headerTitle.length > maxLength
       ? headerTitle.substring(0, maxLength) + "..."
       : headerTitle;
   }
 
-  // If no header, use the first paragraph or sentence
+  // If no header, use the first paragraph exactly as is
   const firstParagraph = content
     .split(/\n\s*\n/)[0] // Get first paragraph
-    .replace(/[*_`~#>]+/g, "") // Remove markdown syntax
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Replace links with text
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Remove images
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Only remove images
     .trim();
 
-  // Extract the first sentence with original punctuation
-  const sentenceMatch = firstParagraph.match(/^(.*?[.!?])/);
-  const firstSentence = sentenceMatch
-    ? sentenceMatch[0]
-    : firstParagraph.trim() + ".";
-
-  // Choose between first sentence or trimmed paragraph based on length
-  let title = firstSentence.length < maxLength ? firstSentence : firstParagraph;
-
-  // If still too long, truncate
-  if (title.length > maxLength) {
-    title = title.substring(0, maxLength) + "...";
+  // If too long, truncate
+  if (firstParagraph.length > maxLength) {
+    return firstParagraph.substring(0, maxLength) + "...";
   }
 
   // If we couldn't extract anything meaningful, fall back to default
-  if (!title || title.length < 10) {
+  if (!firstParagraph || firstParagraph.length < 10) {
     return `Post by ${author}`;
   }
 
-  return title;
+  return firstParagraph;
 }
 
 export default async function postDetailHandler(
