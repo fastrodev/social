@@ -168,8 +168,75 @@ export default function Home({ data }: PageProps<{
     fileInputRef.current?.click();
   };
 
-  const handleRemoveImage = () => {
-    setImageUrl(null);
+  const handleRemoveImage = async () => {
+    if (!imageUrl) return;
+
+    // Extract filename from the public URL
+    const urlParts = imageUrl.split("/");
+    const filename = urlParts.slice(4).join("/");
+
+    if (!filename) {
+      console.error("Could not extract filename from URL:", imageUrl);
+      setImageUrl(null); // Clear preview even if we can't delete
+      return;
+    }
+
+    console.log("Requesting DELETE signed URL for filename:", filename);
+
+    try {
+      // 1. Get the DELETE signed URL from the backend
+      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filename }),
+      });
+
+      if (!deleteUrlResponse.ok) {
+        const errorData = await deleteUrlResponse.text();
+        console.error("Failed to get DELETE signed URL:", errorData);
+        alert("Could not prepare file deletion request. Please try again.");
+        // Decide if you want to clear the preview here or not
+        // setImageUrl(null);
+        return; // Stop if we can't get the URL
+      }
+
+      const data = await deleteUrlResponse.json();
+      if (!data.signedUrl) {
+        throw new Error("No DELETE signed URL returned from server");
+      }
+
+      const deleteSignedUrl = data.signedUrl;
+      console.log("DELETE Signed URL received.");
+
+      // 2. Use the signed URL to execute the DELETE request
+      console.log("Executing DELETE request using signed URL...");
+      const deleteResponse = await fetch(deleteSignedUrl, {
+        method: "DELETE",
+        // No body or Content-Type needed for standard GCS DELETE via signed URL
+      });
+
+      if (!deleteResponse.ok) {
+        // Handle potential errors during the actual delete operation
+        const deleteErrorText = await deleteResponse.text();
+        console.error("Error executing DELETE signed URL:", deleteErrorText);
+        // Inform user, but maybe still clear preview
+        alert(
+          "Failed to delete the file from storage. It might have already been deleted.",
+        );
+      } else {
+        console.log("File deleted successfully using signed URL.");
+      }
+    } catch (error) {
+      console.error("Error during the delete process:", error);
+    } finally {
+      // Always remove the image preview from the UI after attempting deletion
+      setImageUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {

@@ -76,3 +76,57 @@ export async function generateSignedUrl(
     );
   }
 }
+
+/**
+ * Generate a signed URL for deleting files from Google Cloud Storage.
+ * This URL can be used to delete files directly from the frontend.
+ * The URL is valid for 5 minutes and allows deletion of the specified file.
+ * The signed URL is generated using the Google Cloud Storage client library.
+ *
+ * @param filename
+ * @returns { signedUrl: string }
+ * @throws {Error} If the signed URL generation fails or the file does not exist
+ * @example
+ * const { signedUrl } = await generateDeleteSignedUrl("example.txt");
+ * await fetch(signedUrl, {
+ *   method: 'DELETE',
+ * });
+ * @see https://cloud.google.com/storage/docs/access-control/signed-urls
+ * @see https://cloud.google.com/storage/docs/access-control/signed-urls#creating-signed-urls
+ * @see https://cloud.google.com/storage/docs/access-control/signed-urls#using-signed-urls
+ */
+export async function generateDeleteSignedUrl(
+  filename: string,
+): Promise<GenerateSignedUrlResponse> {
+  try {
+    const options = {
+      version: "v4" as const,
+      action: "delete" as const, // Specify delete action
+      expires: Date.now() + 5 * 60 * 1000, // 5 minutes validity for deletion URL
+    };
+
+    const bucketName: string = Deno.env.get("BUCKET_NAME") ||
+      "replix-394315-file";
+    const storageClient = new Storage();
+
+    console.log(
+      `Generating DELETE signed URL for bucket: ${bucketName}, file: ${filename}`,
+    );
+
+    const [url] = await storageClient
+      .bucket(bucketName)
+      .file(filename)
+      .getSignedUrl(options);
+
+    return {
+      signedUrl: url, // This URL will be used with the DELETE HTTP method
+    };
+  } catch (error) {
+    console.error("Detailed error generating DELETE signed URL:", error);
+    throw new Error(
+      `Failed to generate delete signed URL: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
+}
