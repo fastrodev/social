@@ -9,6 +9,7 @@ export default function layout(
       url: string;
       author: string;
       brand: string;
+      publishDate?: string; // Add this new optional property
     }
   >,
 ) {
@@ -36,8 +37,17 @@ export default function layout(
         {data.author && <meta name="author" content={data.author} />}
         {data.author && <meta property="og:type" content="profile" />}
 
+        {/* Publication Date */}
+        {data.publishDate && <meta name="date" content={data.publishDate} />}
+        {data.publishDate && (
+          <meta property="article:published_time" content={data.publishDate} />
+        )}
+
         {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
+        <meta
+          property="og:type"
+          content={data.publishDate ? "article" : "website"}
+        />
         <meta property="og:url" content={data.url} />
         <meta
           property="og:title"
