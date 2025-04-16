@@ -16,6 +16,7 @@ interface Post {
   views?: number;
   avatar?: string;
   isMarkdown?: boolean;
+  image?: string; // Add image URL field
 }
 
 interface Comment {
@@ -287,6 +288,17 @@ export default function Post({ data }: PageProps<{
                   </p>
                 </div>
               </div>
+
+              {/* Post Image (if available) */}
+              {post.image && (
+                <div className="my-4">
+                  <img
+                    src={post.image}
+                    alt="Post image"
+                    className="w-full rounded-lg object-cover"
+                  />
+                </div>
+              )}
 
               <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
                 <div
