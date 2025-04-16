@@ -359,7 +359,7 @@ export default function Home({ data }: PageProps<{
                         </button>
                       )}
 
-                      <div className="flex items-center mb-4">
+                      <div className="flex items-center mb-3">
                         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
                           {/* {post.author.charAt(0).toUpperCase()} */}
                           <img
@@ -381,7 +381,7 @@ export default function Home({ data }: PageProps<{
                       {/* Make the content clickable to view details */}
                       <a href={`/post/${post.id}`} className="block">
                         <div
-                          className={`${themeStyles.text} whitespace-pre-wrap mb-3 markdown-content prose prose-sm dark:prose-invert`}
+                          className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert`}
                           dangerouslySetInnerHTML={renderMarkdown(
                             post.content,
                           )}
@@ -389,7 +389,7 @@ export default function Home({ data }: PageProps<{
                       </a>
 
                       {/* Comment count indicator - only shown when comments exist */}
-                      <div className="mt-4 pt-3 border-t border-gray-700/30 flex items-center justify-between">
+                      <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
                         <a
                           href={`/post/${post.id}`}
                           className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${

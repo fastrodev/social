@@ -290,7 +290,7 @@ export default function Post({ data }: PageProps<{
 
               <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
                 <div
-                  className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-4`}
+                  className={`${themeStyles.text} text-lg whitespace-pre-wrap leading-relaxed mb-0`}
                   dangerouslySetInnerHTML={renderMarkdown(post.content)}
                 />
               </div>
