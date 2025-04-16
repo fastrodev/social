@@ -43,9 +43,19 @@ export async function generateSignedUrl(
       expires: Date.now() + 15 * 60 * 1000,
       contentType: "application/octet-stream",
     };
+
     const bucketName: string = Deno.env.get("BUCKET_NAME") ||
       "replix-394315-file";
+
+    // Use Cloud Run's built-in authentication
+    // This avoids the need for explicit key file
     const storageClient = new Storage();
+
+    // Log for debugging
+    console.log(
+      `Attempting to generate signed URL for bucket: ${bucketName}, file: ${filename}`,
+    );
+
     const [url] = await storageClient
       .bucket(bucketName)
       .file(filename)
@@ -55,6 +65,7 @@ export async function generateSignedUrl(
       signedUrl: url,
     };
   } catch (error) {
+    console.error("Detailed error:", error);
     throw new Error(
       `Failed to generate signed URL: ${
         error instanceof Error ? error.message : String(error)
