@@ -2,6 +2,83 @@ import { getSession } from "@app/utils/session.ts";
 import { getPostById } from "@app/modules/home/home.service.ts";
 import { Context, HttpRequest } from "fastro/mod.ts";
 
+// Helper function to clean markdown for SEO description
+function createSeoDescription(markdown: string, maxLength = 150): string {
+  // Convert markdown to plain text
+  let text = markdown;
+
+  // Remove markdown headers (# Title)
+  text = text.replace(/^#+ .*$/gm, "").trim();
+
+  // Remove other markdown syntax
+  text = text
+    .replace(/[*_`~#>]+/g, "") // Remove formatting chars
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Replace links with just text
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Remove images
+    .replace(/\n+/g, " ") // Replace newlines with spaces
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .trim();
+
+  // If after cleaning we have empty text, fall back to original with basic cleaning
+  if (!text) {
+    text = markdown.replace(/[#*_`~>]+/g, "").trim();
+  }
+
+  // Truncate to desired length
+  if (text.length > maxLength) {
+    return text.substring(0, maxLength) + "...";
+  }
+
+  return text;
+}
+
+// Extract a meaningful title from post content
+function extractPostTitle(
+  content: string,
+  author: string,
+  maxLength = 70,
+): string {
+  // Check if content starts with a markdown header
+  const headerMatch = content.match(/^#+\s+(.+)$/m);
+
+  if (headerMatch && headerMatch[1]) {
+    // Clean the header text
+    const headerTitle = headerMatch[1]
+      .replace(/[*_`~>]+/g, "")
+      .trim();
+
+    return headerTitle.length > maxLength
+      ? headerTitle.substring(0, maxLength) + "..."
+      : headerTitle;
+  }
+
+  // If no header, use the first paragraph or sentence
+  const firstParagraph = content
+    .split(/\n\s*\n/)[0] // Get first paragraph
+    .replace(/[*_`~#>]+/g, "") // Remove markdown syntax
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Replace links with text
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Remove images
+    .trim();
+
+  // Extract the first sentence or use a portion of the paragraph
+  const firstSentence = firstParagraph.split(/\.|\?|!/)[0].trim() + ".";
+
+  // Choose between first sentence or trimmed paragraph based on length
+  let title = firstSentence.length < maxLength ? firstSentence : firstParagraph;
+
+  // If still too long, truncate
+  if (title.length > maxLength) {
+    title = title.substring(0, maxLength) + "...";
+  }
+
+  // If we couldn't extract anything meaningful, fall back to default
+  if (!title || title.length < 10) {
+    return `Post by ${author}`;
+  }
+
+  return title;
+}
+
 export default async function postDetailHandler(
   req: HttpRequest,
   ctx: Context,
@@ -38,11 +115,25 @@ export default async function postDetailHandler(
 
   const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
   const imageUrl = baseUrl + "/social.jpeg";
+  const seoDescription = createSeoDescription(post.content);
+
+  // Generate a more meaningful title based on post content
+  let title = extractPostTitle(post.content, post.author);
+
+  // Ensure the first character is uppercase
+  if (title && title.length > 0) {
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+  }
+
+  // Add author attribution to the title
+  if (!title.includes(post.author)) {
+    // Avoid redundancy if the author name is already in the title
+    title = `${title} by ${post.author}`;
+  }
 
   return await ctx.render({
-    title: `Post by ${post.author}`,
-    description: post.content.substring(0, 150) +
-      (post.content.length > 150 ? "..." : ""),
+    title,
+    description: seoDescription,
     image: imageUrl,
     isLogin,
     avatar_url,

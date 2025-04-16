@@ -256,7 +256,7 @@ export default function Post({ data }: PageProps<{
           <main className="max-w-2xl mx-auto px-4">
             {/* Post Detail Card */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-3 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4 relative`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4 relative`}
             >
               {/* Three dots menu */}
               <div className="absolute top-3 right-3 sm:top-6 sm:right-6">
@@ -326,7 +326,7 @@ export default function Post({ data }: PageProps<{
               >
                 <form
                   onSubmit={handleCommentSubmit}
-                  className="flex items-start space-x-3 sm:space-x-3 mb-6 mt-6"
+                  className="flex items-start space-x-4 sm:space-x-6 mb-6 mt-6"
                 >
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                     {data.isLogin
@@ -375,7 +375,7 @@ export default function Post({ data }: PageProps<{
                   {isLoading
                     ? (
                       // Skeleton loaders for smoother transition
-                      Array(3).fill(0).map((_, index) => (
+                      Array(1).fill(0).map((_, index) => (
                         <div
                           key={`skeleton-${index}`}
                           className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start animate-pulse`}
@@ -407,7 +407,7 @@ export default function Post({ data }: PageProps<{
                         {comments.map((comment) => (
                           <div
                             key={comment.id}
-                            className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start mb-4`}
+                            className={`flex space-x-4 sm:space-x-6 ${themeStyles.text} items-start mb-4`}
                           >
                             {/* Comment avatar */}
                             <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">

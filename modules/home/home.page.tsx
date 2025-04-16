@@ -381,11 +381,24 @@ export default function Home({ data }: PageProps<{
                       {/* Make the content clickable to view details */}
                       <a href={`/post/${post.id}`} className="block">
                         <div
-                          className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert`}
+                          className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert ${
+                            post.content.length > 1000
+                              ? "relative overflow-hidden max-h-[300px]"
+                              : ""
+                          }`}
                           dangerouslySetInnerHTML={renderMarkdown(
-                            post.content,
+                            post.content.length > 280
+                              ? post.content.substring(0, 280) + "..."
+                              : post.content,
                           )}
                         />
+                        {post.content.length > 1000 && (
+                          <div
+                            className={`text-right mt-1 ${themeStyles.link} text-sm`}
+                          >
+                            Read more...
+                          </div>
+                        )}
                       </a>
 
                       {/* Comment count indicator - only shown when comments exist */}

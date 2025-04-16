@@ -4,7 +4,7 @@
 
 @layer base {
     h1 {
-        @apply text-5xl font-extrabold;
+        @apply text-3xl font-bold;
     }
 
     h2 {
@@ -70,11 +70,56 @@ pre {
     text-decoration: underline;
 }
 
+/* Refined markdown heading styles */
 .markdown-content h1,
 .markdown-preview h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 1.2rem;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+.markdown-content h2,
+.markdown-preview h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+}
+
+.markdown-content h3,
+.markdown-preview h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0.8rem;
+    margin-bottom: 0.3rem;
+}
+
+.markdown-content h4,
+.markdown-preview h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.7rem;
+    margin-bottom: 0.3rem;
+}
+
+.markdown-content h5,
+.markdown-preview h5 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 0.6rem;
+    margin-bottom: 0.2rem;
+}
+
+.markdown-content h6,
+.markdown-preview h6 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    color: rgba(75, 85, 99, 1);
 }
 
 .markdown-content pre,
