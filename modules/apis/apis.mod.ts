@@ -9,9 +9,10 @@ export function apisModule(s: Fastro) {
       const { filename } = await req.json();
 
       if (!filename || typeof filename !== "string") {
-        return res.status(400).json({
-          error: "Invalid request: filename is required",
-        });
+        res.send({
+          error: "Filename is required and must be a string",
+        }, 400);
+        return;
       }
 
       // Generate signed URL

@@ -94,6 +94,8 @@ export default function Home({ data }: PageProps<{
           .substring(2, 15)
       }.${extension}`;
 
+      console.log("Requesting signed URL for:", filename);
+
       // Get a signed URL from our API
       const signedUrlResponse = await fetch("/api/signed-url", {
         method: "POST",
@@ -104,30 +106,55 @@ export default function Home({ data }: PageProps<{
       });
 
       if (!signedUrlResponse.ok) {
-        throw new Error("Failed to get signed URL");
+        const errorData = await signedUrlResponse.text();
+        console.error("Signed URL response error:", errorData);
+        throw new Error(`Failed to get signed URL: ${errorData}`);
       }
 
-      const { signedUrl } = await signedUrlResponse.json();
+      const data = await signedUrlResponse.json();
+      console.log("Signed URL received:", data);
+
+      if (!data.signedUrl) {
+        throw new Error("No signed URL returned from server");
+      }
+
+      const { signedUrl } = data;
 
       // Upload the file using the signed URL
+      console.log("Uploading to signed URL...");
       const uploadResponse = await fetch(signedUrl, {
         method: "PUT",
         headers: {
           "Content-Type": file.type,
+          // Add CORS headers for direct upload
+          "x-goog-content-length-range": "0,10485760", // 10MB max
         },
         body: file,
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
+        const uploadErrorText = await uploadResponse.text();
+        console.error("Upload error details:", uploadErrorText);
+        throw new Error(
+          `Failed to upload image: ${uploadResponse.status} ${uploadResponse.statusText}`,
+        );
       }
 
-      // Extract the public URL from the signed URL (remove query parameters)
-      const publicUrl = signedUrl.split("?")[0];
+      console.log("Upload successful");
+
+      // Extract the public URL (IMPORTANT: The URL structure must be correct for your bucket)
+      // If your bucket is set up for public access, you can use this URL format
+      const publicUrl =
+        `https://storage.googleapis.com/replix-394315-file/${filename}`;
+      console.log("Setting public URL:", publicUrl);
       setImageUrl(publicUrl);
     } catch (error) {
       console.error("Error uploading image:", error);
-      alert("Failed to upload image. Please try again.");
+      alert(
+        `Failed to upload image: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
     } finally {
       setUploadingImage(false);
       if (fileInputRef.current) {
