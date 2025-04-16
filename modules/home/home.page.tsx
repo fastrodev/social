@@ -588,7 +588,7 @@ export default function Home({ data }: PageProps<{
                             <img
                               src={post.image}
                               alt="Post attachment"
-                              className="rounded-lg max-h-80 w-full object-contain"
+                              className="w-full rounded-lg object-cover"
                             />
                           </div>
                         )}
