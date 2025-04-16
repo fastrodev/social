@@ -126,8 +126,6 @@ export default function Home({ data }: PageProps<{
         method: "PUT",
         headers: {
           "Content-Type": file.type,
-          // Add CORS headers for direct upload
-          "x-goog-content-length-range": "0,10485760", // 10MB max
         },
         body: file,
       });

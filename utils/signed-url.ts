@@ -42,6 +42,10 @@ export async function generateSignedUrl(
       action: "write" as const,
       expires: Date.now() + 15 * 60 * 1000,
       contentType: "application/octet-stream",
+      // Add these extension headers to be signed with the URL
+      extensionHeaders: {
+        "x-goog-content-length-range": "0,10485760", // 10MB max
+      },
     };
 
     const bucketName: string = Deno.env.get("BUCKET_NAME") ||
