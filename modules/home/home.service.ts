@@ -27,6 +27,7 @@ export async function createPost(input: PostInput): Promise<Post> {
     timestamp: new Date().toISOString(),
     author: input.author,
     avatar: input.avatar,
+    image: input.image,
   };
 
   const primaryKey = ["posts", id];
