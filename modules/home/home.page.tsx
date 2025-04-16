@@ -29,6 +29,7 @@ export default function Home({ data }: PageProps<{
   avatar_url: string;
   html_url: string;
   author: string;
+  message?: string;
   posts: Post[];
 }>) {
   const [postContent, setPostContent] = useState("");
@@ -199,6 +200,7 @@ export default function Home({ data }: PageProps<{
             avatar_url={data.avatar_url}
             html_url={data.html_url}
             isDark={isDark}
+            message={data.message}
           />
 
           <main className="max-w-2xl mx-auto px-3 sm:px-4">

@@ -2,6 +2,7 @@ import pageLayout from "@app/modules/home/home.layout.tsx";
 import pageComponent from "@app/modules/home/home.page.tsx";
 import pageHandler, {
   commentHandler,
+  deleteCommentHandler,
   deletePostHandler,
   getCommentsHandler,
   postHandler,
@@ -37,6 +38,7 @@ export default function (s: Fastro) {
 
   s.post("/api/comment", commentHandler);
   s.get("/api/comments/:id", getCommentsHandler);
+  s.delete("/api/comments/:id", deleteCommentHandler);
 
   return s;
 }

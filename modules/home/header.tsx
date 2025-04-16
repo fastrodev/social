@@ -11,6 +11,7 @@ export default function Header(
     title?: string;
     previous_url?: string;
     isDark?: boolean;
+    message?: string;
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,7 +56,7 @@ export default function Header(
           </div>
         </a>
         <span class={`${textColorClass}`}>
-          {`${props.title || "Fastro Social"}`}
+          {`${props.message || "Fastro Social"}`}
         </span>
       </div>
       <div class={`flex items-center space-x-3`}>

@@ -49,7 +49,6 @@ export async function getPosts(limit = 20): Promise<Post[]> {
   const iterator = kv.list<Post>({ prefix: ["posts"] });
 
   for await (const entry of iterator) {
-    console.log("Post entry:", entry);
     postsResults.push(entry.value);
   }
 
@@ -233,4 +232,39 @@ export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
 
   console.log(`Retrieved ${comments.length} comments for post ${postId}`);
   return comments;
+}
+
+// Delete a comment by ID and verify ownership
+export async function deleteCommentById(
+  id: string,
+  username: string,
+): Promise<boolean> {
+  const primaryKey = ["comments", id];
+  console.log("Attempting to delete comment with ID:", id);
+
+  try {
+    // First check if the comment exists
+    const existingComment = await kv.get<Comment>(primaryKey);
+    if (!existingComment.value) {
+      console.log("Comment not found with ID:", id);
+      return false;
+    }
+
+    // Verify that the current user is the author of the comment
+    if (existingComment.value.author !== username) {
+      console.log(
+        "Unauthorized delete attempt - user doesn't own this comment",
+      );
+      return false;
+    }
+
+    // Delete the comment
+    await kv.delete(primaryKey);
+
+    console.log(`Successfully deleted comment ${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return false;
+  }
 }

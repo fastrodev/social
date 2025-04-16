@@ -40,10 +40,23 @@ export default function Post({ data }: PageProps<{
   const [_isSubmitting, setIsSubmitting] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
   // Fetch comments on page load
   useEffect(() => {
     fetchComments();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdownId(null);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   // Fetch comments for this post
@@ -65,6 +78,29 @@ export default function Post({ data }: PageProps<{
   // Toggle theme
   const toggleTheme = () => {
     setIsDark(!isDark);
+  };
+
+  // Toggle dropdown menu
+  const toggleDropdown = (e: MouseEvent, commentId: string) => {
+    e.stopPropagation(); // Prevent triggering the document click handler
+    setOpenDropdownId(openDropdownId === commentId ? null : commentId);
+  };
+
+  // Handle comment deletion
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setComments(comments.filter((comment) => comment.id !== commentId));
+      } else {
+        console.error("Failed to delete comment");
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
   };
 
   // Handle comment submission
@@ -358,7 +394,7 @@ export default function Post({ data }: PageProps<{
                             key={comment.id}
                             className={`flex space-x-3 sm:space-x-3 ${themeStyles.text} items-start mb-4`}
                           >
-                            {/* Comment content remains the same */}
+                            {/* Comment avatar */}
                             <div className="w-6 h-6 mt-[6px] sm:w-8 sm:h-8 bg-blue-500 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs sm:text-sm">
                               <img
                                 src={comment.avatar}
@@ -367,7 +403,8 @@ export default function Post({ data }: PageProps<{
                               />
                             </div>
                             <div className={`flex-grow`}>
-                              <div className="flex justify-between items-start mb-2">
+                              <div className="flex justify-between items-start mb-2 relative">
+                                {/* User info */}
                                 <div className="flex flex-col">
                                   <span className="font-medium">
                                     {comment.author}
@@ -378,13 +415,37 @@ export default function Post({ data }: PageProps<{
                                     {formatDate(comment.timestamp)}
                                   </span>
                                 </div>
-                                <button
-                                  type="button"
-                                  className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
-                                  aria-label="Comment options"
-                                >
-                                  <VDotsIcon />
-                                </button>
+                                {/* Dots menu with dropdown */}
+                                <div className="relative">
+                                  {/* Only show the menu button if the user is the author of the comment */}
+                                  {comment.author === data.author && (
+                                    <button
+                                      type="button"
+                                      className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text}`}
+                                      aria-label="Comment options"
+                                      onClick={(e) =>
+                                        toggleDropdown(e, comment.id)}
+                                    >
+                                      <VDotsIcon />
+                                    </button>
+                                  )}
+                                  {openDropdownId === comment.id && (
+                                    <div
+                                      className={`absolute right-0 mt-1 w-36 rounded-md shadow-lg ${themeStyles.cardBg} ${themeStyles.cardBorder} z-20`}
+                                    >
+                                      <div className="py-1">
+                                        <button
+                                          type="button"
+                                          className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-red-500/10 hover:text-red-500 transition-colors`}
+                                          onClick={() =>
+                                            handleDeleteComment(comment.id)}
+                                        >
+                                          Delete comment
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                               <p className="whitespace-pre-wrap text-sm">
                                 {comment.content}
