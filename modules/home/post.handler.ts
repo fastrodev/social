@@ -60,8 +60,11 @@ function extractPostTitle(
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Remove images
     .trim();
 
-  // Extract the first sentence or use a portion of the paragraph
-  const firstSentence = firstParagraph.split(/\.|\?|!/)[0].trim() + ".";
+  // Extract the first sentence with original punctuation
+  const sentenceMatch = firstParagraph.match(/^(.*?[.!?])/);
+  const firstSentence = sentenceMatch
+    ? sentenceMatch[0]
+    : firstParagraph.trim() + ".";
 
   // Choose between first sentence or trimmed paragraph based on length
   let title = firstSentence.length < maxLength ? firstSentence : firstParagraph;
