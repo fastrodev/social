@@ -80,6 +80,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
       content,
       author: username,
       avatar: ses?.avatar_url,
+      image: body.image,
     });
 
     return new Response(JSON.stringify(post), {

@@ -5,6 +5,7 @@ interface PostInput {
   content: string;
   author: string;
   avatar?: string;
+  image?: string;
 }
 
 interface Post {
