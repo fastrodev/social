@@ -15,6 +15,7 @@ interface Post {
   commentCount?: number;
   views?: number;
   avatar?: string;
+  image?: string;
 }
 
 export async function createPost(input: PostInput): Promise<Post> {

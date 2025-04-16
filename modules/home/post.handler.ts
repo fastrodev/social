@@ -121,10 +121,11 @@ export default async function postDetailHandler(
     title = `${title} by ${post.author}`;
   }
 
+  const image = post.image || imageUrl;
   return await ctx.render({
     title,
     description: seoDescription,
-    image: imageUrl,
+    image: image,
     isLogin,
     avatar_url,
     html_url,
