@@ -286,25 +286,6 @@ export default function Home({ data }: PageProps<{
     setPostContent(e.currentTarget.value);
   };
 
-  const handleKeyDown = (
-    e: JSX.TargetedEvent<HTMLTextAreaElement, KeyboardEvent>,
-  ) => {
-    // Only override Enter key behavior on non-mobile devices (desktop)
-    if (!isMobile && e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent newline on desktop Enter
-
-      if (postContent.trim()) {
-        // Trigger form submission
-        handleSubmit({
-          preventDefault: () => {},
-          currentTarget: e.currentTarget.form, // Pass the form if needed by handleSubmit
-        } as unknown as JSX.TargetedEvent<HTMLFormElement, Event>);
-      }
-    }
-    // On mobile: Let Enter key behave normally (insert newline).
-    // On desktop: Shift+Enter also behaves normally (insert newline) because we don't preventDefault.
-  };
-
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this post?")) {
       return;
@@ -449,10 +430,9 @@ export default function Home({ data }: PageProps<{
                         placeholder="What's on your mind? (Markdown supported)"
                         value={postContent}
                         onInput={handleChange}
-                        onKeyDown={handleKeyDown}
                         required
                         rows={4}
-                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} 
+                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input}
                           resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                           scrollbar-thin scrollbar-track-transparent
                           ${
@@ -464,11 +444,7 @@ export default function Home({ data }: PageProps<{
                     )}
                   <div className="mt-0 flex justify-between items-center">
                     <div>
-                      <p
-                        className={`text-xs ${themeStyles.footer} hidden sm:block`}
-                      >
-                        Press Enter to submit, Shift+Enter for new line
-                      </p>
+                      {/* Removed the paragraph element */}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -497,18 +473,17 @@ export default function Home({ data }: PageProps<{
                           : <ClipIcon />}
                       </button>
 
-                      {/* Mobile Post Button */}
+                      {/* Always visible Post Button */}
                       <button
                         type="submit"
-                        className={`sm:hidden p-1.5 rounded-full text-sm font-medium transition-colors ${
-                          // Changed to rounded-full
+                        className={`p-1.5 rounded-full text-sm font-medium transition-colors ${
                           isDark
-                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30" // Matched attachment button styles
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30" // Matched attachment button styles
+                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                         disabled={isSubmitting || uploadingImage ||
                           !postContent.trim()}
-                        aria-label="Submit post" // Added aria-label for accessibility
+                        aria-label="Submit post"
                       >
                         <SubmitIcon />
                       </button>

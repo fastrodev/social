@@ -4,6 +4,50 @@
 
 @layer base {}
 
+/* Markdown Heading Styles */
+h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 0.8em;
+    margin-bottom: 0.4em;
+}
+
+h3 {
+    font-size: 1.75em;
+    font-weight: bold;
+    margin-top: 0.7em;
+    margin-bottom: 0.35em;
+}
+
+h4 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 0.6em;
+    margin-bottom: 0.3em;
+}
+
+h5 {
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+
+h6 {
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+
+/* End Markdown Heading Styles */
 
 .token.operator {
     background: transparent;
@@ -12,7 +56,8 @@
 ul,
 ol {
     margin: 1em 0;
-    padding: 0;
+    padding: 1em 1.5em;
+    border-radius: 0.5em;
 }
 
 ul {
@@ -32,4 +77,12 @@ a {
     text-decoration: none;
     cursor: pointer;
     transition: color 0.2s ease-in-out;
+}
+
+
+pre {
+    border-style: solid;
+    border-color: var(--color-border);
+    background-color: transparent;
+    border-width: 1px;
 }

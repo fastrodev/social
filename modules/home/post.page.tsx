@@ -262,7 +262,7 @@ export default function Post({ data }: PageProps<{
               {/* Post author info and options */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  <div className="mt-1 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                     <img
                       src={post.avatar}
                       alt={post.author}
