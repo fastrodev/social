@@ -631,9 +631,9 @@ export default function Home({ data }: PageProps<{
                               : post.content,
                           )}
                         />
-                        {post.content.length > 1000 && (
+                        {post.content.length > 280 && (
                           <div
-                            className={`text-right mt-1 ${themeStyles.link} text-sm`}
+                            className={`text-right mt-1 mb-6 ${themeStyles.link} text-sm`}
                           >
                             Read more...
                           </div>
