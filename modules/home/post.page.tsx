@@ -471,7 +471,14 @@ export default function Post({ data }: PageProps<{
                           onInput={handleTextChange}
                           onKeyDown={handleKeyDown}
                           rows={2}
-                          className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-sm sm:text-base rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                          className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} 
+                          resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                          scrollbar-thin scrollbar-track-transparent
+                          ${
+                            isDark
+                              ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                              : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                          }`}
                         />
                         {/* Submit Button (Optional but recommended) */}
                         <div className="flex justify-end mt-2">
