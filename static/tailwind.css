@@ -6,7 +6,6 @@
 
 
 .token.operator {
-    color: #fff;
     background: transparent;
 }
 
@@ -16,103 +15,20 @@ pre {
     border-width: 1px;
 }
 
-/* Add to your CSS file or inline styles */
-.markdown-content h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
+ul,
+ol {
+    margin: 1em 0;
+    padding: 0;
 }
 
-.markdown-content h2 {
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-top: 0.75rem;
-    margin-bottom: 0.5rem;
+ul {
+    list-style: disc outside none;
 }
 
-.markdown-content ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
+ol {
+    list-style: decimal outside none;
 }
 
-.markdown-content ol {
-    list-style-type: decimal;
-    padding-left: 1.5rem;
-}
-
-.markdown-content pre {
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    overflow-x: auto;
-}
-
-.markdown-content code {
-    font-family: monospace;
-}
-
-.markdown-content blockquote {
-    border-left: 3px solid rgba(156, 163, 175, 0.5);
-    padding-left: 0.75rem;
-    font-style: italic;
-}
-
-.markdown-content a {
-    text-decoration: underline;
-}
-
-/* Refined markdown heading styles */
-.markdown-content h1,
-.markdown-preview h1 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.01em;
-}
-
-.markdown-content h2,
-.markdown-preview h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    letter-spacing: -0.01em;
-}
-
-.markdown-content h3,
-.markdown-preview h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-}
-
-.markdown-content h4,
-.markdown-preview h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-}
-
-.markdown-content h5,
-.markdown-preview h5 {
-    font-size: 0.95rem;
-    font-weight: 500;
-    margin-bottom: 0.2rem;
-}
-
-.markdown-content h6,
-.markdown-preview h6 {
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-bottom: 0.2rem;
-    color: rgba(75, 85, 99, 1);
-}
-
-.markdown-content pre,
-.markdown-preview pre {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    overflow-x: auto;
-    margin: 0.5rem 0;
+li {
+    display: list-item;
 }

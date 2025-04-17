@@ -390,7 +390,7 @@ export default function Home({ data }: PageProps<{
 
           {/* Main Container */}
           <main className="max-w-2xl mx-auto px-3 sm:px-4 relative">
-            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-purple-600/30 via-blue-500/20 to-transparent blur-3xl transform-gpu animate-pulse-slow" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-purple-600/20 via-blue-500/10 to-transparent blur-3xl transform-gpu animate-pulse-slow" />
             <div
               className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg`}
             >
@@ -558,7 +558,7 @@ export default function Home({ data }: PageProps<{
                   posts.map((post) => (
                     <div
                       key={post.id}
-                      className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} relative ${
+                      className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${
                         !isMobile ? "backdrop-blur-lg" : ""
                       } ${
                         !isMobile
@@ -566,46 +566,54 @@ export default function Home({ data }: PageProps<{
                           : ""
                       }`}
                     >
-                      {data.isLogin && ( // Show icon only if logged in
-                        <button
-                          type="button"
-                          onClick={data.author === post.author
-                            ? () => handleDeletePost(post.id)
-                            : undefined} // Only set onClick for author
-                          className={`absolute top-4 right-3 sm:right-4 p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
-                            isDark
-                              ? "text-gray-400 hover:text-gray-200"
-                              : "text-gray-500 hover:text-gray-700"
-                          } ${
-                            data.author !== post.author ? "cursor-pointer" : ""
-                          }`} // Add cursor-pointer for vdots
-                          aria-label={data.author === post.author
-                            ? "Delete post"
-                            : "More options"}
-                        >
-                          {data.author === post.author
-                            ? <DeleteIcon />
-                            : <VDotsIcon />}
-                        </button>
-                      )}
+                      {/* Modified Header Section */}
+                      <div className="flex items-center justify-between mb-3">
+                        {/* Left side: Avatar and Author */}
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                            <img
+                              src={post.avatar}
+                              alt={post.author}
+                              className="w-full h-full rounded-full"
+                            />
+                          </div>
+                          <div className="ml-3">
+                            <p className={`font-medium ${themeStyles.text}`}>
+                              {post.author}
+                            </p>
+                            <p className="text-gray-500 text-xs">
+                              {new Date(post.timestamp).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
 
-                      <div className="flex items-center mb-3">
-                        <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
-                          <img
-                            src={post.avatar}
-                            alt={post.author}
-                            className="w-full h-full rounded-full"
-                          />
-                        </div>
-                        <div className="ml-3">
-                          <p className={`font-medium ${themeStyles.text}`}>
-                            {post.author}
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            {new Date(post.timestamp).toLocaleString()}
-                          </p>
-                        </div>
+                        {/* Right side: Icon Button */}
+                        {data.isLogin && ( // Show icon only if logged in
+                          <button
+                            type="button"
+                            onClick={data.author === post.author
+                              ? () => handleDeletePost(post.id)
+                              : undefined} // Only set onClick for author
+                            className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+                              // Removed absolute positioning
+                              isDark
+                                ? "text-gray-400 hover:text-gray-200"
+                                : "text-gray-500 hover:text-gray-700"} ${
+                              data.author !== post.author
+                                ? "cursor-pointer"
+                                : ""
+                            }`} // Add cursor-pointer for vdots
+                            aria-label={data.author === post.author
+                              ? "Delete post"
+                              : "More options"}
+                          >
+                            {data.author === post.author
+                              ? <DeleteIcon />
+                              : <VDotsIcon />}
+                          </button>
+                        )}
                       </div>
+                      {/* End Modified Header Section */}
 
                       <a href={`/post/${post.id}`} className="block">
                         {post.image && (
