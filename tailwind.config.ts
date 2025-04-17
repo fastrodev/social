@@ -1,8 +1,15 @@
-import { type Config } from "tailwindcss";
+import ts from "tailwind-scrollbar";
 
 export default {
   content: [
     "./modules/**/*.tsx",
     "./components/**/*.tsx",
   ],
-} satisfies Config;
+  darkMode: "class",
+  theme: {
+    extend: {},
+  },
+  plugins: [
+    ts,
+  ],
+};

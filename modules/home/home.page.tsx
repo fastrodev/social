@@ -454,7 +454,14 @@ export default function Home({ data }: PageProps<{
                         onKeyDown={handleKeyDown}
                         required
                         rows={4}
-                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input} 
+                          resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                          scrollbar-thin scrollbar-track-transparent
+                          ${
+                          isDark
+                            ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                            : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                        }`}
                       />
                     )}
                   <div className="mt-0 flex justify-between items-center">

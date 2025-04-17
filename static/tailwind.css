@@ -2,15 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-    h1 {
-        @apply text-3xl font-bold;
-    }
-
-    h2 {
-        @apply text-xl;
-    }
-}
+@layer base {}
 
 
 .token.operator {
