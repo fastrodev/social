@@ -499,8 +499,7 @@ export default function Post({ data }: PageProps<{
                           : "rgba(0,0,0,0.1)",
                       }}
                     >
-                      Please{" "}
-                      <a href="/login" className={themeStyles.link}>login</a>
+                      Please <a href="/" className={themeStyles.link}>login</a>
                       {" "}
                       to comment.
                     </div>
