@@ -11,6 +11,7 @@ import { ClipIcon } from "@app/components/icons/clip.tsx";
 import { SubmitIcon } from "@app/components/icons/submit.tsx"; // Make sure this path is correct
 import { VDotsIcon } from "@app/components/icons/vdots.tsx"; // Import the VdotsIcon
 import { marked } from "marked";
+import { EditIcon } from "@app/components/icons/edit.tsx";
 
 interface Post {
   id: string;
@@ -373,22 +374,22 @@ export default function Home({ data }: PageProps<{
           <main className="max-w-2xl mx-auto px-3 sm:px-4 relative">
             <div className="absolute inset-0 -z-10 bg-gradient-to-b from-purple-600/20 via-blue-500/10 to-transparent blur-3xl transform-gpu animate-pulse-slow" />
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} py-3 px-4 sm:px-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg`}
             >
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                  <div className="flex justify-between items-center mb-2">
+              <form onSubmit={handleSubmit} className="">
+                <div className="relative flex flex-col gap-y-2">
+                  <div className="flex justify-between items-center">
                     <div className={`flex items-center ${themeStyles.text}`}>
                       <button
                         type="button"
                         onClick={() => setShowPreviewMode(!showPreviewMode)}
-                        className={`text-xs px-2 py-1 rounded border ${
+                        className={`p-1.5 rounded-full border flex items-center justify-center ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700 border-gray-600"
                             : "text-gray-700 hover:bg-gray-200 border-gray-300"
                         }`}
                       >
-                        {showPreviewMode ? "Edit" : "Preview"}
+                        {showPreviewMode ? <EditIcon /> : <ViewIcon />}
                       </button>
                     </div>
 
@@ -405,21 +406,24 @@ export default function Home({ data }: PageProps<{
                   {showPreviewMode
                     ? (
                       <div
-                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} min-h-[100px] max-h-[400px] overflow-y-auto`}
+                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} min-h-[120px] h-[180px] max-h-[400px] overflow-y-auto p-3
+                          ${
+                          isDark
+                            ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                            : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                        } scrollbar-thin scrollbar-track-transparent`}
                       >
                         {postContent
                           ? (
                             <div
-                              className="markdown-preview prose prose-sm dark:prose-invert max-w-none p-3"
+                              className="markdown-preview prose prose-sm dark:prose-invert max-w-none"
                               dangerouslySetInnerHTML={renderMarkdown(
                                 postContent,
                               )}
                             />
                           )
                           : (
-                            <div
-                              className={`p-4 text-sm opacity-70`}
-                            >
+                            <div className="opacity-70 text-sm">
                               Nothing to preview yet.
                             </div>
                           )}
@@ -431,9 +435,8 @@ export default function Home({ data }: PageProps<{
                         value={postContent}
                         onInput={handleChange}
                         required
-                        rows={4}
-                        className={`w-full px-4 py-2 rounded-lg border ${themeStyles.input}
-                          resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                        className={`w-full p-3 rounded-lg border ${themeStyles.input}
+                          resize-none min-h-[120px] h-[180px] max-h-[400px] focus:ring-2 focus:ring-blue-500 focus:border-transparent
                           scrollbar-thin scrollbar-track-transparent
                           ${
                           isDark
@@ -442,9 +445,11 @@ export default function Home({ data }: PageProps<{
                         }`}
                       />
                     )}
-                  <div className="mt-0 flex justify-between items-center">
+
+                  {/* Fixed positioning with consistent margin */}
+                  <div className="h-10 flex justify-between items-center">
                     <div>
-                      {/* Removed the paragraph element */}
+                      {/* Empty div for spacing */}
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -460,13 +465,13 @@ export default function Home({ data }: PageProps<{
                       <button
                         type="button"
                         onClick={handleAttachmentClick}
-                        className={`p-1.5 rounded-full ${
+                        className={`p-1.5 rounded-full border ${
                           isDark
-                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-gray-600"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30 border-gray-300"
                         } transition-colors`}
                         aria-label="Add attachment"
-                        disabled={uploadingImage}
+                        disabled={uploadingImage || showPreviewMode}
                       >
                         {uploadingImage
                           ? <span className="animate-pulse">⏳</span>
@@ -476,10 +481,10 @@ export default function Home({ data }: PageProps<{
                       {/* Always visible Post Button */}
                       <button
                         type="submit"
-                        className={`p-1.5 rounded-full text-sm font-medium transition-colors ${
+                        className={`p-1.5 rounded-full border text-sm font-medium transition-colors ${
                           isDark
-                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30 border-gray-600"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30 border-gray-300"
                         } disabled:opacity-50 disabled:cursor-not-allowed`}
                         disabled={isSubmitting || uploadingImage ||
                           !postContent.trim()}
