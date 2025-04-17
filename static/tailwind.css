@@ -9,12 +9,6 @@
     background: transparent;
 }
 
-pre {
-    border-style: solid;
-    border-color: var(--bs-border-width);
-    border-width: 1px;
-}
-
 ul,
 ol {
     margin: 1em 0;
@@ -31,4 +25,11 @@ ol {
 
 li {
     display: list-item;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
 }
