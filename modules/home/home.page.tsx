@@ -344,11 +344,9 @@ export default function Home({ data }: PageProps<{
       ? "text-purple-400 hover:text-purple-300"
       : "text-purple-600 hover:text-purple-500",
     cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-    cardGlow: isMobile
-      ? isDark ? "shadow-md" : "shadow-sm"
-      : isDark
-      ? "shadow-[0_0_35px_rgba(147,51,234,0.3)]"
-      : "shadow-[0_0_20px_rgba(147,51,234,0.15)]",
+    cardGlow: isDark
+      ? "shadow-lg shadow-purple-900/30"
+      : "shadow-lg shadow-purple-200/30",
   };
 
   return (
@@ -390,11 +388,11 @@ export default function Home({ data }: PageProps<{
             message={data.message}
           />
 
-          <main className="max-w-2xl mx-auto px-3 sm:px-4">
+          {/* Main Container */}
+          <main className="max-w-2xl mx-auto px-3 sm:px-4 relative">
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-purple-600/30 via-blue-500/20 to-transparent blur-3xl transform-gpu animate-pulse-slow" />
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} ${
-                !isMobile ? "backdrop-blur-lg" : ""
-              }`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg`}
             >
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="relative">
@@ -560,7 +558,7 @@ export default function Home({ data }: PageProps<{
                   posts.map((post) => (
                     <div
                       key={post.id}
-                      className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-4 sm:p-6 border ${themeStyles.cardBorder} relative ${
+                      className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} relative ${
                         !isMobile ? "backdrop-blur-lg" : ""
                       } ${
                         !isMobile
@@ -677,7 +675,7 @@ export default function Home({ data }: PageProps<{
                 )
                 : (
                   <div
-                    className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
+                    className={`${themeStyles.cardBg} rounded-lg p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
                       !isMobile ? "backdrop-blur-lg" : ""
                     }`}
                   >
