@@ -57,6 +57,7 @@ export default function Post({ data }: PageProps<{
   const [postImage, setPostImage] = useState<string | undefined>(
     data.post.image,
   );
+  const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Detect mobile devices
@@ -422,55 +423,91 @@ export default function Post({ data }: PageProps<{
   const handleFileSelect = async (
     e: JSX.TargetedEvent<HTMLInputElement, Event>,
   ) => {
-    const files = e.currentTarget.files;
-    if (!files || files.length === 0) return;
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
 
-    const file = files[0];
-    setSelectedFile(file);
+    // Check if file is an image
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file (JPEG, PNG, etc.)");
+      return;
+    }
+
+    setUploadingImage(true);
 
     try {
-      // Show a loading indicator or notification
-      console.log("Uploading file:", file.name);
+      // Generate a unique filename
+      const extension = file.name.split(".").pop();
+      const filename = `uploads/${Date.now()}-${
+        Math.random()
+          .toString(36)
+          .substring(2, 15)
+      }.${extension}`;
 
-      // 1. Request a signed upload URL from your backend
-      const uploadUrlResponse = await fetch("/api/signed-url", {
+      console.log("Requesting signed URL for:", filename);
+
+      // Get a signed URL from our API
+      const signedUrlResponse = await fetch("/api/signed-url", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-        }),
+        // Send both filename and contentType
+        body: JSON.stringify({ filename, contentType: file.type }),
       });
 
-      if (!uploadUrlResponse.ok) {
-        throw new Error("Failed to get upload URL");
+      if (!signedUrlResponse.ok) {
+        const errorData = await signedUrlResponse.text();
+        console.error("Signed URL response error:", errorData);
+        throw new Error(`Failed to get signed URL: ${errorData}`);
       }
 
-      const { signedUrl, publicUrl } = await uploadUrlResponse.json();
+      const data = await signedUrlResponse.json();
+      console.log("Signed URL received:", data);
 
-      // 2. Upload the file directly to storage using the signed URL
+      if (!data.signedUrl) {
+        throw new Error("No signed URL returned from server");
+      }
+
+      const { signedUrl } = data;
+
+      // Upload the file using the signed URL
+      console.log("Uploading to signed URL...");
       const uploadResponse = await fetch(signedUrl, {
         method: "PUT",
         headers: {
           "Content-Type": file.type,
+          "x-goog-content-length-range": "0,10485760",
         },
         body: file,
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Failed to upload file");
+        const uploadErrorText = await uploadResponse.text();
+        console.error("Upload error details:", uploadErrorText);
+        throw new Error(
+          `Failed to upload image: ${uploadResponse.status} ${uploadResponse.statusText}`,
+        );
       }
 
-      console.log("File uploaded successfully");
+      console.log("Upload successful");
 
-      // 3. Update the post image reference in the UI using state
+      // Extract the public URL
+      const publicUrl =
+        `https://storage.googleapis.com/replix-394315-file/${filename}`;
+      console.log("Setting public URL:", publicUrl);
       setPostImage(publicUrl);
     } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Failed to upload image. Please try again.");
-      setSelectedFile(null);
+      console.error("Error uploading image:", error);
+      alert(
+        `Failed to upload image: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -661,28 +698,35 @@ export default function Post({ data }: PageProps<{
                         <button
                           type="button"
                           onClick={handleAttachClick}
-                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                             isDark
                               ? "bg-gray-700 text-white hover:bg-gray-600"
                               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                           }`}
+                          disabled={uploadingImage}
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
-                          </svg>
-                          {selectedFile
-                            ? selectedFile.name.substring(0, 15) + "..."
-                            : "Attach"}
+                          <div className="flex items-center gap-1">
+                            {uploadingImage
+                              ? <span className="animate-pulse">⏳</span>
+                              : (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                                </svg>
+                              )}
+                            {selectedFile
+                              ? selectedFile.name.substring(0, 15) + "..."
+                              : "Attach"}
+                          </div>
                         </button>
                         <input
                           type="file"
