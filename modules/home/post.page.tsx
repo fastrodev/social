@@ -11,6 +11,7 @@ import { ShareIcon } from "@app/components/icons/share.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx"; // Add EditIcon import
 import { marked } from "marked";
+import { XIcon } from "@app/components/icons/x.tsx";
 
 interface Post {
   id: string;
@@ -51,6 +52,18 @@ export default function Post({ data }: PageProps<{
   const [showPostMenu, setShowPostMenu] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editPostContent, setEditPostContent] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Initialize edit content with post content when editing starts
   useEffect(() => {
@@ -164,7 +177,7 @@ export default function Post({ data }: PageProps<{
     setShowPostMenu(false); // Close the menu
   };
 
-  // Fix the handleSaveEdit function to better handle mobile devices
+  // Update the handleSaveEdit function to preserve the image state
   const handleSaveEdit = async () => {
     if (!editPostContent.trim()) {
       return;
@@ -182,7 +195,7 @@ export default function Post({ data }: PageProps<{
           // Preserve existing values
           author: data.post.author,
           avatar: data.post.avatar,
-          image: data.post.image,
+          image: post.image, // Pass the current image state (may be null if removed)
         }),
       });
 
@@ -192,6 +205,7 @@ export default function Post({ data }: PageProps<{
         data.post = {
           ...data.post,
           content: updatedPost.content || editPostContent,
+          image: updatedPost.image, // Make sure to update the image property
         };
         setIsEditing(false);
       } else {
@@ -333,6 +347,101 @@ export default function Post({ data }: PageProps<{
     });
   };
 
+  const handleRemoveImage = async () => {
+    if (!post.image) return;
+
+    try {
+      // Extract filename from the public URL
+      const urlParts = post.image.split("/");
+      const filename = urlParts.slice(4).join("/");
+
+      if (!filename) {
+        console.error("Could not extract filename from URL:", post.image);
+        return;
+      }
+
+      console.log("Requesting DELETE signed URL for filename:", filename);
+
+      // 1. Get the DELETE signed URL from the backend
+      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filename }),
+      });
+
+      if (!deleteUrlResponse.ok) {
+        const errorData = await deleteUrlResponse.text();
+        console.error("Failed to get DELETE signed URL:", errorData);
+        alert("Could not prepare file deletion request. Please try again.");
+        return;
+      }
+
+      const data = await deleteUrlResponse.json();
+      if (!data.signedUrl) {
+        throw new Error("No DELETE signed URL returned from server");
+      }
+
+      const deleteSignedUrl = data.signedUrl;
+      console.log("DELETE Signed URL received.");
+
+      // 2. Use the signed URL to execute the DELETE request
+      console.log("Executing DELETE request using signed URL...");
+      const deleteResponse = await fetch(deleteSignedUrl, {
+        method: "DELETE",
+        // No body or Content-Type needed for standard GCS DELETE via signed URL
+      });
+
+      if (!deleteResponse.ok) {
+        const deleteErrorText = await deleteResponse.text();
+        console.error("Error executing DELETE signed URL:", deleteErrorText);
+        alert(
+          "Failed to delete the file from storage. It might have already been deleted.",
+        );
+      } else {
+        console.log("File deleted successfully using signed URL.");
+      }
+
+      // Update the state to remove the image reference
+      // We'll create a temporary object without the image property and update state
+      const updatedPostData = {
+        ...data.post,
+        image: null,
+      };
+
+      // Save the updated post with image removed
+      const updateResponse = await fetch(`/api/post/${post.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: post.content,
+          author: post.author,
+          avatar: post.avatar,
+          image: null, // Explicitly set image to null
+        }),
+      });
+
+      if (updateResponse.ok) {
+        // Update the post in the UI
+        data.post = {
+          ...data.post,
+          image: null,
+        };
+      } else {
+        console.error("Failed to update post after removing image");
+        alert(
+          "Image removed from storage but post not updated. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error during the delete process:", error);
+      alert("An error occurred while removing the image.");
+    }
+  };
+
   return (
     <div className="relative min-h-screen">
       {/* Background Layer - simplified for mobile */}
@@ -468,6 +577,23 @@ export default function Post({ data }: PageProps<{
               {isEditing
                 ? (
                   <div className="mt-4">
+                    {post.image && (
+                      <div className="mt-3 mb-3 relative">
+                        <img
+                          src={post.image}
+                          alt="Post attachment"
+                          className="w-full h-[330px] rounded-lg object-cover"
+                        />
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-2 right-2 hover:bg-gray-700 text-white w-6 h-6 flex items-center justify-center transition-colors"
+                          aria-label="Remove image"
+                        >
+                          <XIcon />
+                        </button>
+                      </div>
+                    )}
+
                     <textarea
                       value={editPostContent}
                       onChange={(e) =>
@@ -475,9 +601,17 @@ export default function Post({ data }: PageProps<{
                       onInput={(e) => setEditPostContent(e.currentTarget.value)}
                       rows={6}
                       className={`w-full p-3 rounded-lg border ${themeStyles.input}
-                        resize-none min-h-[150px] max-h-[600px] 
+                        resize-none ${
+                        isEditing
+                          ? isMobile
+                            ? "min-h-[150px] h-[200px]"
+                            : "min-h-[300px] h-[400px]"
+                          : isMobile
+                          ? "min-h-[60px] h-[100px]"
+                          : "min-h-[80px] h-[120px]"
+                      } max-h-[600px] 
                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                        transition-all duration-300
+                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
                         ${
                         isDark
                           ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
