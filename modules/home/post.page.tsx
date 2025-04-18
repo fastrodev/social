@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import { useEffect, useState } from "preact/hooks";
 import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";

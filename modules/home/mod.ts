@@ -4,6 +4,7 @@ import pageHandler, {
   commentHandler,
   deleteCommentHandler,
   deletePostHandler,
+  editPostHandler,
   getCommentsHandler,
   postHandler,
 } from "@app/modules/home/home.handler.ts";
@@ -32,6 +33,9 @@ export default function (s: Fastro) {
 
   // Add API endpoint for post creation
   s.post("/api/post", postHandler);
+
+  // Add API endpoint for editing a post
+  s.put("/api/post/:id", editPostHandler);
 
   // Add API endpoint for deleting a post
   s.delete("/api/post/:id", deletePostHandler);

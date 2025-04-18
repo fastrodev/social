@@ -172,6 +172,53 @@ export async function deletePostById(id: string): Promise<boolean> {
   }
 }
 
+interface PostUpdateInput {
+  content?: string;
+  author?: string;
+  avatar?: string;
+  image?: string;
+}
+
+export async function editPostById(
+  id: string,
+  updates: PostUpdateInput,
+): Promise<Post | null> {
+  const primaryKey = ["posts", id];
+  console.log("Editing post with ID:", id);
+
+  // First check if the post exists
+  const existingPost = await kv.get<Post>(primaryKey);
+  if (!existingPost.value) {
+    console.log("Post not found with ID:", id);
+    return null;
+  }
+
+  try {
+    // Create updated post by merging existing post with updates
+    const updatedPost: Post = {
+      ...existingPost.value,
+      ...updates,
+      // Preserve original id and timestamp
+      id: existingPost.value.id,
+      timestamp: existingPost.value.timestamp,
+    };
+
+    // Update the post in the database
+    const result = await kv.set(primaryKey, updatedPost);
+
+    if (!result.ok) {
+      console.error("Failed to update post:", id);
+      return null;
+    }
+
+    console.log("Successfully updated post:", id);
+    return updatedPost;
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return null;
+  }
+}
+
 // Comment interface
 interface CommentInput {
   content: string;

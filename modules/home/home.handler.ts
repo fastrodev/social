@@ -2,6 +2,7 @@ import { getSession } from "@app/utils/session.ts";
 import {
   createPost,
   deletePostById,
+  editPostById,
   getPosts,
 } from "@app/modules/home/home.service.ts";
 
@@ -283,3 +284,49 @@ export async function deleteCommentHandler(req: HttpRequest, ctx: Context) {
     });
   }
 }
+
+// Handle post editing
+export const editPostHandler = async (req: HttpRequest) => {
+  const id = req.params?.id;
+  if (!id) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Post ID is required",
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 400,
+      },
+    );
+  }
+
+  try {
+    const body = await req.json();
+
+    await editPostById(id, body);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Post updated successfully",
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Failed to update post",
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      },
+    );
+  }
+};
