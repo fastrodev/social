@@ -465,7 +465,7 @@ export default function Post({ data }: PageProps<{
       console.log("Uploading file:", file.name);
 
       // 1. Request a signed upload URL from your backend
-      const uploadUrlResponse = await fetch("/api/upload-signed-url", {
+      const uploadUrlResponse = await fetch("/api/signed-url", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
