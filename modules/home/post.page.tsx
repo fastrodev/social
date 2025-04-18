@@ -494,16 +494,13 @@ export default function Post({ data }: PageProps<{
               {/* Post author info and options */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                  {/* Only show avatar when not editing */}
-                  {!isEditing && (
-                    <div className="mt-1 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
-                      <img
-                        src={post.avatar}
-                        alt={post.author}
-                        className="w-full h-full rounded-full"
-                      />
-                    </div>
-                  )}
+                  <div className="mt-1 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                    <img
+                      src={post.avatar}
+                      alt={post.author}
+                      className="w-full h-full rounded-full"
+                    />
+                  </div>
                   <div className="ml-4">
                     <p
                       className={`font-medium text-base sm:text-lg ${themeStyles.text}`}
@@ -566,7 +563,7 @@ export default function Post({ data }: PageProps<{
               </div>
 
               {/* Post Image (if available) */}
-              {post.image && (
+              {!isEditing && post.image && (
                 <div className="my-4">
                   <img
                     src={post.image}
