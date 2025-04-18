@@ -10,8 +10,10 @@ import { ViewIcon } from "@app/components/icons/view.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx"; // Add EditIcon import
+import { ClipIcon } from "@app/components/icons/clip.tsx"; // Add ClipIcon import
 import { marked } from "marked";
 import { XIcon } from "@app/components/icons/x.tsx";
+import { CancelIcon } from "@app/components/icons/cancel.tsx";
 
 interface Post {
   id: string;
@@ -59,6 +61,7 @@ export default function Post({ data }: PageProps<{
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showPreviewMode, setShowPreviewMode] = useState(false);
 
   // Detect mobile devices
   useEffect(() => {
@@ -517,6 +520,12 @@ export default function Post({ data }: PageProps<{
     }
   };
 
+  const handleAttachmentClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div className="relative min-h-screen">
       {/* Background Layer - simplified for mobile */}
@@ -651,9 +660,9 @@ export default function Post({ data }: PageProps<{
               {/* Post Content */}
               {isEditing
                 ? (
-                  <div className="mt-4">
+                  <div className="mt-4 flex flex-col gap-y-3">
                     {postImage && (
-                      <div className="mt-3 mb-3 relative">
+                      <div className="relative">
                         <img
                           src={postImage}
                           alt="Post attachment"
@@ -695,39 +704,33 @@ export default function Post({ data }: PageProps<{
                     />
                     <div className="flex justify-between mt-2 mb-3">
                       <div>
-                        <button
-                          type="button"
-                          onClick={handleAttachClick}
-                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                            isDark
-                              ? "bg-gray-700 text-white hover:bg-gray-600"
-                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                          }`}
-                          disabled={uploadingImage}
-                        >
-                          <div className="flex items-center gap-1">
+                        <div>
+                          <button
+                            type="button"
+                            onClick={handleAttachmentClick}
+                            className={`p-1.5 rounded-lg flex items-center gap-2 ${
+                              isDark
+                                ? "text-gray-400 hover:text-gray-200 hover:bg-gray-600/30 bg-gray-700/30"
+                                : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                            } transition-colors`}
+                            aria-label="Add attachment"
+                            disabled={uploadingImage || showPreviewMode}
+                          >
                             {uploadingImage
-                              ? <span className="animate-pulse">⏳</span>
+                              ? (
+                                <>
+                                  <span className="animate-pulse">⏳</span>
+                                  <span className="text-sm">Uploading...</span>
+                                </>
+                              )
                               : (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
-                                </svg>
+                                <>
+                                  <ClipIcon />
+                                  <span className="text-sm">Attachment</span>
+                                </>
                               )}
-                            {selectedFile
-                              ? selectedFile.name.substring(0, 15) + "..."
-                              : "Attach"}
-                          </div>
-                        </button>
+                          </button>
+                        </div>
                         <input
                           type="file"
                           ref={fileInputRef}
@@ -736,24 +739,26 @@ export default function Post({ data }: PageProps<{
                           className="hidden"
                         />
                       </div>
-                      <div className="space-x-2">
+                      <div className="flex gap-x-2">
                         <button
                           type="button"
                           onClick={handleCancelEdit}
-                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                             isDark
                               ? "bg-gray-700 text-white hover:bg-gray-600"
                               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                           }`}
                         >
-                          Cancel
+                          <CancelIcon />
+                          <span>Cancel</span>
                         </button>
                         <button
                           type="button"
                           onClick={handleSaveEdit}
-                          className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors ${themeStyles.button}`}
+                          className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors flex items-center gap-2 ${themeStyles.button}`}
                         >
-                          Save
+                          <EditIcon />
+                          <span>Save</span>
                         </button>
                       </div>
                     </div>
@@ -786,7 +791,7 @@ export default function Post({ data }: PageProps<{
                 <div
                   className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs`}
                 >
-                  <span className="flex items-center">
+                  <span className="flex items-center gap-x-2">
                     <ViewIcon />
                     {post.views || 0} views
                   </span>

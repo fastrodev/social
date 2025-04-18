@@ -14,6 +14,7 @@ import { ShareIcon } from "@app/components/icons/share.tsx"; // Import the Share
 import { marked } from "marked";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
+import { CancelIcon } from "@app/components/icons/cancel.tsx";
 
 interface Post {
   id: string;
@@ -459,19 +460,31 @@ export default function Home({ data }: PageProps<{
                   </div>
                 )}
 
-                <div className="relative flex flex-col gap-y-2">
+                <div className="relative flex flex-col gap-y-3">
                   <div className="flex justify-between items-center">
                     <div className={`flex items-center ${themeStyles.text}`}>
                       <button
                         type="button"
                         onClick={() => setShowPreviewMode(!showPreviewMode)}
-                        className={`p-1.5 rounded-full flex items-center justify-center ${
+                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
                           isDark
-                            ? "text-gray-300 hover:bg-gray-700"
-                            : "text-gray-700 hover:bg-gray-200"
+                            ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
+                            : "text-gray-700 hover:bg-gray-200/30"
                         }`}
                       >
-                        {showPreviewMode ? <EditIcon /> : <ViewIcon />}
+                        {showPreviewMode
+                          ? (
+                            <>
+                              <EditIcon />
+                              <span className="text-sm">Edit</span>
+                            </>
+                          )
+                          : (
+                            <>
+                              <ViewIcon />
+                              <span className="text-sm">Preview</span>
+                            </>
+                          )}
                       </button>
                     </div>
 
@@ -551,7 +564,31 @@ export default function Home({ data }: PageProps<{
                   {/* Fixed positioning with consistent margin */}
                   <div className="h-10 flex justify-between items-center">
                     <div>
-                      {/* Empty div for spacing */}
+                      <button
+                        type="button"
+                        onClick={handleAttachmentClick}
+                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                          isDark
+                            ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
+                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                        } transition-colors`}
+                        aria-label="Add attachment"
+                        disabled={uploadingImage || showPreviewMode}
+                      >
+                        {uploadingImage
+                          ? (
+                            <>
+                              <span className="animate-pulse">⏳</span>
+                              <span className="text-sm">Uploading...</span>
+                            </>
+                          )
+                          : (
+                            <>
+                              <ClipIcon />
+                              <span className="text-sm">Attachment</span>
+                            </>
+                          )}
+                      </button>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -563,34 +600,37 @@ export default function Home({ data }: PageProps<{
                         className="hidden"
                       />
 
-                      <button
-                        type="button"
-                        onClick={handleAttachmentClick}
-                        className={`p-1.5 rounded-full ${
-                          isDark
-                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                        } transition-colors`}
-                        aria-label="Add attachment"
-                        disabled={uploadingImage || showPreviewMode}
-                      >
-                        {uploadingImage
-                          ? <span className="animate-pulse">⏳</span>
-                          : <ClipIcon />}
-                      </button>
+                      {(postContent.trim() || imageUrl) && (
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                            isDark
+                              ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
+                              : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
+                          } border ${
+                            isDark ? "border-gray-700" : "border-gray-300"
+                          } transition-colors`}
+                          aria-label="Cancel post"
+                        >
+                          <CancelIcon />
+                          <span className="text-sm font-medium">Cancel</span>
+                        </button>
+                      )}
 
                       <button
                         type="submit"
-                        className={`p-1.5 rounded-full text-sm font-medium transition-colors ${
+                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
                           isDark
-                            ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            ? "bg-purple-600 hover:bg-purple-500 text-white"
+                            : "bg-purple-500 hover:bg-purple-400 text-white"
+                        } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
                         disabled={isSubmitting || uploadingImage ||
                           !postContent.trim()}
                         aria-label="Submit post"
                       >
                         <SubmitIcon />
+                        <span className="text-sm font-medium">Create</span>
                       </button>
                     </div>
                   </div>
