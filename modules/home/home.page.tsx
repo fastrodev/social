@@ -54,7 +54,6 @@ export default function Home({ data }: PageProps<{
 
   // Detect mobile devices
   useEffect(() => {
-    console.log("author", data.author);
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
