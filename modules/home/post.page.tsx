@@ -45,9 +45,15 @@ export default function Post({ data }: PageProps<{
   const [isLoading, setIsLoading] = useState(true);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
 
-  // Fetch comments on page load
+  // Fetch comments on page load and check for theme in session storage
   useEffect(() => {
     fetchComments();
+
+    // Load theme preference from session storage
+    const savedTheme = sessionStorage.getItem("theme");
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+    }
   }, []);
 
   // Close dropdown when clicking outside
@@ -78,9 +84,12 @@ export default function Post({ data }: PageProps<{
     }
   };
 
-  // Toggle theme
+  // Toggle theme and save preference to session storage
   const toggleTheme = () => {
-    setIsDark(!isDark);
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    // Save theme preference to session storage
+    sessionStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   // Toggle dropdown menu

@@ -59,6 +59,12 @@ export default function Home({ data }: PageProps<{
       setIsMobile(window.innerWidth < 768);
     };
 
+    // Load theme preference from session storage
+    const savedTheme = sessionStorage.getItem("theme");
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+    }
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -362,7 +368,10 @@ export default function Home({ data }: PageProps<{
   };
 
   const toggleTheme = () => {
-    setIsDark(!isDark);
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    // Save theme preference to session storage
+    sessionStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   const themeStyles = {

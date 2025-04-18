@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
@@ -15,10 +15,33 @@ export default function Header(
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const textColorClass = props.isDark ? "text-gray-100" : "text-gray-700";
-  const linkTextColorClass = props.isDark ? "text-gray-100" : "text-gray-700";
-  const bgClass = props.isDark ? "bg-gray-800" : "bg-white";
-  const borderClass = props.isDark ? "border-gray-700" : "border-gray-200";
+  // Use the isDark prop with a fallback to true if not specified
+  const [isDark, setIsDark] = useState(
+    props.isDark !== undefined ? props.isDark : true,
+  );
+
+  // Check session storage for theme on component mount
+  useEffect(() => {
+    const savedTheme = sessionStorage.getItem("theme");
+    if (savedTheme) {
+      setIsDark(savedTheme === "dark");
+    }
+  }, []);
+
+  // Update local state when props change
+  useEffect(() => {
+    if (props.isDark !== undefined) {
+      setIsDark(props.isDark);
+    }
+  }, [props.isDark]);
+
+  const textColorClass = isDark ? "text-gray-100" : "text-gray-700";
+  const linkTextColorClass = isDark ? "text-gray-100" : "text-gray-700";
+  const bgClass = isDark ? "bg-gray-800" : "bg-white";
+  const borderClass = isDark ? "border-gray-700" : "border-gray-200";
+
+  const defaultTitle = "Fastro Social";
+  const headerTitle = props.isLogin ? "Home" : (props.message || defaultTitle);
 
   // Close dropdown when clicking outside
   const handleClickOutside = () => {
@@ -56,7 +79,7 @@ export default function Header(
           </div>
         </a>
         <span class={`${textColorClass}`}>
-          {`${props.message || "Fastro Social"}`}
+          {headerTitle}
         </span>
       </div>
       <div class={`flex items-center space-x-3`}>
