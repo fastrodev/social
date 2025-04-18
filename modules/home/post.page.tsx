@@ -362,16 +362,22 @@ export default function Post({ data }: PageProps<{
       // Extract just the filename without the bucket part
       // From URLs like: https://storage.googleapis.com/replix-394315-file/uploads/1744857113334-zidt6i2nx4.jpeg
       let filename;
+      let bucketName;
 
       // Standard GCS public URL pattern
       if (postImage.includes("storage.googleapis.com")) {
-        // Parse the URL to extract just the path after the bucket name
-        const regex = /storage\.googleapis\.com\/[^\/]+\/(.+)$/;
-        const match = postImage.match(regex);
+        // Parse the URL properly to extract bucket and path separately
+        const urlParts = postImage.split("/");
+        const bucketIndex = urlParts.findIndex((part) =>
+          part === "storage.googleapis.com"
+        );
 
-        if (match && match[1]) {
-          filename = match[1]; // This gives us "uploads/1744857113334-zidt6i2nx4.jpeg"
-          console.log("Extracted GCS path:", filename);
+        if (bucketIndex !== -1 && urlParts.length > bucketIndex + 2) {
+          // Get the bucket name and path separately
+          bucketName = urlParts[bucketIndex + 1];
+          filename = urlParts.slice(bucketIndex + 2).join("/");
+          console.log("Extracted bucket:", bucketName);
+          console.log("Extracted path:", filename);
         }
       } else {
         // Fallback for other URL formats - just take the last part
@@ -399,7 +405,10 @@ export default function Post({ data }: PageProps<{
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ filename }),
+          body: JSON.stringify({
+            filename,
+            bucketName, // Pass the bucket name separately
+          }),
         });
 
         if (!deleteUrlResponse.ok) {
