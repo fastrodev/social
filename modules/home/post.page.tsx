@@ -47,11 +47,6 @@ export default function Post({ data }: PageProps<{
 
   // Fetch comments on page load and check for theme in session storage
   useEffect(() => {
-    // Load theme preference from session storage
-    const savedTheme = sessionStorage.getItem("theme");
-    if (savedTheme) {
-      setIsDark(savedTheme === "dark");
-    }
     fetchComments();
   }, []);
 
