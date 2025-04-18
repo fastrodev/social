@@ -187,6 +187,8 @@ export default function Post({ data }: PageProps<{
 
     try {
       setIsSubmitting(true);
+
+      // Use the image from data.post which was updated during file upload
       const response = await fetch(`/api/post/${data.post.id}`, {
         method: "PUT",
         headers: {
@@ -194,10 +196,9 @@ export default function Post({ data }: PageProps<{
         },
         body: JSON.stringify({
           content: editPostContent,
-          // Preserve existing values
           author: data.post.author,
           avatar: data.post.avatar,
-          image: post.image, // Pass the current image state (may be null if removed)
+          image: data.post.image, // This will contain the new image URL if uploaded
         }),
       });
 
@@ -210,6 +211,7 @@ export default function Post({ data }: PageProps<{
           image: updatedPost.image, // Make sure to update the image property
         };
         setIsEditing(false);
+        setSelectedFile(null); // Clear selected file after saving
       } else {
         console.error("Failed to update post");
         alert("Failed to update post. Please try again.");
@@ -449,11 +451,64 @@ export default function Post({ data }: PageProps<{
     }
   };
 
-  const handleFileSelect = (e: JSX.TargetedEvent<HTMLInputElement, Event>) => {
+  const handleFileSelect = async (
+    e: JSX.TargetedEvent<HTMLInputElement, Event>,
+  ) => {
     const files = e.currentTarget.files;
-    if (files && files.length > 0) {
-      setSelectedFile(files[0]);
-      // You might want to handle the file upload here or on save
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    setSelectedFile(file);
+
+    try {
+      // Show a loading indicator or notification
+      console.log("Uploading file:", file.name);
+
+      // 1. Request a signed upload URL from your backend
+      const uploadUrlResponse = await fetch("/api/upload-signed-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+        }),
+      });
+
+      if (!uploadUrlResponse.ok) {
+        throw new Error("Failed to get upload URL");
+      }
+
+      const { signedUrl, publicUrl } = await uploadUrlResponse.json();
+
+      // 2. Upload the file directly to storage using the signed URL
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      console.log("File uploaded successfully");
+
+      // 3. Update the post image reference in the UI
+      data.post = {
+        ...data.post,
+        image: publicUrl,
+      };
+
+      // Force re-render to show the uploaded image
+      setIsEditing(isEditing);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to upload image. Please try again.");
+      setSelectedFile(null);
     }
   };
 
@@ -663,7 +718,9 @@ export default function Post({ data }: PageProps<{
                           >
                             <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
                           </svg>
-                          Attach
+                          {selectedFile
+                            ? selectedFile.name.substring(0, 15) + "..."
+                            : "Attach"}
                         </button>
                         <input
                           type="file"
