@@ -54,6 +54,9 @@ export default function Post({ data }: PageProps<{
   const [editPostContent, setEditPostContent] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [postImage, setPostImage] = useState<string | undefined>(
+    data.post.image,
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Detect mobile devices
@@ -71,8 +74,9 @@ export default function Post({ data }: PageProps<{
   useEffect(() => {
     if (isEditing) {
       setEditPostContent(data.post.content);
+      setPostImage(data.post.image);
     }
-  }, [isEditing, data.post.content]);
+  }, [isEditing, data.post.content, data.post.image]);
 
   // Fetch comments on page load and check for theme in session storage
   useEffect(() => {
@@ -179,7 +183,7 @@ export default function Post({ data }: PageProps<{
     setShowPostMenu(false); // Close the menu
   };
 
-  // Update the handleSaveEdit function to preserve the image state
+  // Update the handleSaveEdit function to use the state value
   const handleSaveEdit = async () => {
     if (!editPostContent.trim()) {
       return;
@@ -188,7 +192,7 @@ export default function Post({ data }: PageProps<{
     try {
       setIsSubmitting(true);
 
-      // Use the image from data.post which was updated during file upload
+      // Use postImage from state instead of data.post.image
       const response = await fetch(`/api/post/${data.post.id}`, {
         method: "PUT",
         headers: {
@@ -198,20 +202,20 @@ export default function Post({ data }: PageProps<{
           content: editPostContent,
           author: data.post.author,
           avatar: data.post.avatar,
-          image: data.post.image, // This will contain the new image URL if uploaded
+          image: postImage, // Use state value here
         }),
       });
 
       if (response.ok) {
         const updatedPost = await response.json();
-        // Update the post properly in the UI by updating the data object
+        // Update the post properly in the UI
         data.post = {
           ...data.post,
           content: updatedPost.content || editPostContent,
-          image: updatedPost.image, // Make sure to update the image property
+          image: updatedPost.image || postImage, // Use postImage if server doesn't return image
         };
         setIsEditing(false);
-        setSelectedFile(null); // Clear selected file after saving
+        setSelectedFile(null);
       } else {
         console.error("Failed to update post");
         alert("Failed to update post. Please try again.");
@@ -352,27 +356,20 @@ export default function Post({ data }: PageProps<{
   };
 
   const handleRemoveImage = async () => {
-    if (!post.image) return;
+    if (!postImage) return;
 
     try {
       // Extract filename from the public URL
-      const urlParts = post.image.split("/");
+      const urlParts = postImage.split("/");
       const filename = urlParts.slice(4).join("/");
 
       if (!filename) {
-        console.error("Could not extract filename from URL:", post.image);
+        console.error("Could not extract filename from URL:", postImage);
         return;
       }
 
       // Immediately update the UI by removing the image reference
-      // This provides immediate feedback to the user
-      data.post = {
-        ...data.post,
-        image: undefined,
-      };
-
-      // Force component to re-render with updated data
-      setIsEditing(isEditing);
+      setPostImage(undefined);
 
       console.log("Requesting DELETE signed URL for filename:", filename);
 
@@ -416,38 +413,11 @@ export default function Post({ data }: PageProps<{
       } else {
         console.log("File deleted successfully using signed URL.");
       }
-
-      // Save the updated post with image removed
-      const updateResponse = await fetch(`/api/post/${post.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: post.content,
-          author: post.author,
-          avatar: post.avatar,
-          image: null, // Explicitly set image to null
-        }),
-      });
-
-      if (!updateResponse.ok) {
-        console.error("Failed to update post after removing image");
-        alert(
-          "Image removed from storage but post not updated. Please try again.",
-        );
-      }
     } catch (error) {
       console.error("Error during the delete process:", error);
       alert("An error occurred while removing the image.");
-
       // If an error occurs, restore the image reference
-      data.post = {
-        ...data.post,
-        image: post.image,
-      };
-      // Force component to re-render with restored data
-      setIsEditing(isEditing);
+      setPostImage(data.post.image);
     }
   };
 
@@ -497,14 +467,8 @@ export default function Post({ data }: PageProps<{
 
       console.log("File uploaded successfully");
 
-      // 3. Update the post image reference in the UI
-      data.post = {
-        ...data.post,
-        image: publicUrl,
-      };
-
-      // Force re-render to show the uploaded image
-      setIsEditing(isEditing);
+      // 3. Update the post image reference in the UI using state
+      setPostImage(publicUrl);
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Failed to upload image. Please try again.");
@@ -653,10 +617,10 @@ export default function Post({ data }: PageProps<{
               {isEditing
                 ? (
                   <div className="mt-4">
-                    {post.image && (
+                    {postImage && (
                       <div className="mt-3 mb-3 relative">
                         <img
-                          src={post.image}
+                          src={postImage}
                           alt="Post attachment"
                           className="w-full h-[330px] rounded-lg object-cover"
                         />
