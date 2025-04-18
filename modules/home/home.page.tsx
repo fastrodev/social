@@ -445,7 +445,7 @@ export default function Home({ data }: PageProps<{
                 {imageUrl && (
                   <div className="mt-3 mb-3 relative">
                     <img
-                      src={"https://storage.googleapis.com/replix-394315-file/uploads/1744885981964-1uprfuywk9uj.jpeg"}
+                      src={imageUrl}
                       alt="Post attachment"
                       className="w-full h-[330px] rounded-lg object-cover"
                     />
