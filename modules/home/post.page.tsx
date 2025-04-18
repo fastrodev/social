@@ -6,6 +6,9 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
+import { ShareIcon } from "@app/components/icons/share.tsx";
+import { DeleteIcon } from "@app/components/icons/delete.tsx";
+import { EditIcon } from "@app/components/icons/edit.tsx"; // Add EditIcon import
 import { marked } from "marked";
 
 interface Post {
@@ -44,6 +47,16 @@ export default function Post({ data }: PageProps<{
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [showPostMenu, setShowPostMenu] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editPostContent, setEditPostContent] = useState("");
+
+  // Initialize edit content with post content when editing starts
+  useEffect(() => {
+    if (isEditing) {
+      setEditPostContent(data.post.content);
+    }
+  }, [isEditing, data.post.content]);
 
   // Fetch comments on page load and check for theme in session storage
   useEffect(() => {
@@ -54,6 +67,7 @@ export default function Post({ data }: PageProps<{
   useEffect(() => {
     const handleClickOutside = () => {
       setOpenDropdownId(null);
+      setShowPostMenu(false); // Close post menu when clicking outside
     };
 
     document.addEventListener("click", handleClickOutside);
@@ -90,6 +104,100 @@ export default function Post({ data }: PageProps<{
   const toggleDropdown = (e: MouseEvent, commentId: string) => {
     e.stopPropagation(); // Prevent triggering the document click handler
     setOpenDropdownId(openDropdownId === commentId ? null : commentId);
+  };
+
+  // Toggle post menu
+  const togglePostMenu = (e: MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the document click handler
+    setShowPostMenu(!showPostMenu);
+  };
+
+  // Handle post deletion
+  const handleDeletePost = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/post/${data.post.id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Redirect to home page after successful deletion
+        window.location.href = "/";
+      } else {
+        console.error("Failed to delete post");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+  // Handle post sharing
+  const handleSharePost = async () => {
+    const postUrl = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out this post",
+          url: postUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert("Link copied to clipboard!");
+      }).catch((err) => {
+        console.error("Failed to copy link:", err);
+      });
+    }
+  };
+
+  // Handle post editing
+  const handleEditPost = () => {
+    setIsEditing(true);
+    setShowPostMenu(false); // Close the menu
+  };
+
+  // Handle saving edited post
+  const handleSaveEdit = async () => {
+    if (!editPostContent.trim()) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/post/${data.post.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          content: editPostContent,
+          isMarkdown: true,
+          image: data.post.image,
+        }),
+      });
+
+      if (response.ok) {
+        // Update the post in the UI
+        data.post.content = editPostContent;
+        setIsEditing(false);
+      } else {
+        console.error("Failed to update post");
+      }
+    } catch (error) {
+      console.error("Error updating post:", error);
+    }
+  };
+
+  // Handle canceling edit
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditPostContent("");
   };
 
   // Handle comment deletion
@@ -284,13 +392,53 @@ export default function Post({ data }: PageProps<{
                   </div>
                 </div>
                 {/* Three dots menu */}
-                <button
-                  type="button"
-                  className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text} ml-4`} // Added ml-4 for spacing
-                  aria-label="Post options"
-                >
-                  <VDotsIcon />
-                </button>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className={`p-1 rounded-full hover:bg-gray-700/30 ${themeStyles.text} ml-4`}
+                    aria-label="Post options"
+                    onClick={togglePostMenu}
+                  >
+                    <VDotsIcon />
+                  </button>
+                  {showPostMenu && (
+                    <div
+                      className={`absolute right-0 mt-1 w-36 rounded-md shadow-lg ${themeStyles.cardBg} ${themeStyles.cardBorder} z-20`}
+                    >
+                      <div className="py-1">
+                        <button
+                          type="button"
+                          className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-gray-700/30 transition-colors flex items-center gap-2`}
+                          onClick={handleSharePost}
+                        >
+                          <ShareIcon />
+                          Share post
+                        </button>
+                        {/* Only show edit and delete options if the user is the author */}
+                        {post.author === data.author && (
+                          <>
+                            <button
+                              type="button"
+                              className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-gray-700/30 transition-colors flex items-center gap-2`}
+                              onClick={handleEditPost}
+                            >
+                              <EditIcon />
+                              Edit post
+                            </button>
+                            <button
+                              type="button"
+                              className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-red-500/10 hover:text-red-500 transition-colors flex items-center gap-2`}
+                              onClick={handleDeletePost}
+                            >
+                              <DeleteIcon />
+                              Delete post
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Post Image (if available) */}
@@ -304,12 +452,55 @@ export default function Post({ data }: PageProps<{
                 </div>
               )}
 
-              <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
-                <div
-                  className={`${themeStyles.text} text-base sm:text-lg whitespace-pre-wrap leading-relaxed mb-0`}
-                  dangerouslySetInnerHTML={renderMarkdown(post.content)}
-                />
-              </div>
+              {/* Post Content */}
+              {isEditing
+                ? (
+                  <div className="mt-4">
+                    <textarea
+                      value={editPostContent}
+                      onChange={(e) =>
+                        setEditPostContent(e.currentTarget.value)}
+                      rows={6}
+                      className={`w-full p-3 rounded-lg border ${themeStyles.input}
+                        resize-none max-h-[600px] 
+                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
+                        ${
+                        isDark
+                          ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                          : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                      }`}
+                    />
+                    <div className="flex justify-end mt-2 mb-3 space-x-2">
+                      <button
+                        type="button"
+                        onClick={handleCancelEdit}
+                        className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                          isDark
+                            ? "bg-gray-700 text-white hover:bg-gray-600"
+                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                        }`}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSaveEdit}
+                        className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors ${themeStyles.button}`}
+                      >
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                )
+                : (
+                  <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
+                    <div
+                      className={`${themeStyles.text} text-base sm:text-lg whitespace-pre-wrap leading-relaxed mb-0`}
+                      dangerouslySetInnerHTML={renderMarkdown(post.content)}
+                    />
+                  </div>
+                )}
 
               {/* Stats section with top and bottom borders */}
               <div
