@@ -359,22 +359,25 @@ export default function Post({ data }: PageProps<{
     if (!postImage) return;
 
     try {
-      // Extract filename from the public URL more reliably
-      // Example URL format: https://storage.googleapis.com/replix-394315-file/uploads/filename.jpg
-      const urlParts = postImage.split("/");
-      const bucketIndex = urlParts.findIndex((part) =>
-        part === "storage.googleapis.com"
-      );
-
-      // If we can't find the proper URL structure, use a simpler approach
+      // Extract just the filename without the bucket part
+      // From URLs like: https://storage.googleapis.com/replix-394315-file/uploads/1744857113334-zidt6i2nx4.jpeg
       let filename;
-      if (bucketIndex !== -1 && urlParts.length > bucketIndex + 2) {
-        // Get the path after the bucket name (which is what GCS needs)
-        // Don't include the bucket name in the path
-        filename = urlParts.slice(bucketIndex + 2).join("/");
+
+      // Standard GCS public URL pattern
+      if (postImage.includes("storage.googleapis.com")) {
+        // Parse the URL to extract just the path after the bucket name
+        const regex = /storage\.googleapis\.com\/[^\/]+\/(.+)$/;
+        const match = postImage.match(regex);
+
+        if (match && match[1]) {
+          filename = match[1]; // This gives us "uploads/1744857113334-zidt6i2nx4.jpeg"
+          console.log("Extracted GCS path:", filename);
+        }
       } else {
-        // Fallback to the original approach
-        filename = urlParts.slice(-2).join("/"); // Just get the last 2 parts of the path
+        // Fallback for other URL formats - just take the last part
+        const urlParts = postImage.split("/");
+        filename = urlParts[urlParts.length - 1];
+        console.log("Fallback filename extraction:", filename);
       }
 
       if (!filename) {
@@ -384,53 +387,56 @@ export default function Post({ data }: PageProps<{
         return;
       }
 
-      console.log("Extracted filename for deletion:", filename);
-
       // Immediately update the UI by removing the image reference
       setPostImage(undefined);
 
-      // 1. Get the DELETE signed URL from the backend
-      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filename }),
-      });
+      try {
+        console.log("Requesting delete signed URL for:", filename);
 
-      if (!deleteUrlResponse.ok) {
-        const errorData = await deleteUrlResponse.text();
-        console.error("Failed to get DELETE signed URL:", errorData);
-        // Don't show alert to user, just log it - the UI is already updated
-        return;
-      }
+        // Get the DELETE signed URL from the backend
+        const deleteUrlResponse = await fetch("/api/delete-signed-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filename }),
+        });
 
-      const responseData = await deleteUrlResponse.json();
-      if (!responseData.signedUrl) {
-        throw new Error("No DELETE signed URL returned from server");
-      }
-
-      const deleteSignedUrl = responseData.signedUrl;
-      console.log("DELETE Signed URL received.");
-
-      // 2. Use the signed URL to execute the DELETE request
-      console.log("Executing DELETE request using signed URL...");
-      const deleteResponse = await fetch(deleteSignedUrl, {
-        method: "DELETE",
-      });
-
-      if (!deleteResponse.ok) {
-        const deleteErrorText = await deleteResponse.text();
-        console.error("Error executing DELETE signed URL:", deleteErrorText);
-
-        // Check if it's just a "not found" error, which we can ignore
-        if (deleteErrorText.includes("NoSuchKey")) {
-          console.log("File has already been deleted or doesn't exist");
-        } else {
-          console.error("Unknown error during deletion:", deleteErrorText);
+        if (!deleteUrlResponse.ok) {
+          const errorText = await deleteUrlResponse.text();
+          console.error("Failed to get DELETE signed URL:", errorText);
+          return;
         }
-      } else {
-        console.log("File deleted successfully using signed URL.");
+
+        const responseData = await deleteUrlResponse.json();
+        if (!responseData.signedUrl) {
+          console.error("No signed URL returned from server");
+          return;
+        }
+
+        const deleteSignedUrl = responseData.signedUrl;
+        console.log("DELETE Signed URL received");
+
+        // Execute the DELETE request
+        const deleteResponse = await fetch(deleteSignedUrl, {
+          method: "DELETE",
+        });
+
+        if (!deleteResponse.ok) {
+          const deleteErrorText = await deleteResponse.text();
+          console.error("Error executing DELETE signed URL:", deleteErrorText);
+
+          // Don't show error to user if it's just "NoSuchKey"
+          if (deleteErrorText.includes("NoSuchKey")) {
+            console.log("File has already been deleted or doesn't exist");
+          } else {
+            console.error("Unknown error during deletion:", deleteErrorText);
+          }
+        } else {
+          console.log("File deleted successfully using signed URL");
+        }
+      } catch (deleteError) {
+        console.error("Error during delete operation:", deleteError);
       }
     } catch (error) {
       console.error("Error during the delete process:", error);
