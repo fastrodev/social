@@ -413,7 +413,7 @@ export default function Home({ data }: PageProps<{
             <div
               className={`${
                 isDark
-                  ? " shadow-xl shadow-purple-600/80 bg-purple-600/35"
+                  ? "shadow-2xl shadow-purple-600/90 bg-purple-600/30"
                   : "shadow-2xl shadow-gray-400/40 bg-gray-400/20"
               } rounded-lg`}
             >
