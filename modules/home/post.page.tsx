@@ -246,14 +246,14 @@ export default function Post({ data }: PageProps<{
           {isDark ? "☀️" : "🌙"}
         </button>
 
-        <div className="max-w-xl mx-auto">
-          <Header
-            isLogin={data.isLogin}
-            avatar_url={data.avatar_url}
-            html_url={data.html_url}
-            isDark={isDark}
-          />
+        <Header
+          isLogin={data.isLogin}
+          avatar_url={data.avatar_url}
+          html_url={data.html_url}
+          isDark={isDark}
+        />
 
+        <div className="max-w-xl mx-auto">
           <main className="max-w-2xl mx-auto px-4">
             {/* Post Detail Card */}
             <div

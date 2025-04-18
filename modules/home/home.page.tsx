@@ -50,6 +50,7 @@ export default function Home({ data }: PageProps<{
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Detect mobile devices
   useEffect(() => {
@@ -279,8 +280,7 @@ export default function Home({ data }: PageProps<{
       if (response.ok) {
         const newPost = await response.json();
         setPosts([newPost, ...posts]);
-        setPostContent("");
-        setImageUrl(null);
+        resetForm(); // Use this instead of just clearing postContent
         setSubmitSuccess(true);
 
         // Reset success message after 3 seconds
@@ -299,6 +299,24 @@ export default function Home({ data }: PageProps<{
 
   const handleChange = (e: { currentTarget: { value: string } }) => {
     setPostContent(e.currentTarget.value);
+    setIsEditing(!!e.currentTarget.value.trim());
+  };
+
+  const handleTextareaFocus = () => {
+    setIsEditing(true);
+  };
+
+  const handleTextareaBlur = () => {
+    // Only set editing to false if there's no content
+    if (!postContent.trim()) {
+      setIsEditing(false);
+    }
+  };
+
+  const resetForm = () => {
+    setPostContent("");
+    setImageUrl(null);
+    setIsEditing(false);
   };
 
   const handleDeletePost = async (postId: string) => {
@@ -363,8 +381,8 @@ export default function Home({ data }: PageProps<{
       : "text-purple-600 hover:text-purple-500",
     cardBorder: isDark ? "border-gray-700" : "border-gray-200",
     cardGlow: isDark
-      ? "shadow-lg shadow-purple-900/30"
-      : "shadow-lg shadow-purple-200/30",
+      ? "shadow-2xl shadow-purple-500/30"
+      : "shadow-lg shadow-gray-200/30",
   };
 
   return (
@@ -397,23 +415,24 @@ export default function Home({ data }: PageProps<{
           {isDark ? "☀️" : "🌙"}
         </button>
 
+        <Header
+          isLogin={data.isLogin}
+          avatar_url={data.avatar_url}
+          html_url={data.html_url}
+          isDark={isDark}
+          message={data.message}
+        />
         <div className="max-w-xl mx-auto">
-          <Header
-            isLogin={data.isLogin}
-            avatar_url={data.avatar_url}
-            html_url={data.html_url}
-            isDark={isDark}
-            message={data.message}
-          />
-
           {/* Main Container */}
           <main
             className={`max-w-2xl mx-auto px-3 sm:px-4 relative`}
           >
             <div
-              className={`${themeStyles.cardBg} rounded-lg py-3 px-4 sm:px-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg`}
+              className={`${themeStyles.cardBg} rounded-lg py-3 px-4 sm:px-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
             >
-              <form onSubmit={handleSubmit} className="">
+              <form
+                onSubmit={handleSubmit}
+              >
                 <div className="relative flex flex-col gap-y-2">
                   <div className="flex justify-between items-center">
                     <div className={`flex items-center ${themeStyles.text}`}>
@@ -443,12 +462,17 @@ export default function Home({ data }: PageProps<{
                   {showPreviewMode
                     ? (
                       <div
-                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} min-h-[120px] h-[180px] max-h-[400px] overflow-y-auto p-3
+                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
+                          ${
+                          isEditing
+                            ? "min-h-[300px] h-[400px]"
+                            : "min-h-[80px] h-[120px]"
+                        } max-h-[600px] overflow-y-auto p-3
                           ${
                           isDark
                             ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                             : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                        } scrollbar-thin scrollbar-track-transparent`}
+                        } scrollbar-thin scrollbar-track-transparent transition-all duration-300`}
                       >
                         {postContent
                           ? (
@@ -471,10 +495,17 @@ export default function Home({ data }: PageProps<{
                         placeholder="What's on your mind? (Markdown supported)"
                         value={postContent}
                         onInput={handleChange}
+                        onFocus={handleTextareaFocus}
+                        onBlur={handleTextareaBlur}
                         required
                         className={`w-full p-3 rounded-lg border ${themeStyles.input}
-                          resize-none min-h-[120px] h-[180px] max-h-[400px] focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                          scrollbar-thin scrollbar-track-transparent
+                          resize-none ${
+                          isEditing
+                            ? "min-h-[300px] h-[400px]"
+                            : "min-h-[80px] h-[120px]"
+                        } max-h-[600px] 
+                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                          scrollbar-thin scrollbar-track-transparent transition-all duration-300
                           ${
                           isDark
                             ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
@@ -567,182 +598,181 @@ export default function Home({ data }: PageProps<{
               </form>
             </div>
 
-            <div className="space-y-4 mb-8">
-              {posts.length > 0
-                ? (
-                  posts.map((post) => (
-                    <div
-                      key={post.id}
-                      className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${
-                        !isMobile ? "backdrop-blur-lg" : ""
-                      } ${
-                        !isMobile
-                          ? "transition-all duration-300 hover:scale-[1.01]"
-                          : ""
-                      }`}
-                    >
-                      {/* Modified Header Section */}
-                      <div className="flex items-center justify-between mb-3">
-                        {/* Left side: Avatar and Author */}
-                        <div className="flex items-center">
-                          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                            <img
-                              src={post.avatar}
-                              alt={post.author}
-                              className="w-full h-full rounded-full"
-                            />
+            {/* Posts section */}
+            {!isEditing && (
+              <div className="space-y-4 mb-8">
+                {posts.length > 0
+                  ? (
+                    posts.map((post) => (
+                      <div
+                        key={post.id}
+                        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${themeStyles.cardGlow}`}
+                      >
+                        {/* Modified Header Section */}
+                        <div className="flex items-center justify-between mb-3">
+                          {/* Left side: Avatar and Author */}
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                              <img
+                                src={post.avatar}
+                                alt={post.author}
+                                className="w-full h-full rounded-full"
+                              />
+                            </div>
+                            <div className="ml-3">
+                              <p className={`font-medium ${themeStyles.text}`}>
+                                {post.author}
+                              </p>
+                              <p className="text-gray-500 text-xs">
+                                {new Date(post.timestamp).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                          <div className="ml-3">
-                            <p className={`font-medium ${themeStyles.text}`}>
-                              {post.author}
-                            </p>
-                            <p className="text-gray-500 text-xs">
-                              {new Date(post.timestamp).toLocaleString()}
-                            </p>
-                          </div>
-                        </div>
 
-                        {/* Right side: Icon Button */}
-                        {data.isLogin && (
-                          <div className="relative">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setMenuOpenForPost(
-                                  menuOpenForPost === post.id ? null : post.id,
-                                );
-                              }}
-                              className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
-                                isDark
-                                  ? "text-gray-400 hover:text-gray-200"
-                                  : "text-gray-500 hover:text-gray-700"
-                              }`}
-                              aria-label="Post options"
-                            >
-                              <VDotsIcon />
-                            </button>
-
-                            {menuOpenForPost === post.id && (
-                              <div
-                                className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+                          {/* Right side: Icon Button */}
+                          {data.isLogin && (
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  setMenuOpenForPost(
+                                    menuOpenForPost === post.id
+                                      ? null
+                                      : post.id,
+                                  );
+                                }}
+                                className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
                                   isDark
-                                    ? "bg-gray-800 border border-gray-700"
-                                    : "bg-white border border-gray-200"
+                                    ? "text-gray-400 hover:text-gray-200"
+                                    : "text-gray-500 hover:text-gray-700"
                                 }`}
-                                onClick={(e) => e.stopPropagation()}
+                                aria-label="Post options"
                               >
-                                {/* Share option for all users */}
-                                <button
-                                  onClick={() => handleSharePost(post.id)}
-                                  className={`flex items-center w-full gap-x-2 px-3 py-2 text-sm ${
-                                    isDark
-                                      ? "text-blue-400 hover:bg-gray-700"
-                                      : "text-blue-600 hover:bg-gray-100"
-                                  } rounded-md`}
-                                >
-                                  <ShareIcon />
-                                  Share post
-                                </button>
+                                <VDotsIcon />
+                              </button>
 
-                                {/* Delete option only for post author */}
-                                {data.author === post.author && (
+                              {menuOpenForPost === post.id && (
+                                <div
+                                  className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+                                    isDark
+                                      ? "bg-gray-800 border border-gray-700"
+                                      : "bg-white border border-gray-200"
+                                  }`}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {/* Share option for all users */}
                                   <button
-                                    onClick={() => handleDeletePost(post.id)}
+                                    onClick={() => handleSharePost(post.id)}
                                     className={`flex items-center w-full gap-x-2 px-3 py-2 text-sm ${
                                       isDark
-                                        ? "text-red-400 hover:bg-gray-700"
-                                        : "text-red-600 hover:bg-gray-100"
+                                        ? "text-blue-400 hover:bg-gray-700"
+                                        : "text-blue-600 hover:bg-gray-100"
                                     } rounded-md`}
                                   >
-                                    <DeleteIcon />
-                                    Delete post
+                                    <ShareIcon />
+                                    Share post
                                   </button>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {/* End Modified Header Section */}
 
-                      <a href={`/post/${post.id}`} className="block">
-                        {post.image && (
-                          <div className="mb-3">
-                            <img
-                              src={post.image}
-                              alt="Post attachment"
-                              className="w-full rounded-lg object-cover"
-                            />
-                          </div>
-                        )}
-                        <div
-                          className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert ${
-                            post.content.length > 1000
-                              ? "relative overflow-hidden max-h-[300px]"
-                              : ""
-                          }`}
-                          dangerouslySetInnerHTML={renderMarkdown(
-                            post.content.length > 280
-                              ? post.content.substring(0, 280) + "..."
-                              : post.content,
-                          )}
-                        />
-                        {post.content.length > 280 && (
-                          <div
-                            className={`text-right mt-1 mb-6 ${themeStyles.link} text-sm`}
-                          >
-                            Read more...
-                          </div>
-                        )}
-                      </a>
-
-                      <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
-                        <a
-                          href={`/post/${post.id}`}
-                          className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
-                            themeStyles.link.split(" ")[0]
-                          }`}
-                        >
-                          <CommentIcon />
-                          <span>
-                            {post.commentCount
-                              ? (
-                                <>
-                                  {post.commentCount} {post.commentCount === 1
-                                    ? "comment"
-                                    : "comments"}
-                                </>
-                              )
-                              : (
-                                "Add comment"
+                                  {/* Delete option only for post author */}
+                                  {data.author === post.author && (
+                                    <button
+                                      onClick={() => handleDeletePost(post.id)}
+                                      className={`flex items-center w-full gap-x-2 px-3 py-2 text-sm ${
+                                        isDark
+                                          ? "text-red-400 hover:bg-gray-700"
+                                          : "text-red-600 hover:bg-gray-100"
+                                      } rounded-md`}
+                                    >
+                                      <DeleteIcon />
+                                      Delete post
+                                    </button>
+                                  )}
+                                </div>
                               )}
-                          </span>
+                            </div>
+                          )}
+                        </div>
+                        {/* End Modified Header Section */}
+
+                        <a href={`/post/${post.id}`} className="block">
+                          {post.image && (
+                            <div className="mb-3">
+                              <img
+                                src={post.image}
+                                alt="Post attachment"
+                                className="w-full rounded-lg object-cover"
+                              />
+                            </div>
+                          )}
+                          <div
+                            className={`${themeStyles.text} whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert ${
+                              post.content.length > 1000
+                                ? "relative overflow-hidden max-h-[300px]"
+                                : ""
+                            }`}
+                            dangerouslySetInnerHTML={renderMarkdown(
+                              post.content.length > 280
+                                ? post.content.substring(0, 280) + "..."
+                                : post.content,
+                            )}
+                          />
+                          {post.content.length > 280 && (
+                            <div
+                              className={`text-right mt-1 mb-6 ${themeStyles.link} text-sm`}
+                            >
+                              Read more...
+                            </div>
+                          )}
                         </a>
 
-                        <div
-                          className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
-                        >
-                          <span className="flex items-center gap-x-2">
-                            <ViewIcon />
-                            {post.views || post.viewCount || 0} views
-                          </span>
+                        <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
+                          <a
+                            href={`/post/${post.id}`}
+                            className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
+                              themeStyles.link.split(" ")[0]
+                            }`}
+                          >
+                            <CommentIcon />
+                            <span>
+                              {post.commentCount
+                                ? (
+                                  <>
+                                    {post.commentCount} {post.commentCount === 1
+                                      ? "comment"
+                                      : "comments"}
+                                  </>
+                                )
+                                : (
+                                  "Add comment"
+                                )}
+                            </span>
+                          </a>
+
+                          <div
+                            className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
+                          >
+                            <span className="flex items-center gap-x-2">
+                              <ViewIcon />
+                              {post.views || post.viewCount || 0} views
+                            </span>
+                          </div>
                         </div>
                       </div>
+                    ))
+                  )
+                  : (
+                    <div
+                      className={`${themeStyles.cardBg} rounded-lg p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
+                        !isMobile ? "backdrop-blur-lg" : ""
+                      }`}
+                    >
+                      <p>No posts yet. Be the first to post something!</p>
                     </div>
-                  ))
-                )
-                : (
-                  <div
-                    className={`${themeStyles.cardBg} rounded-lg p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
-                      !isMobile ? "backdrop-blur-lg" : ""
-                    }`}
-                  >
-                    <p>No posts yet. Be the first to post something!</p>
-                  </div>
-                )}
-            </div>
+                  )}
+              </div>
+            )}
           </main>
         </div>
       </div>
