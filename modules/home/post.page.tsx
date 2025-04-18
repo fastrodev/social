@@ -358,98 +358,64 @@ export default function Post({ data }: PageProps<{
   const handleRemoveImage = async () => {
     if (!postImage) return;
 
+    // Extract filename from the public URL
+    const urlParts = postImage.split("/");
+    const filename = urlParts.slice(4).join("/"); // This gets just "uploads/filename.jpg"
+
+    if (!filename) {
+      console.error("Could not extract filename from URL:", postImage);
+      setPostImage(undefined); // Clear preview even if we can't delete
+      return;
+    }
+
+    // Immediately update the UI
+    setPostImage(undefined);
+
     try {
-      // Extract just the filename without the bucket part
-      // From URLs like: https://storage.googleapis.com/replix-394315-file/uploads/1744857113334-zidt6i2nx4.jpeg
-      let filename;
-      let bucketName;
+      console.log("Requesting DELETE signed URL for filename:", filename);
 
-      // Standard GCS public URL pattern
-      if (postImage.includes("storage.googleapis.com")) {
-        // Parse the URL properly to extract bucket and path separately
-        const urlParts = postImage.split("/");
-        const bucketIndex = urlParts.findIndex((part) =>
-          part === "storage.googleapis.com"
-        );
+      // Get the DELETE signed URL from the backend
+      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filename }), // Don't send bucketName, it's handled by the backend
+      });
 
-        if (bucketIndex !== -1 && urlParts.length > bucketIndex + 2) {
-          // Get the bucket name and path separately
-          bucketName = urlParts[bucketIndex + 1];
-          filename = urlParts.slice(bucketIndex + 2).join("/");
-          console.log("Extracted bucket:", bucketName);
-          console.log("Extracted path:", filename);
-        }
-      } else {
-        // Fallback for other URL formats - just take the last part
-        const urlParts = postImage.split("/");
-        filename = urlParts[urlParts.length - 1];
-        console.log("Fallback filename extraction:", filename);
-      }
-
-      if (!filename) {
-        console.error("Could not extract filename from URL:", postImage);
-        // Just update UI without trying to delete from storage
-        setPostImage(undefined);
+      if (!deleteUrlResponse.ok) {
+        const errorData = await deleteUrlResponse.text();
+        console.error("Failed to get DELETE signed URL:", errorData);
         return;
       }
 
-      // Immediately update the UI by removing the image reference
-      setPostImage(undefined);
+      const data = await deleteUrlResponse.json();
+      if (!data.signedUrl) {
+        throw new Error("No DELETE signed URL returned from server");
+      }
 
-      try {
-        console.log("Requesting delete signed URL for:", filename);
+      const deleteSignedUrl = data.signedUrl;
+      console.log("DELETE Signed URL received");
 
-        // Get the DELETE signed URL from the backend
-        const deleteUrlResponse = await fetch("/api/delete-signed-url", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            filename,
-            bucketName, // Pass the bucket name separately
-          }),
-        });
+      // Execute the DELETE request
+      const deleteResponse = await fetch(deleteSignedUrl, {
+        method: "DELETE",
+      });
 
-        if (!deleteUrlResponse.ok) {
-          const errorText = await deleteUrlResponse.text();
-          console.error("Failed to get DELETE signed URL:", errorText);
-          return;
-        }
+      if (!deleteResponse.ok) {
+        const deleteErrorText = await deleteResponse.text();
+        console.error("Error executing DELETE signed URL:", deleteErrorText);
 
-        const responseData = await deleteUrlResponse.json();
-        if (!responseData.signedUrl) {
-          console.error("No signed URL returned from server");
-          return;
-        }
-
-        const deleteSignedUrl = responseData.signedUrl;
-        console.log("DELETE Signed URL received");
-
-        // Execute the DELETE request
-        const deleteResponse = await fetch(deleteSignedUrl, {
-          method: "DELETE",
-        });
-
-        if (!deleteResponse.ok) {
-          const deleteErrorText = await deleteResponse.text();
-          console.error("Error executing DELETE signed URL:", deleteErrorText);
-
-          // Don't show error to user if it's just "NoSuchKey"
-          if (deleteErrorText.includes("NoSuchKey")) {
-            console.log("File has already been deleted or doesn't exist");
-          } else {
-            console.error("Unknown error during deletion:", deleteErrorText);
-          }
+        if (deleteErrorText.includes("NoSuchKey")) {
+          console.log("File has already been deleted or doesn't exist");
         } else {
-          console.log("File deleted successfully using signed URL");
+          console.error("Unknown error during deletion:", deleteErrorText);
         }
-      } catch (deleteError) {
-        console.error("Error during delete operation:", deleteError);
+      } else {
+        console.log("File deleted successfully using signed URL");
       }
     } catch (error) {
-      console.error("Error during the delete process:", error);
-      // The UI is already updated to remove the image, so no need to show an error
+      console.error("Error during delete operation:", error);
     }
   };
 
