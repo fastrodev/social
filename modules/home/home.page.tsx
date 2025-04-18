@@ -570,7 +570,7 @@ export default function Home({ data }: PageProps<{
                   </div>
 
                   {imageUrl && (
-                    <div className="mt-3 relative">
+                    <div className="relative">
                       <img
                         src={imageUrl}
                         alt="Uploaded preview"
