@@ -1,5 +1,5 @@
 // deno-lint-ignore-file
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import Header from "./header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
@@ -53,6 +53,8 @@ export default function Post({ data }: PageProps<{
   const [isEditing, setIsEditing] = useState(false);
   const [editPostContent, setEditPostContent] = useState("");
   const [isMobile, setIsMobile] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Detect mobile devices
   useEffect(() => {
@@ -360,6 +362,16 @@ export default function Post({ data }: PageProps<{
         return;
       }
 
+      // Immediately update the UI by removing the image reference
+      // This provides immediate feedback to the user
+      data.post = {
+        ...data.post,
+        image: undefined,
+      };
+
+      // Force component to re-render with updated data
+      setIsEditing(isEditing);
+
       console.log("Requesting DELETE signed URL for filename:", filename);
 
       // 1. Get the DELETE signed URL from the backend
@@ -378,12 +390,12 @@ export default function Post({ data }: PageProps<{
         return;
       }
 
-      const data = await deleteUrlResponse.json();
-      if (!data.signedUrl) {
+      const responseData = await deleteUrlResponse.json();
+      if (!responseData.signedUrl) {
         throw new Error("No DELETE signed URL returned from server");
       }
 
-      const deleteSignedUrl = data.signedUrl;
+      const deleteSignedUrl = responseData.signedUrl;
       console.log("DELETE Signed URL received.");
 
       // 2. Use the signed URL to execute the DELETE request
@@ -403,13 +415,6 @@ export default function Post({ data }: PageProps<{
         console.log("File deleted successfully using signed URL.");
       }
 
-      // Update the state to remove the image reference
-      // We'll create a temporary object without the image property and update state
-      const updatedPostData = {
-        ...data.post,
-        image: null,
-      };
-
       // Save the updated post with image removed
       const updateResponse = await fetch(`/api/post/${post.id}`, {
         method: "PUT",
@@ -424,13 +429,7 @@ export default function Post({ data }: PageProps<{
         }),
       });
 
-      if (updateResponse.ok) {
-        // Update the post in the UI
-        data.post = {
-          ...data.post,
-          image: null,
-        };
-      } else {
+      if (!updateResponse.ok) {
         console.error("Failed to update post after removing image");
         alert(
           "Image removed from storage but post not updated. Please try again.",
@@ -439,6 +438,28 @@ export default function Post({ data }: PageProps<{
     } catch (error) {
       console.error("Error during the delete process:", error);
       alert("An error occurred while removing the image.");
+
+      // If an error occurs, restore the image reference
+      data.post = {
+        ...data.post,
+        image: post.image,
+      };
+      // Force component to re-render with restored data
+      setIsEditing(isEditing);
+    }
+  };
+
+  const handleFileSelect = (e: JSX.TargetedEvent<HTMLInputElement, Event>) => {
+    const files = e.currentTarget.files;
+    if (files && files.length > 0) {
+      setSelectedFile(files[0]);
+      // You might want to handle the file upload here or on save
+    }
+  };
+
+  const handleAttachClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -618,25 +639,60 @@ export default function Post({ data }: PageProps<{
                           : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
                       }`}
                     />
-                    <div className="flex justify-end mt-2 mb-3 space-x-2">
-                      <button
-                        type="button"
-                        onClick={handleCancelEdit}
-                        className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                          isDark
-                            ? "bg-gray-700 text-white hover:bg-gray-600"
-                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                        }`}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSaveEdit}
-                        className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors ${themeStyles.button}`}
-                      >
-                        Save
-                      </button>
+                    <div className="flex justify-between mt-2 mb-3">
+                      <div>
+                        <button
+                          type="button"
+                          onClick={handleAttachClick}
+                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+                            isDark
+                              ? "bg-gray-700 text-white hover:bg-gray-600"
+                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                          </svg>
+                          Attach
+                        </button>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileSelect}
+                          accept="image/*"
+                          className="hidden"
+                        />
+                      </div>
+                      <div className="space-x-2">
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            isDark
+                              ? "bg-gray-700 text-white hover:bg-gray-600"
+                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSaveEdit}
+                          className={`px-4 py-1.5 rounded-lg text-white text-sm font-medium transition-colors ${themeStyles.button}`}
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )
