@@ -489,12 +489,16 @@ export default function Home({ data }: PageProps<{
                     ? (
                       <div
                         className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
-                          ${
+                        ${
                           isEditing
-                            ? "min-h-[300px] h-[400px]"
+                            ? isMobile
+                              ? "min-h-[150px] h-[200px]"
+                              : "min-h-[300px] h-[400px]"
+                            : isMobile
+                            ? "min-h-[60px] h-[100px]"
                             : "min-h-[80px] h-[120px]"
                         } max-h-[600px] overflow-y-auto p-3
-                          ${
+                        ${
                           isDark
                             ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                             : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
@@ -525,14 +529,18 @@ export default function Home({ data }: PageProps<{
                         onBlur={handleTextareaBlur}
                         required
                         className={`w-full p-3 rounded-lg border ${themeStyles.input}
-                          resize-none ${
+                        resize-none ${
                           isEditing
-                            ? "min-h-[300px] h-[400px]"
+                            ? isMobile
+                              ? "min-h-[150px] h-[200px]"
+                              : "min-h-[300px] h-[400px]"
+                            : isMobile
+                            ? "min-h-[60px] h-[100px]"
                             : "min-h-[80px] h-[120px]"
                         } max-h-[600px] 
-                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                          scrollbar-thin scrollbar-track-transparent transition-all duration-300
-                          ${
+                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
+                        ${
                           isDark
                             ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                             : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
