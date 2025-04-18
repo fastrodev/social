@@ -13,6 +13,7 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx"; // Import the Vdots
 import { ShareIcon } from "@app/components/icons/share.tsx"; // Import the ShareIcon
 import { marked } from "marked";
 import { EditIcon } from "@app/components/icons/edit.tsx";
+import { XIcon } from "@app/components/icons/x.tsx";
 
 interface Post {
   id: string;
@@ -441,6 +442,23 @@ export default function Home({ data }: PageProps<{
               <form
                 onSubmit={handleSubmit}
               >
+                {imageUrl && (
+                  <div className="mt-3 mb-3 relative">
+                    <img
+                      src={"https://storage.googleapis.com/replix-394315-file/uploads/1744885981964-1uprfuywk9uj.jpeg"}
+                      alt="Post attachment"
+                      className="w-full h-[330px] rounded-lg object-cover"
+                    />
+                    <button
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 hover:bg-gray-700 text-white w-6 h-6 flex items-center justify-center transition-colors"
+                      aria-label="Remove image"
+                    >
+                      <XIcon />
+                    </button>
+                  </div>
+                )}
+
                 <div className="relative flex flex-col gap-y-2">
                   <div className="flex justify-between items-center">
                     <div className={`flex items-center ${themeStyles.text}`}>
@@ -568,23 +586,6 @@ export default function Home({ data }: PageProps<{
                       </button>
                     </div>
                   </div>
-
-                  {imageUrl && (
-                    <div className="relative">
-                      <img
-                        src={imageUrl}
-                        alt="Uploaded preview"
-                        className="max-h-60 w-auto rounded-lg object-contain bg-gray-100/10"
-                      />
-                      <button
-                        onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 bg-gray-800/70 hover:bg-gray-700 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center border border-gray-600/50"
-                        aria-label="Remove image"
-                      >
-                        <span className="text-sm">✕</span>
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 {submitSuccess || isSubmitting
