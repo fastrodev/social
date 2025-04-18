@@ -361,7 +361,6 @@ export default function Post({ data }: PageProps<{
     try {
       // Extract filename from the public URL more reliably
       // Example URL format: https://storage.googleapis.com/replix-394315-file/uploads/filename.jpg
-      // https://storage.googleapis.com/replix-394315-file/uploads/1744857113334-zidt6i2nx4.jpeg
       const urlParts = postImage.split("/");
       const bucketIndex = urlParts.findIndex((part) =>
         part === "storage.googleapis.com"
@@ -370,12 +369,12 @@ export default function Post({ data }: PageProps<{
       // If we can't find the proper URL structure, use a simpler approach
       let filename;
       if (bucketIndex !== -1 && urlParts.length > bucketIndex + 2) {
-        // Get the bucket name and the rest of the path
-        const bucketName = urlParts[bucketIndex + 1];
+        // Get the path after the bucket name (which is what GCS needs)
+        // Don't include the bucket name in the path
         filename = urlParts.slice(bucketIndex + 2).join("/");
       } else {
         // Fallback to the original approach
-        filename = urlParts.slice(4).join("/");
+        filename = urlParts.slice(-2).join("/"); // Just get the last 2 parts of the path
       }
 
       if (!filename) {
@@ -423,15 +422,19 @@ export default function Post({ data }: PageProps<{
       if (!deleteResponse.ok) {
         const deleteErrorText = await deleteResponse.text();
         console.error("Error executing DELETE signed URL:", deleteErrorText);
-        // Don't alert the user as the image is already removed from the UI
-        console.log("File might have already been deleted or moved");
+
+        // Check if it's just a "not found" error, which we can ignore
+        if (deleteErrorText.includes("NoSuchKey")) {
+          console.log("File has already been deleted or doesn't exist");
+        } else {
+          console.error("Unknown error during deletion:", deleteErrorText);
+        }
       } else {
         console.log("File deleted successfully using signed URL.");
       }
     } catch (error) {
       console.error("Error during the delete process:", error);
-      // Don't show an error to the user unless we want to revert the UI
-      // since we've already removed the image from the UI
+      // The UI is already updated to remove the image, so no need to show an error
     }
   };
 
