@@ -262,7 +262,7 @@ export default function Post({ data }: PageProps<{
         />
 
         <div className="max-w-xl mx-auto">
-          <main className="max-w-2xl mx-auto px-4">
+          <main className="max-w-2xl mx-auto px-0 sm:px-4">
             {/* Post Detail Card */}
             <div
               className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4 relative`}

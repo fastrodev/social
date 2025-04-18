@@ -58,12 +58,6 @@ export default function Home({ data }: PageProps<{
       setIsMobile(window.innerWidth < 768);
     };
 
-    // Load theme preference from session storage
-    const savedTheme = sessionStorage.getItem("theme");
-    if (savedTheme) {
-      setIsDark(savedTheme === "dark");
-    }
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -367,10 +361,16 @@ export default function Home({ data }: PageProps<{
   };
 
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    // Save theme preference to session storage
-    sessionStorage.setItem("theme", newTheme ? "dark" : "light");
+    try {
+      const newTheme = !isDark;
+      setIsDark(newTheme);
+      // Save theme preference to session storage
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("theme", newTheme ? "dark" : "light");
+      }
+    } catch (e) {
+      console.error("Error saving theme to sessionStorage:", e);
+    }
   };
 
   const themeStyles = {
@@ -433,7 +433,7 @@ export default function Home({ data }: PageProps<{
         <div className="max-w-xl mx-auto">
           {/* Main Container */}
           <main
-            className={`max-w-2xl mx-auto px-3 sm:px-4 relative`}
+            className={`max-w-2xl mx-auto px-0 sm:px-4 relative`}
           >
             <div
               className={`${themeStyles.cardBg} rounded-lg py-3 px-4 sm:px-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
@@ -578,10 +578,10 @@ export default function Home({ data }: PageProps<{
                       />
                       <button
                         onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 bg-gray-800/70 hover:bg-gray-700 text-white rounded-full p-1"
+                        className="absolute top-2 right-2 bg-gray-800/70 hover:bg-gray-700 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center border border-gray-600/50"
                         aria-label="Remove image"
                       >
-                        ✕
+                        <span className="text-sm">✕</span>
                       </button>
                     </div>
                   )}
