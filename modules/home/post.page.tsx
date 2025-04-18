@@ -359,19 +359,36 @@ export default function Post({ data }: PageProps<{
     if (!postImage) return;
 
     try {
-      // Extract filename from the public URL
+      // Extract filename from the public URL more reliably
+      // Example URL format: https://storage.googleapis.com/replix-394315-file/uploads/filename.jpg
+      // https://storage.googleapis.com/replix-394315-file/uploads/1744857113334-zidt6i2nx4.jpeg
       const urlParts = postImage.split("/");
-      const filename = urlParts.slice(4).join("/");
+      const bucketIndex = urlParts.findIndex((part) =>
+        part === "storage.googleapis.com"
+      );
+
+      // If we can't find the proper URL structure, use a simpler approach
+      let filename;
+      if (bucketIndex !== -1 && urlParts.length > bucketIndex + 2) {
+        // Get the bucket name and the rest of the path
+        const bucketName = urlParts[bucketIndex + 1];
+        filename = urlParts.slice(bucketIndex + 2).join("/");
+      } else {
+        // Fallback to the original approach
+        filename = urlParts.slice(4).join("/");
+      }
 
       if (!filename) {
         console.error("Could not extract filename from URL:", postImage);
+        // Just update UI without trying to delete from storage
+        setPostImage(undefined);
         return;
       }
 
+      console.log("Extracted filename for deletion:", filename);
+
       // Immediately update the UI by removing the image reference
       setPostImage(undefined);
-
-      console.log("Requesting DELETE signed URL for filename:", filename);
 
       // 1. Get the DELETE signed URL from the backend
       const deleteUrlResponse = await fetch("/api/delete-signed-url", {
@@ -385,7 +402,7 @@ export default function Post({ data }: PageProps<{
       if (!deleteUrlResponse.ok) {
         const errorData = await deleteUrlResponse.text();
         console.error("Failed to get DELETE signed URL:", errorData);
-        alert("Could not prepare file deletion request. Please try again.");
+        // Don't show alert to user, just log it - the UI is already updated
         return;
       }
 
@@ -401,23 +418,20 @@ export default function Post({ data }: PageProps<{
       console.log("Executing DELETE request using signed URL...");
       const deleteResponse = await fetch(deleteSignedUrl, {
         method: "DELETE",
-        // No body or Content-Type needed for standard GCS DELETE via signed URL
       });
 
       if (!deleteResponse.ok) {
         const deleteErrorText = await deleteResponse.text();
         console.error("Error executing DELETE signed URL:", deleteErrorText);
-        alert(
-          "Failed to delete the file from storage. It might have already been deleted.",
-        );
+        // Don't alert the user as the image is already removed from the UI
+        console.log("File might have already been deleted or moved");
       } else {
         console.log("File deleted successfully using signed URL.");
       }
     } catch (error) {
       console.error("Error during the delete process:", error);
-      alert("An error occurred while removing the image.");
-      // If an error occurs, restore the image reference
-      setPostImage(data.post.image);
+      // Don't show an error to the user unless we want to revert the UI
+      // since we've already removed the image from the UI
     }
   };
 
