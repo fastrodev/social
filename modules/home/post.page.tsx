@@ -164,13 +164,14 @@ export default function Post({ data }: PageProps<{
     setShowPostMenu(false); // Close the menu
   };
 
-  // Handle saving edited post
+  // Fix the handleSaveEdit function to better handle mobile devices
   const handleSaveEdit = async () => {
     if (!editPostContent.trim()) {
       return;
     }
 
     try {
+      setIsSubmitting(true);
       const response = await fetch(`/api/post/${data.post.id}`, {
         method: "PUT",
         headers: {
@@ -178,20 +179,30 @@ export default function Post({ data }: PageProps<{
         },
         body: JSON.stringify({
           content: editPostContent,
-          isMarkdown: true,
+          // Preserve existing values
+          author: data.post.author,
+          avatar: data.post.avatar,
           image: data.post.image,
         }),
       });
 
       if (response.ok) {
-        // Update the post in the UI
-        data.post.content = editPostContent;
+        const updatedPost = await response.json();
+        // Update the post properly in the UI by updating the data object
+        data.post = {
+          ...data.post,
+          content: updatedPost.content || editPostContent,
+        };
         setIsEditing(false);
       } else {
         console.error("Failed to update post");
+        alert("Failed to update post. Please try again.");
       }
     } catch (error) {
       console.error("Error updating post:", error);
+      alert("An error occurred while updating the post.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -369,7 +380,7 @@ export default function Post({ data }: PageProps<{
           <main className="max-w-2xl mx-auto px-0 sm:px-4">
             {/* Post Detail Card */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-4 relative`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
             >
               {/* Post author info and options */}
               <div className="flex items-center justify-between mb-6">
@@ -461,11 +472,12 @@ export default function Post({ data }: PageProps<{
                       value={editPostContent}
                       onChange={(e) =>
                         setEditPostContent(e.currentTarget.value)}
+                      onInput={(e) => setEditPostContent(e.currentTarget.value)}
                       rows={6}
                       className={`w-full p-3 rounded-lg border ${themeStyles.input}
-                        resize-none max-h-[600px] 
+                        resize-none min-h-[150px] max-h-[600px] 
                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
+                        transition-all duration-300
                         ${
                         isDark
                           ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
