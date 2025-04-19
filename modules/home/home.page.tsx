@@ -538,21 +538,21 @@ export default function Home({ data }: PageProps<{
                     )
                     : (
                       <textarea
-                        placeholder="What's on your mind? (Markdown supported)"
+                        placeholder="What's on your mind?"
                         value={postContent}
                         onInput={handleChange}
                         onFocus={handleTextareaFocus}
                         onBlur={handleTextareaBlur}
                         required
-                        className={`w-full p-3 rounded-lg border ${themeStyles.input}
+                        className={`w-full p-1 sm:p-3 rounded-lg border ${themeStyles.input}
                         resize-none ${
                           isEditing
                             ? isMobile
                               ? "min-h-[150px] h-[200px]"
                               : "min-h-[300px] h-[400px]"
                             : isMobile
-                            ? "min-h-[40px] h-[40px]"
-                            : "min-h-[50px] h-[50px]"
+                            ? "min-h-[45px] h-[45px]"
+                            : "min-h-[55px] h-[55px]"
                         } max-h-[600px] 
                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
                         scrollbar-thin scrollbar-track-transparent transition-all duration-300
@@ -604,25 +604,23 @@ export default function Home({ data }: PageProps<{
                           className="hidden"
                         />
 
-                        {(postContent.trim() || imageUrl) && (
-                          <button
-                            type="button"
-                            onClick={resetForm}
-                            className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                              isDark
-                                ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
-                                : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
-                            } border ${
-                              isDark ? "border-gray-700" : "border-gray-300"
-                            } transition-colors`}
-                            aria-label="Cancel post"
-                          >
-                            <CancelIcon />
-                            <span className="text-sm font-medium">
-                              Cancel
-                            </span>
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                            isDark
+                              ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
+                              : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
+                          } border ${
+                            isDark ? "border-gray-700" : "border-gray-300"
+                          } transition-colors`}
+                          aria-label="Cancel post"
+                        >
+                          <CancelIcon />
+                          <span className="text-sm font-medium">
+                            Cancel
+                          </span>
+                        </button>
 
                         <button
                           type="submit"
