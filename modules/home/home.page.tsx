@@ -544,7 +544,7 @@ export default function Home({ data }: PageProps<{
                         onFocus={handleTextareaFocus}
                         onBlur={handleTextareaBlur}
                         required
-                        className={`w-full p-1 sm:p-3 rounded-lg border ${themeStyles.input}
+                        className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
                         resize-none ${
                           isEditing
                             ? isMobile
@@ -583,13 +583,17 @@ export default function Home({ data }: PageProps<{
                             ? (
                               <>
                                 <span className="animate-pulse">⏳</span>
-                                <span className="text-sm">Uploading...</span>
+                                <span className="text-sm hidden sm:inline">
+                                  Uploading...
+                                </span>
                               </>
                             )
                             : (
                               <>
                                 <ClipIcon />
-                                <span className="text-sm">Attachment</span>
+                                <span className="text-sm hidden sm:inline">
+                                  Attachment
+                                </span>
                               </>
                             )}
                         </button>
