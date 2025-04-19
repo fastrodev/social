@@ -15,6 +15,7 @@ import { marked } from "marked";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
+import { is } from "@app/node_modules/.deno/unist-util-is@5.2.1/node_modules/unist-util-is/index.d.ts";
 
 interface Post {
   id: string;
@@ -435,10 +436,10 @@ export default function Home({ data }: PageProps<{
         <div className="max-w-xl mx-auto">
           {/* Main Container */}
           <main
-            className={`max-w-2xl mx-auto px-0 sm:px-4 relative`}
+            className={`max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6`}
           >
             <div
-              className={`${themeStyles.cardBg} rounded-lg py-3 px-4 sm:px-6 mb-4 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
+              className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
             >
               <form
                 onSubmit={handleSubmit}
@@ -461,42 +462,44 @@ export default function Home({ data }: PageProps<{
                 )}
 
                 <div className="relative flex flex-col gap-y-3">
-                  <div className="flex justify-between items-center">
-                    <div className={`flex items-center ${themeStyles.text}`}>
-                      <button
-                        type="button"
-                        onClick={() => setShowPreviewMode(!showPreviewMode)}
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
-                            : "text-gray-700 hover:bg-gray-200/30"
-                        }`}
-                      >
-                        {showPreviewMode
-                          ? (
-                            <>
-                              <EditIcon />
-                              <span className="text-sm">Edit</span>
-                            </>
-                          )
-                          : (
-                            <>
-                              <ViewIcon />
-                              <span className="text-sm">Preview</span>
-                            </>
-                          )}
-                      </button>
-                    </div>
+                  {isEditing && (
+                    <div className="flex justify-between items-center">
+                      <div className={`flex items-center ${themeStyles.text}`}>
+                        <button
+                          type="button"
+                          onClick={() => setShowPreviewMode(!showPreviewMode)}
+                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                            isDark
+                              ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
+                              : "text-gray-700 hover:bg-gray-200/30"
+                          }`}
+                        >
+                          {showPreviewMode
+                            ? (
+                              <>
+                                <EditIcon />
+                                <span className="text-sm">Edit</span>
+                              </>
+                            )
+                            : (
+                              <>
+                                <ViewIcon />
+                                <span className="text-sm">Preview</span>
+                              </>
+                            )}
+                        </button>
+                      </div>
 
-                    <a
-                      href="https://www.markdownguide.org/cheat-sheet/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`text-xs ${themeStyles.link}`}
-                    >
-                      Markdown Help
-                    </a>
-                  </div>
+                      <a
+                        href="https://www.markdownguide.org/cheat-sheet/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-xs ${themeStyles.link}`}
+                      >
+                        Markdown Help
+                      </a>
+                    </div>
+                  )}
 
                   {showPreviewMode
                     ? (
@@ -548,8 +551,8 @@ export default function Home({ data }: PageProps<{
                               ? "min-h-[150px] h-[200px]"
                               : "min-h-[300px] h-[400px]"
                             : isMobile
-                            ? "min-h-[60px] h-[100px]"
-                            : "min-h-[80px] h-[120px]"
+                            ? "min-h-[40px] h-[40px]"
+                            : "min-h-[50px] h-[50px]"
                         } max-h-[600px] 
                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
                         scrollbar-thin scrollbar-track-transparent transition-all duration-300
@@ -562,96 +565,83 @@ export default function Home({ data }: PageProps<{
                     )}
 
                   {/* Fixed positioning with consistent margin */}
-                  <div className="h-10 flex justify-between items-center">
-                    <div>
-                      <button
-                        type="button"
-                        onClick={handleAttachmentClick}
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                        } transition-colors`}
-                        aria-label="Add attachment"
-                        disabled={uploadingImage || showPreviewMode}
-                      >
-                        {uploadingImage
-                          ? (
-                            <>
-                              <span className="animate-pulse">⏳</span>
-                              <span className="text-sm">Uploading...</span>
-                            </>
-                          )
-                          : (
-                            <>
-                              <ClipIcon />
-                              <span className="text-sm">Attachment</span>
-                            </>
-                          )}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileSelect}
-                        accept="image/jpeg,image/png,image/gif"
-                        className="hidden"
-                      />
-
-                      {(postContent.trim() || imageUrl) && (
+                  {isEditing && (
+                    <div className="h-10 flex justify-between items-center">
+                      <div>
                         <button
                           type="button"
-                          onClick={resetForm}
+                          onClick={handleAttachmentClick}
                           className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
                             isDark
-                              ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
-                              : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
-                          } border ${
-                            isDark ? "border-gray-700" : "border-gray-300"
+                              ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
+                              : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
                           } transition-colors`}
-                          aria-label="Cancel post"
+                          aria-label="Add attachment"
+                          disabled={uploadingImage || showPreviewMode}
                         >
-                          <CancelIcon />
-                          <span className="text-sm font-medium">Cancel</span>
+                          {uploadingImage
+                            ? (
+                              <>
+                                <span className="animate-pulse">⏳</span>
+                                <span className="text-sm">Uploading...</span>
+                              </>
+                            )
+                            : (
+                              <>
+                                <ClipIcon />
+                                <span className="text-sm">Attachment</span>
+                              </>
+                            )}
                         </button>
-                      )}
+                      </div>
 
-                      <button
-                        type="submit"
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "bg-purple-600 hover:bg-purple-500 text-white"
-                            : "bg-purple-500 hover:bg-purple-400 text-white"
-                        } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-                        disabled={isSubmitting || uploadingImage ||
-                          !postContent.trim()}
-                        aria-label="Submit post"
-                      >
-                        <SubmitIcon />
-                        <span className="text-sm font-medium">Create</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileSelect}
+                          accept="image/jpeg,image/png,image/gif"
+                          className="hidden"
+                        />
+
+                        {(postContent.trim() || imageUrl) && (
+                          <button
+                            type="button"
+                            onClick={resetForm}
+                            className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                              isDark
+                                ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
+                                : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
+                            } border ${
+                              isDark ? "border-gray-700" : "border-gray-300"
+                            } transition-colors`}
+                            aria-label="Cancel post"
+                          >
+                            <CancelIcon />
+                            <span className="text-sm font-medium">
+                              Cancel
+                            </span>
+                          </button>
+                        )}
+
+                        <button
+                          type="submit"
+                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                            isDark
+                              ? "bg-purple-600 hover:bg-purple-500 text-white"
+                              : "bg-purple-500 hover:bg-purple-400 text-white"
+                          } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                          disabled={isSubmitting || uploadingImage ||
+                            !postContent.trim()}
+                          aria-label="Submit post"
+                        >
+                          <SubmitIcon />
+                          <span className="text-sm font-medium">Create</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
-
-                {submitSuccess || isSubmitting
-                  ? (
-                    <div className="flex justify-start w-full">
-                      {submitSuccess && (
-                        <div className="bg-green-500/20 text-green-500 px-4 py-2 rounded-lg">
-                          Post created successfully!
-                        </div>
-                      )}
-                      {isSubmitting && (
-                        <div className="bg-blue-500/20 text-blue-500 px-4 py-2 rounded-lg">
-                          Posting...
-                        </div>
-                      )}
-                    </div>
-                  )
-                  : ""}
               </form>
             </div>
 
