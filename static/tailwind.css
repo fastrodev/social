@@ -50,9 +50,9 @@
 }
 
 .markdown-body p {
-    margin-bottom: 16px;
     margin-top: 0;
-    line-height: 1;
+    margin-bottom: 16px;
+    line-height: 1.5;
 }
 
 .markdown-body ul,
@@ -109,7 +109,7 @@
     margin: 1em 0;
     overflow: auto;
     font-size: 0.875em;
-    line-height: 1;
+    line-height: 1.5;
     font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
