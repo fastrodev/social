@@ -50,15 +50,11 @@
 }
 
 .markdown-body p {
-    margin-top: 0;
-    margin-bottom: 16px;
     line-height: 1.5;
 }
 
 .markdown-body ul,
 .markdown-body ol {
-    margin-top: 0;
-    margin-bottom: 16px;
     padding-left: 2em;
 }
 
