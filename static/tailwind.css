@@ -68,6 +68,18 @@ h6 {
     overflow-wrap: break-word;
 }
 
+/* Paragraph style */
+p {
+    margin-top: 0.7em;
+    margin-bottom: 0.7em;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 1em;
+    font-family: inherit;
+    color: inherit;
+}
+
 /* Adjusted medium screen sizes to be more compact */
 @media (min-width: 768px) {
     h1 {
@@ -107,6 +119,12 @@ h6 {
         font-size: 1em;
         margin-top: 0.5em;
         margin-bottom: 0.25em;
+    }
+
+    p {
+        margin-top: 0.7em;
+        margin-bottom: 0.7em;
+        line-height: 1.5;
     }
 }
 
