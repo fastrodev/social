@@ -11,6 +11,7 @@
     margin: 0 auto;
     line-height: 1.5;
     word-wrap: break-word;
+    padding-bottom: 1em;
 }
 
 .markdown-body h1,
@@ -19,22 +20,24 @@
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
+    margin-bottom: 1em;
     font-weight: 600;
     line-height: 1.25;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    font-style: bold;
 }
 
 .markdown-body h1 {
-    font-size: 2em;
+    font-size: 1.35em;
 }
 
 .markdown-body h2 {
-    font-size: 1.5em;
+    font-size: 1.15em;
 }
 
 .markdown-body h3 {
-    font-size: 1.25em;
+    font-size: 1em;
 }
 
 .markdown-body h4 {
@@ -51,6 +54,7 @@
 
 .markdown-body p {
     line-height: 1.5;
+    margin-bottom: 1em;
 }
 
 .markdown-body ul,
@@ -60,10 +64,14 @@
 
 .markdown-body ul {
     list-style-type: disc;
+    margin-bottom: 1em;
+    margin-top: 0;
 }
 
 .markdown-body ol {
     list-style-type: decimal;
+    margin-bottom: 1em;
+    margin-top: 0;
 }
 
 .markdown-body li {

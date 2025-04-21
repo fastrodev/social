@@ -523,7 +523,7 @@ export default function Home({ data }: PageProps<{
                         {postContent
                           ? (
                             <div
-                              className="markdown-body markdown-preview prose prose-sm dark:prose-invert max-w-none"
+                              className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
                               dangerouslySetInnerHTML={renderMarkdown(
                                 postContent,
                               )}
@@ -756,11 +756,7 @@ export default function Home({ data }: PageProps<{
                             </div>
                           )}
                           <div
-                            className={`${themeStyles.text} markdown-body whitespace-pre-wrap mb-0 markdown-content prose prose-sm dark:prose-invert ${
-                              post.content.length > 1000
-                                ? "relative overflow-hidden max-h-[300px]"
-                                : ""
-                            }`}
+                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
                             dangerouslySetInnerHTML={renderMarkdown(
                               post.content.length > 280
                                 ? post.content.substring(0, 280) + "..."

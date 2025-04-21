@@ -765,12 +765,10 @@ export default function Post({ data }: PageProps<{
                   </div>
                 )
                 : (
-                  <div className="markdown-content prose prose-sm dark:prose-invert max-w-none">
-                    <div
-                      className={`markdown-body ${themeStyles.text} text-base sm:text-lg whitespace-pre-wrap leading-relaxed mb-0`}
-                      dangerouslySetInnerHTML={renderMarkdown(post.content)}
-                    />
-                  </div>
+                  <div
+                    className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                    dangerouslySetInnerHTML={renderMarkdown(post.content)}
+                  />
                 )}
 
               {/* Stats section with top and bottom borders */}
