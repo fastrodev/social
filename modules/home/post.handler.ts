@@ -118,7 +118,7 @@ export default async function postDetailHandler(
   // Add author attribution to the title
   if (!title.includes(post.author)) {
     // Avoid redundancy if the author name is already in the title
-    title = `${title} by ${post.author}`;
+    title = `${title}`;
   }
 
   const image = post.image || imageUrl;
