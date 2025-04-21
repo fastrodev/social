@@ -99,21 +99,6 @@
 }
 
 
-pre {
-    border-style: solid;
-    border-color: var(--color-border);
-    background-color: transparent;
-    border-width: 1px;
-    border-radius: 0.5em;
-    padding: 1em;
-    margin: 1em 0;
-    overflow: auto;
-    font-size: 0.875em;
-    line-height: 1.5;
-    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-}
-
-
 .markdown-body pre {
     border-style: solid;
     border-color: var(--color-border);
@@ -124,7 +109,7 @@ pre {
     margin: 1em 0;
     overflow: auto;
     font-size: 0.875em;
-    line-height: 1.5;
+    line-height: 1;
     font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
 }
 
