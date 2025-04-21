@@ -80,11 +80,9 @@ export default function Home({ data }: PageProps<{
 
   const renderMarkdown = (content: string) => {
     try {
-      const html = marked.parse(content, {
-        // Remove mangle and headerIds options as they don't exist in the type definition
-      });
-
-      return { __html: typeof html === "string" ? html : String(html) };
+      let html = marked.parse(content) as string;
+      html = html.replace(/>\s+</g, "><").trim();
+      return { __html: html };
     } catch (e) {
       console.error("Markdown parsing error:", e);
       return { __html: content };
