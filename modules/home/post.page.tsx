@@ -571,12 +571,12 @@ export default function Post({ data }: PageProps<{
           <main className="max-w-2xl mx-auto px-0 sm:px-4">
             {/* Post Detail Card */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} p-6 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} px-6 py-4 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
             >
               {/* Post author info and options */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center">
-                  <div className="mt-1 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                     <img
                       src={post.avatar}
                       alt={post.author}
@@ -585,11 +585,11 @@ export default function Post({ data }: PageProps<{
                   </div>
                   <div className="ml-4">
                     <p
-                      className={`font-medium text-base sm:text-lg ${themeStyles.text}`}
+                      className={`font-medium text-sm ${themeStyles.text}`}
                     >
                       {post.author}
                     </p>
-                    <p className="text-gray-500 text-xs sm:text-sm">
+                    <p className="text-gray-500 text-xs">
                       {formatDate(post.timestamp)}
                     </p>
                   </div>

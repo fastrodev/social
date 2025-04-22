@@ -653,13 +653,13 @@ export default function Home({ data }: PageProps<{
                     posts.map((post) => (
                       <div
                         key={post.id}
-                        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${themeStyles.cardGlow}`}
+                        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
                       >
                         {/* Modified Header Section */}
                         <div className="flex items-center justify-between mb-3">
                           {/* Left side: Avatar and Author */}
                           <div className="flex items-center">
-                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                            <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                               <img
                                 src={post.avatar}
                                 alt={post.author}
@@ -743,7 +743,7 @@ export default function Home({ data }: PageProps<{
                         </div>
                         {/* End Modified Header Section */}
 
-                        <a href={`/post/${post.id}`} className="block">
+                        <a href={`/post/${post.id}`} className="block relative">
                           {post.image && (
                             <div className="mb-3">
                               <img
@@ -757,16 +757,23 @@ export default function Home({ data }: PageProps<{
                             className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
                             dangerouslySetInnerHTML={renderMarkdown(
                               post.content.length > 280
-                                ? post.content.substring(0, 280) + "..."
+                                ? post.content.substring(0, 280) +
+                                  "..."
                                 : post.content,
                             )}
                           />
+
                           {post.content.length > 280 && (
-                            <div
-                              className={`text-right mt-1 mb-6 ${themeStyles.link} text-sm`}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = `/post/${post.id}`;
+                              }}
+                              className="absolute right-4 bottom-[-2px] px-2 py-1 rounded bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-500 transition-colors"
                             >
-                              Read more...
-                            </div>
+                              Read more
+                            </button>
                           )}
                         </a>
 

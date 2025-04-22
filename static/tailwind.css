@@ -11,7 +11,7 @@
     margin: 0 auto;
     line-height: 1.5;
     word-wrap: break-word;
-    padding-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 .markdown-body h1,
@@ -21,11 +21,10 @@
 .markdown-body h5,
 .markdown-body h6 {
     margin-bottom: 1em;
-    font-weight: 600;
+    font-weight: bold;
     line-height: 1.25;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    font-style: bold;
 }
 
 .markdown-body h1 {
