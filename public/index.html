@@ -1,26 +1,165 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to My Site</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-
-        h1 {
-            color: #333;
-        }
-    </style>
+    <title>Join the Conversation | Fastro Social</title>
+    <meta name="description" content="Today's ideas become tomorrow's innovations">
+    <meta property="og:image" content="https://social.fastro.dev/social.jpeg">
+    <link href="styles.css" rel="stylesheet">
+    <meta name="x-request-id" content="1745407550893">
 </head>
 
-<body>
-    <h1>Welcome to My Static Website</h1>
-    <p>This site is hosted on Google Cloud Storage.</p>
+<body id="root" class="h-screen bg-gray-950 text-white">
+    <main class="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden"><a
+            href="https://github.com/fastrodev/social" class="github-corner z-50" target="_blank"
+            rel="noopener noreferrer" aria-label="View source on GitHub"><svg width="80" height="80"
+                viewBox="0 0 250 250" style="fill:#a855f7;color:#111827;position:absolute;top:0px;border:0px;right:0px;"
+                aria-hidden="true">
+                <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+                <path
+                    d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+                    fill="currentColor" style="transform-origin:130px 106px;" class="octo-arm"></path>
+                <path
+                    d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+                    fill="currentColor" class="octo-body"></path>
+            </svg></a>
+        <div class="fixed inset-0 z-0 opacity-20"><svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="hexagons" width="56" height="100" patternUnits="userSpaceOnUse"
+                        patternTransform="scale(0.5)">
+                        <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100" fill="none" stroke="#777"
+                            stroke-width="1"></path>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#hexagons)"></rect>
+            </svg></div>
+        <div class="flex flex-col min-h-screen relative z-10">
+            <section class="flex-grow flex items-center justify-center">
+                <div class="px-4 mx-auto max-w-5xl text-center">
+                    <h1
+                        class="mb-4 mx-auto max-w-3xl text-4xl font-extrabold tracking-tight leading-none text-white dark:text-white glow-purple">
+                        Join the Conversation</h1>
+                    <p class="mb-8 mx-auto max-w-3xl text-lg font-normal text-white lg:text-xl dark:text-gray-100">
+                        Today's ideas become tomorrow's innovations</p>
+                    <div class="flex flex-col gap-4 justify-center max-w-md mx-auto"><a href="/auth/github/signin"
+                            class="inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400"><svg
+                                class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 2C6.477 2 2 6.477 2 12C2 16.418 4.865 20.167 8.84 21.654C9.34 21.742 9.52 21.438 9.52 21.173C9.52 20.936 9.512 20.211 9.508 19.392C6.726 19.983 6.139 18.027 6.139 18.027C5.684 16.888 5.029 16.586 5.029 16.586C4.146 15.975 5.095 15.986 5.095 15.986C6.075 16.054 6.604 16.999 6.604 16.999C7.491 18.514 8.979 18.071 9.541 17.816C9.629 17.178 9.883 16.734 10.164 16.491C7.955 16.247 5.619 15.393 5.619 11.611C5.619 10.513 6.009 9.617 6.624 8.917C6.516 8.662 6.175 7.677 6.714 6.263C6.714 6.263 7.555 5.994 9.497 7.329C10.294 7.109 11.151 6.999 12 6.995C12.85 6.999 13.707 7.109 14.505 7.329C16.445 5.994 17.284 6.263 17.284 6.263C17.824 7.677 17.483 8.662 17.376 8.917C17.992 9.617 18.38 10.513 18.38 11.611C18.38 15.402 16.04 16.244 13.822 16.483C14.171 16.78 14.485 17.372 14.485 18.274C14.485 19.573 14.472 20.85 14.472 21.173C14.472 21.441 14.649 21.749 15.158 21.654C19.138 20.164 22 16.417 22 12C22 6.477 17.523 2 12 2Z">
+                                </path>
+                            </svg><span class="ml-2 text-lg">Sign in with GitHub</span></a>
+                        <div class="flex items-center my-2">
+                            <hr class="flex-grow border-gray-600"><span class="px-3 text-sm text-gray-400">Coming
+                                soon</span>
+                            <hr class="flex-grow border-gray-600">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><button type="button" disabled=""
+                                class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-400 bg-gray-800 rounded-lg cursor-not-allowed opacity-60 shadow-lg"><svg
+                                    class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
+                                        fill="#FBC02D"></path>
+                                    <path
+                                        d="M3.15295 7.3455L6.43845 9.755C7.32745 7.554 9.48045 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15895 2 4.82795 4.1685 3.15295 7.3455Z"
+                                        fill="#E53935"></path>
+                                    <path
+                                        d="M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5717 17.5742 13.3037 18.001 12 18C9.39903 18 7.19053 16.3415 6.35853 14.027L3.09753 16.5395C4.75253 19.778 8.11353 22 12 22Z"
+                                        fill="#4CAF50"></path>
+                                    <path
+                                        d="M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.785L18.7045 19.404C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
+                                        fill="#1565C0"></path>
+                                </svg><span class="ml-2">Google</span></button><button type="button" disabled=""
+                                class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-400 bg-gray-800 rounded-lg cursor-not-allowed opacity-60 shadow-lg"><svg
+                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="w-5 h-5 mr-2">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9"></path>
+                                    <path
+                                        d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1">
+                                    </path>
+                                </svg><span class="ml-2">WhatsApp</span></button></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <style>
+            .glow-purple {
+                color: white;
+                text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #7e22ce;
+            }
+
+            .github-corner:hover .octo-arm {
+                animation: octocat-wave 560ms ease-in-out;
+            }
+
+            @keyframes octocat-wave {
+
+                0%,
+                100% {
+                    transform: rotate(0);
+                }
+
+                20%,
+                60% {
+                    transform: rotate(-25deg);
+                }
+
+                40%,
+                80% {
+                    transform: rotate(10deg);
+                }
+            }
+
+            @media (max-width: 500px) {
+                .github-corner:hover .octo-arm {
+                    animation: none;
+                }
+
+                .github-corner .octo-arm {
+                    animation: octocat-wave 560ms ease-in-out;
+                }
+            }
+        </style>
+    </main>
+    <script defer="" type="module"
+        nonce="">function fetchWithRetry(t) { fetch(t).then(t => t.text()).then(t => { if ("Not Found" === t) return setTimeout(() => { location.reload() }, 500); const e = document.createElement("script"); e.defer = true; e.type = "module"; e.nonce = '01JSH63CYW9B9WV17B7MDRF1KB'; e.textContent = t, document.body.appendChild(e) }) }; const origin = new URL(window.location.origin), url = origin + "js/index.01JSH63CYW9B9WV17B7MDRF1KB.js"; fetchWithRetry(url);</script>
+    <script defer="" type="module">var D, h, te, we, L, X, ne, oe, re, $, B, V, Ce, T = {}, le = [], be = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, j = Array.isArray; function b(t, e) { for (var n in e) t[n] = e[n]; return t } function G(t) { t && t.parentNode && t.parentNode.removeChild(t) } function Z(t, e, n) { var l, _, r, i = {}; for (r in e) r == "key" ? l = e[r] : r == "ref" ? _ = e[r] : i[r] = e[r]; if (arguments.length > 2 && (i.children = arguments.length > 3 ? D.call(arguments, 2) : n), typeof t == "function" && t.defaultProps != null) for (r in t.defaultProps) i[r] == null && (i[r] = t.defaultProps[r]); return A(t, i, l, _, null) } function A(t, e, n, l, _) { var r = { type: t, props: e, key: n, ref: l, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: _ ?? ++te, __i: -1, __u: 0 }; return _ == null && h.vnode != null && h.vnode(r), r } function C(t) { return t.children } function F(t, e) { this.props = t, this.context = e } function N(t, e) { if (e == null) return t.__ ? N(t.__, t.__i + 1) : null; for (var n; e < t.__k.length; e++)if ((n = t.__k[e]) != null && n.__e != null) return n.__e; return typeof t.type == "function" ? N(t) : null } function _e(t) { var e, n; if ((t = t.__) != null && t.__c != null) { for (t.__e = t.__c.base = null, e = 0; e < t.__k.length; e++)if ((n = t.__k[e]) != null && n.__e != null) { t.__e = t.__c.base = n.__e; break } return _e(t) } } function Q(t) { (!t.__d && (t.__d = !0) && L.push(t) && !W.__r++ || X != h.debounceRendering) && ((X = h.debounceRendering) || ne)(W) } function W() { for (var t, e, n, l, _, r, i, a = 1; L.length;)L.length > a && L.sort(oe), t = L.shift(), a = L.length, t.__d && (n = void 0, _ = (l = (e = t).__v).__e, r = [], i = [], e.__P && ((n = b({}, l)).__v = l.__v + 1, h.vnode && h.vnode(n), z(e.__P, n, l, e.__n, e.__P.namespaceURI, 32 & l.__u ? [_] : null, r, _ ?? N(l), !!(32 & l.__u), i), n.__v = l.__v, n.__.__k[n.__i] = n, ae(r, n, i), n.__e != _ && _e(n))); W.__r = 0 } function ie(t, e, n, l, _, r, i, a, u, c, f) { var o, g, p, v, x, y, d = l && l.__k || le, m = e.length; for (u = ke(n, e, d, u, m), o = 0; o < m; o++)(p = n.__k[o]) != null && (g = p.__i == -1 ? T : d[p.__i] || T, p.__i = o, y = z(t, p, g, _, r, i, a, u, c, f), v = p.__e, p.ref && g.ref != p.ref && (g.ref && O(g.ref, null, p), f.push(p.ref, p.__c || v, p)), x == null && v != null && (x = v), 4 & p.__u || g.__k === p.__k ? u = se(p, u, t) : typeof p.type == "function" && y !== void 0 ? u = y : v && (u = v.nextSibling), p.__u &= -7); return n.__e = x, u } function ke(t, e, n, l, _) { var r, i, a, u, c, f = n.length, o = f, g = 0; for (t.__k = new Array(_), r = 0; r < _; r++)(i = e[r]) != null && typeof i != "boolean" && typeof i != "function" ? (u = r + g, (i = t.__k[r] = typeof i == "string" || typeof i == "number" || typeof i == "bigint" || i.constructor == String ? A(null, i, null, null, null) : j(i) ? A(C, { children: i }, null, null, null) : i.constructor == null && i.__b > 0 ? A(i.type, i.props, i.key, i.ref ? i.ref : null, i.__v) : i).__ = t, i.__b = t.__b + 1, a = null, (c = i.__i = Le(i, n, u, o)) != -1 && (o--, (a = n[c]) && (a.__u |= 2)), a == null || a.__v == null ? (c == -1 && (_ > f ? g-- : _ < f && g++), typeof i.type != "function" && (i.__u |= 4)) : c != u && (c == u - 1 ? g-- : c == u + 1 ? g++ : (c > u ? g-- : g++, i.__u |= 4))) : t.__k[r] = null; if (o) for (r = 0; r < f; r++)(a = n[r]) != null && !(2 & a.__u) && (a.__e == l && (l = N(a)), ue(a, a)); return l } function se(t, e, n) { var l, _; if (typeof t.type == "function") { for (l = t.__k, _ = 0; l && _ < l.length; _++)l[_] && (l[_].__ = t, e = se(l[_], e, n)); return e } t.__e != e && (e && t.type && !n.contains(e) && (e = N(t)), n.insertBefore(t.__e, e || null), e = t.__e); do e = e && e.nextSibling; while (e != null && e.nodeType == 8); return e } function Le(t, e, n, l) { var _, r, i = t.key, a = t.type, u = e[n]; if (u === null && t.key == null || u && i == u.key && a == u.type && !(2 & u.__u)) return n; if (l > (u != null && !(2 & u.__u) ? 1 : 0)) for (_ = n - 1, r = n + 1; _ >= 0 || r < e.length;) { if (_ >= 0) { if ((u = e[_]) && !(2 & u.__u) && i == u.key && a == u.type) return _; _-- } if (r < e.length) { if ((u = e[r]) && !(2 & u.__u) && i == u.key && a == u.type) return r; r++ } } return -1 } function Y(t, e, n) { e[0] == "-" ? t.setProperty(e, n ?? "") : t[e] = n == null ? "" : typeof n != "number" || be.test(e) ? n : n + "px" } function E(t, e, n, l, _) { var r; e: if (e == "style") if (typeof n == "string") t.style.cssText = n; else { if (typeof l == "string" && (t.style.cssText = l = ""), l) for (e in l) n && e in n || Y(t.style, e, ""); if (n) for (e in n) l && n[e] == l[e] || Y(t.style, e, n[e]) } else if (e[0] == "o" && e[1] == "n") r = e != (e = e.replace(re, "$1")), e = e.toLowerCase() in t || e == "onFocusOut" || e == "onFocusIn" ? e.toLowerCase().slice(2) : e.slice(2), t.l || (t.l = {}), t.l[e + r] = n, n ? l ? n.u = l.u : (n.u = $, t.addEventListener(e, r ? V : B, r)) : t.removeEventListener(e, r ? V : B, r); else { if (_ == "http://www.w3.org/2000/svg") e = e.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s"); else if (e != "width" && e != "height" && e != "href" && e != "list" && e != "form" && e != "tabIndex" && e != "download" && e != "rowSpan" && e != "colSpan" && e != "role" && e != "popover" && e in t) try { t[e] = n ?? ""; break e } catch { } typeof n == "function" || (n == null || n === !1 && e[4] != "-" ? t.removeAttribute(e) : t.setAttribute(e, e == "popover" && n == 1 ? "" : n)) } } function ee(t) { return function (e) { if (this.l) { var n = this.l[e.type + t]; if (e.t == null) e.t = $++; else if (e.t < n.u) return; return n(h.event ? h.event(e) : e) } } } function z(t, e, n, l, _, r, i, a, u, c) { var f, o, g, p, v, x, y, d, m, P, k, I, M, K, U, S, R, w = e.type; if (e.constructor != null) return null; 128 & n.__u && (u = !!(32 & n.__u), r = [a = e.__e = n.__e]), (f = h.__b) && f(e); e: if (typeof w == "function") try { if (d = e.props, m = "prototype" in w && w.prototype.render, P = (f = w.contextType) && l[f.__c], k = f ? P ? P.props.value : f.__ : l, n.__c ? y = (o = e.__c = n.__c).__ = o.__E : (m ? e.__c = o = new w(d, k) : (e.__c = o = new F(d, k), o.constructor = w, o.render = Pe), P && P.sub(o), o.props = d, o.state || (o.state = {}), o.context = k, o.__n = l, g = o.__d = !0, o.__h = [], o._sb = []), m && o.__s == null && (o.__s = o.state), m && w.getDerivedStateFromProps != null && (o.__s == o.state && (o.__s = b({}, o.__s)), b(o.__s, w.getDerivedStateFromProps(d, o.__s))), p = o.props, v = o.state, o.__v = e, g) m && w.getDerivedStateFromProps == null && o.componentWillMount != null && o.componentWillMount(), m && o.componentDidMount != null && o.__h.push(o.componentDidMount); else { if (m && w.getDerivedStateFromProps == null && d !== p && o.componentWillReceiveProps != null && o.componentWillReceiveProps(d, k), !o.__e && o.shouldComponentUpdate != null && o.shouldComponentUpdate(d, o.__s, k) === !1 || e.__v == n.__v) { for (e.__v != n.__v && (o.props = d, o.state = o.__s, o.__d = !1), e.__e = n.__e, e.__k = n.__k, e.__k.some(function (H) { H && (H.__ = e) }), I = 0; I < o._sb.length; I++)o.__h.push(o._sb[I]); o._sb = [], o.__h.length && i.push(o); break e } o.componentWillUpdate != null && o.componentWillUpdate(d, o.__s, k), m && o.componentDidUpdate != null && o.__h.push(function () { o.componentDidUpdate(p, v, x) }) } if (o.context = k, o.props = d, o.__P = t, o.__e = !1, M = h.__r, K = 0, m) { for (o.state = o.__s, o.__d = !1, M && M(e), f = o.render(o.props, o.state, o.context), U = 0; U < o._sb.length; U++)o.__h.push(o._sb[U]); o._sb = [] } else do o.__d = !1, M && M(e), f = o.render(o.props, o.state, o.context), o.state = o.__s; while (o.__d && ++K < 25); o.state = o.__s, o.getChildContext != null && (l = b(b({}, l), o.getChildContext())), m && !g && o.getSnapshotBeforeUpdate != null && (x = o.getSnapshotBeforeUpdate(p, v)), S = f, f != null && f.type === C && f.key == null && (S = ce(f.props.children)), a = ie(t, j(S) ? S : [S], e, n, l, _, r, i, a, u, c), o.base = e.__e, e.__u &= -161, o.__h.length && i.push(o), y && (o.__E = o.__ = null) } catch (H) { if (e.__v = null, u || r != null) if (H.then) { for (e.__u |= u ? 160 : 128; a && a.nodeType == 8 && a.nextSibling;)a = a.nextSibling; r[r.indexOf(a)] = null, e.__e = a } else for (R = r.length; R--;)G(r[R]); else e.__e = n.__e, e.__k = n.__k; h.__e(H, e, n) } else r == null && e.__v == n.__v ? (e.__k = n.__k, e.__e = n.__e) : a = e.__e = Ne(n.__e, e, n, l, _, r, i, u, c); return (f = h.diffed) && f(e), 128 & e.__u ? void 0 : a } function ae(t, e, n) { for (var l = 0; l < n.length; l++)O(n[l], n[++l], n[++l]); h.__c && h.__c(e, t), t.some(function (_) { try { t = _.__h, _.__h = [], t.some(function (r) { r.call(_) }) } catch (r) { h.__e(r, _.__v) } }) } function ce(t) { return typeof t != "object" || t == null || t.__b && t.__b > 0 ? t : j(t) ? t.map(ce) : b({}, t) } function Ne(t, e, n, l, _, r, i, a, u) { var c, f, o, g, p, v, x, y = n.props, d = e.props, m = e.type; if (m == "svg" ? _ = "http://www.w3.org/2000/svg" : m == "math" ? _ = "http://www.w3.org/1998/Math/MathML" : _ || (_ = "http://www.w3.org/1999/xhtml"), r != null) { for (c = 0; c < r.length; c++)if ((p = r[c]) && "setAttribute" in p == !!m && (m ? p.localName == m : p.nodeType == 3)) { t = p, r[c] = null; break } } if (t == null) { if (m == null) return document.createTextNode(d); t = document.createElementNS(_, m, d.is && d), a && (h.__m && h.__m(e, r), a = !1), r = null } if (m == null) y === d || a && t.data == d || (t.data = d); else { if (r = r && D.call(t.childNodes), y = n.props || T, !a && r != null) for (y = {}, c = 0; c < t.attributes.length; c++)y[(p = t.attributes[c]).name] = p.value; for (c in y) if (p = y[c], c != "children") { if (c == "dangerouslySetInnerHTML") o = p; else if (!(c in d)) { if (c == "value" && "defaultValue" in d || c == "checked" && "defaultChecked" in d) continue; E(t, c, null, p, _) } } for (c in d) p = d[c], c == "children" ? g = p : c == "dangerouslySetInnerHTML" ? f = p : c == "value" ? v = p : c == "checked" ? x = p : a && typeof p != "function" || y[c] === p || E(t, c, p, y[c], _); if (f) a || o && (f.__html == o.__html || f.__html == t.innerHTML) || (t.innerHTML = f.__html), e.__k = []; else if (o && (t.innerHTML = ""), ie(e.type == "template" ? t.content : t, j(g) ? g : [g], e, n, l, m == "foreignObject" ? "http://www.w3.org/1999/xhtml" : _, r, i, r ? r[0] : n.__k && N(n, 0), a, u), r != null) for (c = r.length; c--;)G(r[c]); a || (c = "value", m == "progress" && v == null ? t.removeAttribute("value") : v != null && (v !== t[c] || m == "progress" && !v || m == "option" && v != y[c]) && E(t, c, v, y[c], _), c = "checked", x != null && x != t[c] && E(t, c, x, y[c], _)) } return t } function O(t, e, n) { try { if (typeof t == "function") { var l = typeof t.__u == "function"; l && t.__u(), l && e == null || (t.__u = t(e)) } else t.current = e } catch (_) { h.__e(_, n) } } function ue(t, e, n) { var l, _; if (h.unmount && h.unmount(t), (l = t.ref) && (l.current && l.current != t.__e || O(l, null, e)), (l = t.__c) != null) { if (l.componentWillUnmount) try { l.componentWillUnmount() } catch (r) { h.__e(r, e) } l.base = l.__P = null } if (l = t.__k) for (_ = 0; _ < l.length; _++)l[_] && ue(l[_], e, n || typeof t.type != "function"); n || G(t.__e), t.__c = t.__ = t.__e = void 0 } function Pe(t, e, n) { return this.constructor(t, n) } function Me(t, e, n) { var l, _, r, i; e == document && (e = document.documentElement), h.__ && h.__(t, e), _ = (l = typeof n == "function") ? null : n && n.__k || e.__k, r = [], i = [], z(e, t = (!l && n || e).__k = Z(C, null, [t]), _ || T, T, e.namespaceURI, !l && n ? [n] : _ ? null : e.firstChild ? D.call(e.childNodes) : null, r, !l && n ? n : _ ? _.__e : e.firstChild, l, i), ae(r, t, i) } function q(t, e) { Me(t, e, q) } D = le.slice, h = { __e: function (t, e, n, l) { for (var _, r, i; e = e.__;)if ((_ = e.__c) && !_.__) try { if ((r = _.constructor) && r.getDerivedStateFromError != null && (_.setState(r.getDerivedStateFromError(t)), i = _.__d), _.componentDidCatch != null && (_.componentDidCatch(t, l || {}), i = _.__d), i) return _.__E = _ } catch (a) { t = a } throw t } }, te = 0, we = function (t) { return t != null && t.constructor == null }, F.prototype.setState = function (t, e) { var n; n = this.__s != null && this.__s != this.state ? this.__s : this.__s = b({}, this.state), typeof t == "function" && (t = t(b({}, n), this.props)), t && b(n, t), t != null && this.__v && (e && this._sb.push(e), Q(this)) }, F.prototype.forceUpdate = function (t) { this.__v && (this.__e = !0, t && this.__h.push(t), Q(this)) }, F.prototype.render = C, L = [], ne = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, oe = function (t, e) { return t.__v.__b - e.__v.__b }, W.__r = 0, re = /(PointerCapture)$|Capture$/i, $ = 0, B = ee(!1), V = ee(!0), Ce = 0; var Se = 0, Ue = Array.isArray; function s(t, e, n, l, _, r) { e || (e = {}); var i, a, u = e; if ("ref" in u) for (a in u = {}, e) a == "ref" ? i = e[a] : u[a] = e[a]; var c = { type: t, props: u, key: n, ref: i, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --Se, __i: -1, __u: 0, __source: _, __self: r }; if (typeof t == "function" && (i = t.defaultProps)) for (a in i) u[a] === void 0 && (u[a] = i[a]); return h.vnode && h.vnode(c), c } var pe = () => s(C, {}); var fe = () => s(C, {}); function he() { return s("svg", { className: "w-5 h-5 mr-2", viewBox: "0 0 24 24", fill: "currentColor", xmlns: "http://www.w3.org/2000/svg", children: s("path", { d: "M12 2C6.477 2 2 6.477 2 12C2 16.418 4.865 20.167 8.84 21.654C9.34 21.742 9.52 21.438 9.52 21.173C9.52 20.936 9.512 20.211 9.508 19.392C6.726 19.983 6.139 18.027 6.139 18.027C5.684 16.888 5.029 16.586 5.029 16.586C4.146 15.975 5.095 15.986 5.095 15.986C6.075 16.054 6.604 16.999 6.604 16.999C7.491 18.514 8.979 18.071 9.541 17.816C9.629 17.178 9.883 16.734 10.164 16.491C7.955 16.247 5.619 15.393 5.619 11.611C5.619 10.513 6.009 9.617 6.624 8.917C6.516 8.662 6.175 7.677 6.714 6.263C6.714 6.263 7.555 5.994 9.497 7.329C10.294 7.109 11.151 6.999 12 6.995C12.85 6.999 13.707 7.109 14.505 7.329C16.445 5.994 17.284 6.263 17.284 6.263C17.824 7.677 17.483 8.662 17.376 8.917C17.992 9.617 18.38 10.513 18.38 11.611C18.38 15.402 16.04 16.244 13.822 16.483C14.171 16.78 14.485 17.372 14.485 18.274C14.485 19.573 14.472 20.85 14.472 21.173C14.472 21.441 14.649 21.749 15.158 21.654C19.138 20.164 22 16.417 22 12C22 6.477 17.523 2 12 2Z" }) }) } function de() { return s("svg", { className: "w-5 h-5 mr-2", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", children: [s("path", { d: "M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z", fill: "#FBC02D" }), s("path", { d: "M3.15295 7.3455L6.43845 9.755C7.32745 7.554 9.48045 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15895 2 4.82795 4.1685 3.15295 7.3455Z", fill: "#E53935" }), s("path", { d: "M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5717 17.5742 13.3037 18.001 12 18C9.39903 18 7.19053 16.3415 6.35853 14.027L3.09753 16.5395C4.75253 19.778 8.11353 22 12 22Z", fill: "#4CAF50" }), s("path", { d: "M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.785L18.7045 19.404C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z", fill: "#1565C0" })] }) } function me() { return s("svg", { xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", className: "w-5 h-5 mr-2", children: [s("path", { stroke: "none", d: "M0 0h24v24H0z", fill: "none" }), s("path", { d: "M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" }), s("path", { d: "M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" })] }) } function ge() { return s("svg", { width: "100%", height: "100%", xmlns: "http://www.w3.org/2000/svg", children: [s("defs", { children: s("pattern", { id: "hexagons", width: "56", height: "100", patternUnits: "userSpaceOnUse", patternTransform: "scale(0.5)", children: s("path", { d: "M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100", fill: "none", stroke: "#777", strokeWidth: "1" }) }) }), s("rect", { width: "100%", height: "100%", fill: "url(#hexagons)" })] }) } function ve() { return s("svg", { width: "80", height: "80", viewBox: "0 0 250 250", style: { fill: "#a855f7", color: "#111827", position: "absolute", top: 0, border: 0, right: 0 }, "aria-hidden": "true", children: [s("path", { d: "M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z" }), s("path", { d: "M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2", fill: "currentColor", style: { transformOrigin: "130px 106px" }, className: "octo-arm" }), s("path", { d: "M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z", fill: "currentColor", className: "octo-body" })] }) } function J({ data: t }) {
+            return s("main", {
+                className: "min-h-screen flex flex-col bg-gray-950 relative overflow-hidden", children: [s("a", { href: "https://github.com/fastrodev/social", className: "github-corner z-50", target: "_blank", rel: "noopener noreferrer", "aria-label": "View source on GitHub", children: s(ve, {}) }), s("div", { className: "fixed inset-0 z-0 opacity-20", children: s(ge, {}) }), s("div", { className: "flex flex-col min-h-screen relative z-10", children: [s(pe, {}), s("section", { className: "flex-grow flex items-center justify-center", children: s("div", { className: "px-4 mx-auto max-w-5xl text-center", children: [s("h1", { className: "mb-4 mx-auto max-w-3xl text-4xl font-extrabold tracking-tight leading-none text-white dark:text-white glow-purple", children: t.title }), s("p", { className: "mb-8 mx-auto max-w-3xl text-lg font-normal text-white lg:text-xl dark:text-gray-100", children: t.description }), s("div", { className: "flex flex-col gap-4 justify-center max-w-md mx-auto", children: [s("a", { href: "/auth/github/signin", className: "inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400", children: [s(he, {}), s("span", { className: "ml-2 text-lg", children: "Sign in with GitHub" })] }), s("div", { className: "flex items-center my-2", children: [s("hr", { className: "flex-grow border-gray-600" }), s("span", { className: "px-3 text-sm text-gray-400", children: "Coming soon" }), s("hr", { className: "flex-grow border-gray-600" })] }), s("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3", children: [s("button", { type: "button", disabled: !0, className: "inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-400 bg-gray-800 rounded-lg cursor-not-allowed opacity-60 shadow-lg", children: [s(de, {}), s("span", { className: "ml-2", children: "Google" })] }), s("button", { type: "button", disabled: !0, className: "inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-400 bg-gray-800 rounded-lg cursor-not-allowed opacity-60 shadow-lg", children: [s(me, {}), s("span", { className: "ml-2", children: "WhatsApp" })] })] })] })] }) }), s(fe, {})] }), s("style", {
+                    dangerouslySetInnerHTML: {
+                        __html: `
+          .glow-purple {
+            color: white;
+            text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #7e22ce;
+          }
+
+          .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out;
+          }
+
+          @keyframes octocat-wave {
+            0%, 100% { transform: rotate(0); }
+            20%, 60% { transform: rotate(-25deg); }
+            40%, 80% { transform: rotate(10deg); }
+          }
+
+          @media (max-width: 500px) {
+            .github-corner:hover .octo-arm {
+              animation: none;
+            }
+            .github-corner .octo-arm {
+              animation: octocat-wave 560ms ease-in-out;
+            }
+          }
+          `}
+                })]
+            })
+        } function He() { let t = document.querySelector('meta[name="x-request-id"]'); return t ? t.content : null } async function xe(t) { try { let e = new URL(window.location.href), l = await (await fetch("/__/" + He())).json(); if (!l) throw new Error("undefined"); q(Z(J, { data: l }), t) } catch { setTimeout(() => { xe(t) }, 500) } } var ye = document.getElementById("root"); ye && xe(ye);
+    </script>
 </body>
 
 </html>
