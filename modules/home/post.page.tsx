@@ -160,7 +160,7 @@ export default function Post({ data }: PageProps<{
 
   // Handle post sharing
   const handleSharePost = async () => {
-    const postUrl = window.location.href;
+    const postUrl = `https://social.fastro.dev/post/${data.post.id}`;
 
     if (navigator.share) {
       try {
