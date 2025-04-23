@@ -87,7 +87,7 @@ jobs:
             }
           }' > .firebaserc
 
-          # Create firebase.json file dynamically with custom domain
+          # Create firebase.json file dynamically with custom domain and redirects
           echo '{
             "hosting": {
               "public": "public",
@@ -95,6 +95,13 @@ jobs:
                 "firebase.json",
                 "**/.*",
                 "**/node_modules/**"
+              ],
+              "redirects": [
+                {
+                  "source": "/post/:postId*",
+                  "destination": "https://web.fastro.dev/post/:postId",
+                  "type": 301
+                }
               ],
               "rewrites": [
                 {
