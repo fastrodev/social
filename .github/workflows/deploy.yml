@@ -78,7 +78,7 @@ jobs:
       - name: Deploy to Firebase Hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_PROJECT: ${{ vars.GCP_PROJECT_ID }}
+          FIREBASE_PROJECT: ${{ vars.GCP_PROJECT_ID || 'replix-394315' }}
         run: |
           # Create .firebaserc file dynamically
           echo '{
@@ -87,7 +87,7 @@ jobs:
             }
           }' > .firebaserc
 
-          # Create firebase.json file dynamically
+          # Create firebase.json file dynamically with custom domain
           echo '{
             "hosting": {
               "public": "public",
@@ -95,6 +95,12 @@ jobs:
                 "firebase.json",
                 "**/.*",
                 "**/node_modules/**"
+              ],
+              "rewrites": [
+                {
+                  "source": "**",
+                  "destination": "/index.html"
+                }
               ]
             }
           }' > firebase.json
