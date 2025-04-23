@@ -101,7 +101,9 @@ jobs:
                   "source": "**",
                   "destination": "/index.html"
                 }
-              ]
+              ],
+              "appAssociation": "AUTO",
+              "cleanUrls": true
             }
           }' > firebase.json
 
