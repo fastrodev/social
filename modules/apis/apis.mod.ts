@@ -65,5 +65,22 @@ export function apisModule(s: Fastro) {
     }
   });
 
+  // add healthcheck endpoint
+  s.get("/api/healthcheck", (_req, ctx) => {
+    try {
+      return ctx.send({
+        status: "OK",
+        message: "API is healthy",
+      }, 200);
+    } catch (error) {
+      console.error("Healthcheck failed:", error);
+      // If any health check fails, return a 500 Internal Server Error response
+      return ctx.send({
+        error: "Healthcheck failed",
+        details: error,
+      }, 500);
+    }
+  });
+
   return s;
 }
