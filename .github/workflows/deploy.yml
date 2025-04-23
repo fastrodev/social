@@ -78,8 +78,16 @@ jobs:
       - name: Deploy to Firebase Hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_PROJECT: ${{ vars.GCP_PROJECT_ID }}
         run: |
-          firebase use replix-394315 --token "$FIREBASE_TOKEN"
+          # Create .firebaserc file dynamically with the project ID from environment variables
+          echo '{
+            "projects": {
+              "default": "'$FIREBASE_PROJECT'"
+            }
+          }' > .firebaserc
+
+          # Now deploy to Firebase hosting
           firebase deploy --only hosting --token "$FIREBASE_TOKEN"
 
       - name: Clean up old images
