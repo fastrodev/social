@@ -79,7 +79,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          firebase use ${{ vars.GCP_PROJECT_ID }} --token "$FIREBASE_TOKEN"
+          firebase use replix-394315 --token "$FIREBASE_TOKEN"
           firebase deploy --only hosting --token "$FIREBASE_TOKEN"
 
       - name: Clean up old images
