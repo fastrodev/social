@@ -1,0 +1,5 @@
+{
+  "projects": {
+    "default": "${{ vars.FIREBASE_PROJECT_ID }}"
+  }
+}
