@@ -316,12 +316,13 @@ export const editPostHandler = async (req: HttpRequest) => {
   try {
     const body = await req.json();
 
-    await editPostById(id, body);
+    const post = await editPostById(id, body);
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "Post updated successfully",
+        data: post,
       }),
       {
         headers: { "Content-Type": "application/json" },

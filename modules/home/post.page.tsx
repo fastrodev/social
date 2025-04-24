@@ -65,6 +65,7 @@ export default function Post({ data }: PageProps<{
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showPreviewMode, setShowPreviewMode] = useState(false);
+  const [postData, setPostData] = useState<Post>(data.post); // Add a state to manage the post data
 
   // Detect mobile devices
   useEffect(() => {
@@ -80,10 +81,10 @@ export default function Post({ data }: PageProps<{
   // Initialize edit content with post content when editing starts
   useEffect(() => {
     if (isEditing) {
-      setEditPostContent(data.post.content);
-      setPostImage(data.post.image);
+      setEditPostContent(postData.content);
+      setPostImage(postData.image);
     }
-  }, [isEditing, data.post.content, data.post.image]);
+  }, [isEditing, postData.content, postData.image]);
 
   // Fetch comments on page load and check for theme in session storage
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function Post({ data }: PageProps<{
   const fetchComments = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/comments/${data.post.id}`);
+      const response = await fetch(`/api/comments/${postData.id}`);
       if (response.ok) {
         const commentsData = await response.json();
         setComments(commentsData);
@@ -146,7 +147,7 @@ export default function Post({ data }: PageProps<{
     }
 
     try {
-      const response = await fetch(`/api/post/${data.post.id}`, {
+      const response = await fetch(`/api/post/${postData.id}`, {
         method: "DELETE",
       });
 
@@ -163,7 +164,7 @@ export default function Post({ data }: PageProps<{
 
   // Handle post sharing
   const handleSharePost = async () => {
-    const postUrl = `https://social.fastro.dev/post/${data.post.id}`;
+    const postUrl = `https://social.fastro.dev/post/${postData.id}`;
 
     if (navigator.share) {
       try {
@@ -199,27 +200,31 @@ export default function Post({ data }: PageProps<{
     try {
       setIsSubmitting(true);
 
-      const response = await fetch(`/api/post/${data.post.id}`, {
+      const response = await fetch(`/api/post/${postData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           content: editPostContent,
-          author: data.post.author,
-          avatar: data.post.avatar,
+          author: postData.author,
+          avatar: postData.avatar,
           image: postImage,
         }),
       });
 
       if (response.ok) {
         const updatedPost = await response.json();
-        // Update the post properly in the UI
-        data.post = {
-          ...data.post,
+
+        setPostData({
+          ...postData,
           content: updatedPost.content || editPostContent,
-          image: updatedPost.image || postImage, // Use postImage if server doesn't return image
-        };
+          image: updatedPost.image || postImage,
+          tags: updatedPost.data.tags || [],
+          title: updatedPost.title || postData.title,
+          description: updatedPost.description || postData.description,
+        });
+
         setIsEditing(false);
         setSelectedFile(null);
       } else {
@@ -274,7 +279,7 @@ export default function Post({ data }: PageProps<{
         },
         body: JSON.stringify({
           content: commentText,
-          postId: data.post.id,
+          postId: postData.id,
         }),
       });
 
@@ -339,8 +344,6 @@ export default function Post({ data }: PageProps<{
       ? "text-blue-400 hover:text-blue-300 font-medium"
       : "text-blue-600 hover:text-blue-500 font-medium",
   };
-
-  const { post } = data;
 
   // Format the date for display
   const formatDate = (timestamp: string) => {
@@ -568,8 +571,8 @@ export default function Post({ data }: PageProps<{
                 <div className="flex items-center">
                   <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                     <img
-                      src={post.avatar}
-                      alt={post.author}
+                      src={postData.avatar}
+                      alt={postData.author}
                       className="w-full h-full rounded-full"
                     />
                   </div>
@@ -577,10 +580,10 @@ export default function Post({ data }: PageProps<{
                     <p
                       className={`font-medium text-sm ${themeStyles.text}`}
                     >
-                      {post.author}
+                      {postData.author}
                     </p>
                     <p className="text-gray-500 text-xs">
-                      {formatDate(post.timestamp)}
+                      {formatDate(postData.timestamp)}
                     </p>
                   </div>
                 </div>
@@ -608,7 +611,7 @@ export default function Post({ data }: PageProps<{
                           Share post
                         </button>
                         {/* Only show edit and delete options if the user is the author */}
-                        {post.author === data.author && (
+                        {postData.author === data.author && (
                           <>
                             <button
                               type="button"
@@ -635,10 +638,10 @@ export default function Post({ data }: PageProps<{
               </div>
 
               {/* Post Image (if available) */}
-              {!isEditing && post.image && (
+              {!isEditing && postData.image && (
                 <div className="my-4">
                   <img
-                    src={post.image}
+                    src={postData.image}
                     alt="Post image"
                     className="w-full rounded-lg object-cover"
                   />
@@ -756,32 +759,33 @@ export default function Post({ data }: PageProps<{
                   <>
                     <div
                       className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
-                      dangerouslySetInnerHTML={renderMarkdown(post.content)}
+                      dangerouslySetInnerHTML={renderMarkdown(postData.content)}
                     />
                     {/* Hashtag container below the content */}
-                    {Array.isArray(post.tags) && post.tags.length > 0 && (
-                      <div
-                        className={`flex flex-wrap gap-2 mb-6 text-xs font-normal py-2 rounded`}
-                        style={{ lineHeight: 1.6 }}
-                      >
-                        {post.tags.map((tag: string) => (
-                          <a
-                            key={tag}
-                            href={`/tag/${tag}`}
-                            className={`px-2 py-1 rounded hover:underline transition-colors border border-gray-300 dark:border-gray-700
+                    {Array.isArray(postData.tags) && postData.tags.length > 0 &&
+                      (
+                        <div
+                          className={`flex flex-wrap gap-2 mb-6 text-xs font-normal py-2 rounded`}
+                          style={{ lineHeight: 1.6 }}
+                        >
+                          {postData.tags.map((tag: string) => (
+                            <a
+                              key={tag}
+                              href={`/tag/${tag}`}
+                              className={`px-2 py-1 rounded hover:underline transition-colors border border-gray-300 dark:border-gray-700
                               ${
-                              isDark
-                                ? "bg-gray-800 text-blue-300 hover:text-blue-200"
-                                : "bg-blue-50 text-blue-600 hover:text-blue-500"
-                            }
+                                isDark
+                                  ? "bg-gray-800 text-blue-300 hover:text-blue-200"
+                                  : "bg-blue-50 text-blue-600 hover:text-blue-500"
+                              }
                             `}
-                            style={{ fontWeight: 400 }}
-                          >
-                            #{tag}
-                          </a>
-                        ))}
-                      </div>
-                    )}
+                              style={{ fontWeight: 400 }}
+                            >
+                              #{tag}
+                            </a>
+                          ))}
+                        </div>
+                      )}
                   </>
                 )}
 
@@ -805,7 +809,7 @@ export default function Post({ data }: PageProps<{
                 >
                   <span className="flex items-center gap-x-2">
                     <ViewIcon />
-                    {post.views || 0} views
+                    {postData.views || 0} views
                   </span>
                 </div>
               </div>
