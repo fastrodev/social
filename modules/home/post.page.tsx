@@ -78,6 +78,17 @@ export default function Post({ data }: PageProps<{
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  // Update the useEffect to check for edit=true in the URL
+  useEffect(() => {
+    // Check if edit parameter is in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("edit") === "true") {
+      setIsEditing(true);
+    }
+
+    fetchComments();
+  }, []);
+
   // Initialize edit content with post content when editing starts
   useEffect(() => {
     if (isEditing) {
@@ -85,11 +96,6 @@ export default function Post({ data }: PageProps<{
       setPostImage(postData.image);
     }
   }, [isEditing, postData.content, postData.image]);
-
-  // Fetch comments on page load and check for theme in session storage
-  useEffect(() => {
-    fetchComments();
-  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
