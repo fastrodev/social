@@ -1,50 +1,51 @@
 import { Context, HttpRequest } from "fastro/core/server/types.ts";
 
+const ALLOWED_ORIGINS = [
+  "https://web.fastro.dev",
+  "https://social.fastro.dev",
+  "http://localhost:8000",
+];
+
 export default function authMiddleware() {
-  return async (req: HttpRequest, ctx: Context) => {
-    const authHeader = req.headers.get("Authorization");
+  return (req: HttpRequest, ctx: Context) => {
+    const origin = req.headers.get("Origin");
+    const secFetchSite = req.headers.get("Sec-Fetch-Site");
+    const secFetchMode = req.headers.get("Sec-Fetch-Mode");
+    const secFetchDest = req.headers.get("Sec-Fetch-Dest");
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return ctx.send(
-        {
-          status: 401,
-          message: "Unauthorized: Missing or invalid Authorization header",
-        },
-        401,
-      );
-    }
+    // Log received headers for debugging
+    console.log(`Auth Middleware - Received Origin: ${origin}`);
+    console.log(`Auth Middleware - Sec-Fetch-Site: ${secFetchSite}`);
+    console.log(`Auth Middleware - Sec-Fetch-Mode: ${secFetchMode}`);
+    console.log(`Auth Middleware - Sec-Fetch-Dest: ${secFetchDest}`);
 
-    const token = authHeader.split(" ")[1];
-
-    try {
-      const isValid = await verifyToken(token);
-      if (!isValid) {
-        return ctx.send(
-          {
-            status: 401,
-            message: "Unauthorized: Invalid token",
-          },
-          401,
-        );
-      }
-
-      ctx.state.user = { id: "user-id", role: "user-role" };
+    // Allow direct browser navigation (no Origin header, and appropriate Sec-Fetch-* headers)
+    if (
+      !origin && secFetchMode === "navigate" &&
+      (secFetchSite === "none" || secFetchSite === null)
+    ) {
+      console.log("Auth Middleware - Allowing direct browser navigation");
       return ctx.next();
-    } catch (error) {
-      console.error("Authentication error:", error);
+    }
+
+    // For API requests (typically with Origin header), strictly enforce allowed origins
+    if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+      console.error(
+        `Auth Middleware - Blocking request due to invalid Origin: ${origin}`,
+      );
       return ctx.send(
         {
-          status: 500,
-          message: "Internal Server Error: Authentication failed",
+          status: 403,
+          message: "Forbidden: Invalid Origin header.",
         },
-        500,
+        403,
       );
     }
-  };
-}
 
-// deno-lint-ignore require-await
-async function verifyToken(token: string): Promise<boolean> {
-  // Replace this with your actual token verification logic
-  return token === "valid-token"; // Example: Replace with real validation
+    // If we get here, either:
+    // 1. Origin is in allowed list, or
+    // 2. Origin is missing but it's not a navigation request (handled by earlier check)
+    console.log("Auth Middleware - Allowing request.");
+    return ctx.next();
+  };
 }
