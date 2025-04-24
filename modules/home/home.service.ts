@@ -1,5 +1,10 @@
 import { ulid } from "jsr:@std/ulid/ulid";
 import { kv } from "@app/utils/db.ts";
+import {
+  createSeoDescription,
+  extractPostTitle,
+  extractTags,
+} from "@app/modules/home/post.handler.ts";
 
 interface PostInput {
   title: string;
@@ -22,7 +27,7 @@ interface Post {
   image?: string;
   title?: string;
   description?: string;
-  tags?: string[];
+  tags?: string[] | null;
 }
 
 export async function createPost(input: PostInput): Promise<Post> {
@@ -186,6 +191,9 @@ interface PostUpdateInput {
   author?: string;
   avatar?: string;
   image?: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
 }
 
 export async function editPostById(
@@ -194,6 +202,7 @@ export async function editPostById(
 ): Promise<Post | null> {
   const primaryKey = ["posts", id];
   console.log("Editing post with ID:", id);
+  console.log("Updates:", updates);
 
   // First check if the post exists
   const existingPost = await kv.get<Post>(primaryKey);
@@ -203,10 +212,51 @@ export async function editPostById(
   }
 
   try {
-    // Create updated post by merging existing post with updates
+    // Extract title, description, and tags from content if content is updated
+    let newTitle = extractPostTitle(
+      updates.content || existingPost.value.content,
+      existingPost.value.author,
+    );
+    let newDescription = createSeoDescription(
+      updates.content || existingPost.value.content,
+    );
+
+    let newTags = extractTags(
+      updates.content || existingPost.value.content,
+    );
+
+    if (typeof updates.content === "string") {
+      // Title: first line starting with # (markdown heading)
+      const lines = updates.content.split("\n").map((l) => l.trim());
+      const titleLine = lines.find((line) => /^#\s?/.test(line));
+      if (titleLine) {
+        newTitle = titleLine.replace(/^#\s?/, "");
+      }
+
+      // Description: first non-empty line after title
+      const titleIdx = lines.findIndex((line) => /^#\s?/.test(line));
+      if (titleIdx !== -1) {
+        newDescription = lines.slice(titleIdx + 1).find((line) =>
+          line.length > 0
+        ) || "";
+      }
+
+      // Tags: all hashtags in the content, deduplicated and lowercased
+      newTags = Array.from(
+        new Set(
+          (updates.content.match(/#(\w+)/g) || [])
+            .map((tag) => tag.slice(1).toLowerCase()),
+        ),
+      );
+    }
+
+    // Create updated post by merging existing post with updates and extracted fields
     const updatedPost: Post = {
       ...existingPost.value,
       ...updates,
+      title: newTitle,
+      description: newDescription,
+      tags: newTags,
       // Preserve original id and timestamp
       id: existingPost.value.id,
       timestamp: existingPost.value.timestamp,

@@ -25,6 +25,8 @@ interface Post {
   isMarkdown?: boolean;
   image?: string; // Add image URL field
   tags?: string[]; // Add tags field
+  title?: string; // Add title field
+  description?: string; // Add description field
 }
 
 interface Comment {
@@ -197,7 +199,6 @@ export default function Post({ data }: PageProps<{
     try {
       setIsSubmitting(true);
 
-      // Use postImage from state instead of data.post.image
       const response = await fetch(`/api/post/${data.post.id}`, {
         method: "PUT",
         headers: {
@@ -207,7 +208,7 @@ export default function Post({ data }: PageProps<{
           content: editPostContent,
           author: data.post.author,
           avatar: data.post.avatar,
-          image: postImage, // Use state value here
+          image: postImage,
         }),
       });
 

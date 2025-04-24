@@ -14,7 +14,6 @@ import { ShareIcon } from "@app/components/icons/share.tsx"; // Import the Share
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
-import { is } from "@app/node_modules/.deno/unist-util-is@5.2.1/node_modules/unist-util-is/index.d.ts";
 import { renderMarkdownWithHashtags } from "./utils/markdown.ts";
 
 interface Post {
