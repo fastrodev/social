@@ -65,6 +65,7 @@ export default function Home({ data }: PageProps<{
       "/kbyeb2kbyeb2kbye.jpg",
       "/91pymj91pymj91py.jpg",
       "/midvcjmidvcjmidv.jpg",
+      "/ckp4shckp4shckp4.jpg",
     ];
     const randomIndex = Math.floor(Math.random() * images.length);
     return images[randomIndex];
