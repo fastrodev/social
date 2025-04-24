@@ -11,9 +11,9 @@ import { ShareIcon } from "@app/components/icons/share.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx"; // Add EditIcon import
 import { ClipIcon } from "@app/components/icons/clip.tsx"; // Add ClipIcon import
-import { marked } from "marked";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
+import { renderMarkdownWithHashtags } from "./utils/markdown.ts";
 
 interface Post {
   id: string;
@@ -24,6 +24,7 @@ interface Post {
   avatar?: string;
   isMarkdown?: boolean;
   image?: string; // Add image URL field
+  tags?: string[]; // Add tags field
 }
 
 interface Comment {
@@ -312,16 +313,7 @@ export default function Post({ data }: PageProps<{
     setCommentText(e.currentTarget.value);
   };
 
-  const renderMarkdown = (content: string) => {
-    try {
-      let html = marked.parse(content) as string;
-      html = html.replace(/>\s+</g, "><").trim();
-      return { __html: html };
-    } catch (e) {
-      console.error("Markdown parsing error:", e);
-      return { __html: content };
-    }
-  };
+  const renderMarkdown = renderMarkdownWithHashtags;
 
   // Theme styles
   const themeStyles = {
@@ -342,6 +334,9 @@ export default function Post({ data }: PageProps<{
     cardGlow: isDark
       ? "shadow-[0_0_35px_rgba(147,51,234,0.3)]"
       : "shadow-[0_0_20px_rgba(147,51,234,0.15)]",
+    hashtag: isDark
+      ? "text-blue-400 hover:text-blue-300 font-medium"
+      : "text-blue-600 hover:text-blue-500 font-medium",
   };
 
   const { post } = data;
@@ -757,10 +752,36 @@ export default function Post({ data }: PageProps<{
                   </div>
                 )
                 : (
-                  <div
-                    className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
-                    dangerouslySetInnerHTML={renderMarkdown(post.content)}
-                  />
+                  <>
+                    <div
+                      className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                      dangerouslySetInnerHTML={renderMarkdown(post.content)}
+                    />
+                    {/* Hashtag container below the content */}
+                    {Array.isArray(post.tags) && post.tags.length > 0 && (
+                      <div
+                        className={`flex flex-wrap gap-2 mb-6 text-xs font-normal py-2 rounded`}
+                        style={{ lineHeight: 1.6 }}
+                      >
+                        {post.tags.map((tag: string) => (
+                          <a
+                            key={tag}
+                            href={`/tag/${tag}`}
+                            className={`px-2 py-1 rounded hover:underline transition-colors border border-gray-300 dark:border-gray-700
+                              ${
+                              isDark
+                                ? "bg-gray-800 text-blue-300 hover:text-blue-200"
+                                : "bg-blue-50 text-blue-600 hover:text-blue-500"
+                            }
+                            `}
+                            style={{ fontWeight: 400 }}
+                          >
+                            #{tag}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
 
               {/* Stats section with top and bottom borders */}

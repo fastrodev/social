@@ -11,11 +11,11 @@ import { ClipIcon } from "@app/components/icons/clip.tsx";
 import { SubmitIcon } from "@app/components/icons/submit.tsx"; // Make sure this path is correct
 import { VDotsIcon } from "@app/components/icons/vdots.tsx"; // Import the VdotsIcon
 import { ShareIcon } from "@app/components/icons/share.tsx"; // Import the ShareIcon
-import { marked } from "marked";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
 import { is } from "@app/node_modules/.deno/unist-util-is@5.2.1/node_modules/unist-util-is/index.d.ts";
+import { renderMarkdownWithHashtags } from "./utils/markdown.ts";
 
 interface Post {
   id: string;
@@ -78,16 +78,7 @@ export default function Home({ data }: PageProps<{
     };
   }, []);
 
-  const renderMarkdown = (content: string) => {
-    try {
-      let html = marked.parse(content) as string;
-      html = html.replace(/>\s+</g, "><").trim();
-      return { __html: html };
-    } catch (e) {
-      console.error("Markdown parsing error:", e);
-      return { __html: content };
-    }
-  };
+  const renderMarkdown = renderMarkdownWithHashtags;
 
   const handleFileSelect = async (
     e: JSX.TargetedEvent<HTMLInputElement, Event>,
@@ -754,7 +745,10 @@ export default function Home({ data }: PageProps<{
                             </div>
                           )}
                           <div
-                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none
+    prose-a:no-underline prose-a:font-normal
+    prose-p:my-2
+    ${themeStyles.text}`}
                             dangerouslySetInnerHTML={renderMarkdown(
                               post.content.length > 280
                                 ? post.content.substring(0, 280) +
@@ -762,21 +756,9 @@ export default function Home({ data }: PageProps<{
                                 : post.content,
                             )}
                           />
-
-                          {post.content.length > 280 && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                window.location.href = `/post/${post.id}`;
-                              }}
-                              className="absolute right-4 bottom-[-2px] px-2 py-1 rounded bg-purple-600 text-white text-xs font-semibold shadow hover:bg-purple-500 transition-colors"
-                            >
-                              Read more
-                            </button>
-                          )}
                         </a>
 
+                        {/* the style breaked by the hash tag content. fix it */}
                         <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
                           <a
                             href={`/post/${post.id}`}
