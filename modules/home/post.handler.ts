@@ -39,7 +39,7 @@ export function createSeoDescription(
 export function extractPostTitle(
   content: string,
   author: string,
-  maxLength = 70,
+  maxLength = 140,
 ): string {
   // Check if content starts with a markdown header
   const headerMatch = content.match(/^#+\s+(.+)$/m);

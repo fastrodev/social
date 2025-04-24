@@ -772,13 +772,11 @@ export default function Post({ data }: PageProps<{
                             <a
                               key={tag}
                               href={`/tag/${tag}`}
-                              className={`px-2 py-1 rounded hover:underline transition-colors border border-gray-300 dark:border-gray-700
-                              ${
+                              className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                                 isDark
-                                  ? "bg-gray-800 text-blue-300 hover:text-blue-200"
-                                  : "bg-blue-50 text-blue-600 hover:text-blue-500"
-                              }
-                            `}
+                                  ? "bg-purple-800/40 text-purple-200"
+                                  : "bg-purple-100 text-purple-700"
+                              }`}
                               style={{ fontWeight: 400 }}
                             >
                               #{tag}

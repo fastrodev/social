@@ -27,6 +27,8 @@ interface Post {
   views?: number;
   isMarkdown?: boolean;
   image?: string; // Add this field for image URL
+  title?: string; // Add this field for post title
+  tags?: string[]; // Add this field for tags
 }
 
 export default function Home({ data }: PageProps<{
@@ -53,6 +55,20 @@ export default function Home({ data }: PageProps<{
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Add a function to get a random default image
+  const getRandomDefaultImage = () => {
+    const images = [
+      "/i00vm5i00vm5i00v.jpeg",
+      "/m0zjohm0zjohm0zj.jpg",
+      "/6sftej6sftej6sft.jpg",
+      "/kbyeb2kbyeb2kbye.jpg",
+      "/91pymj91pymj91py.jpg",
+      "/midvcjmidvcjmidv.jpg",
+    ];
+    const randomIndex = Math.floor(Math.random() * images.length);
+    return images[randomIndex];
+  };
 
   // Detect mobile devices
   useEffect(() => {
@@ -253,7 +269,7 @@ export default function Home({ data }: PageProps<{
     if (!postContent.trim()) return;
 
     setIsSubmitting(true);
-
+    const randomImage = imageUrl || getRandomDefaultImage();
     try {
       const response = await fetch("/api/post", {
         method: "POST",
@@ -263,7 +279,7 @@ export default function Home({ data }: PageProps<{
         body: JSON.stringify({
           content: postContent,
           isMarkdown: true,
-          image: imageUrl,
+          image: randomImage,
         }),
       });
 
@@ -734,27 +750,40 @@ export default function Home({ data }: PageProps<{
                         {/* End Modified Header Section */}
 
                         <a href={`/post/${post.id}`} className="block relative">
-                          {post.image && (
-                            <div className="mb-3">
-                              <img
-                                src={post.image}
-                                alt="Post attachment"
-                                className="w-full h-[330px] rounded-lg object-cover"
-                              />
-                            </div>
-                          )}
+                          <div className="mb-3">
+                            <img
+                              src={post.image
+                                ? post.image
+                                : getRandomDefaultImage()}
+                              alt="Post attachment"
+                              className="w-full h-[300px] rounded-lg object-cover"
+                            />
+                          </div>
+
                           <div
-                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none
-    prose-a:no-underline prose-a:font-normal
-    prose-p:my-2
-    ${themeStyles.text}`}
-                            dangerouslySetInnerHTML={renderMarkdown(
-                              post.content.length > 280
-                                ? post.content.substring(0, 280) +
-                                  "..."
-                                : post.content,
+                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none prose-a:no-underline prose-a:font-normal prose-p:my-2 ${themeStyles.text}`}
+                          >
+                            <h2 className="text-xl font-extrabold mb-2">
+                              {post.title ? post.title : post.content}
+                            </h2>
+
+                            {post.tags && post.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-1">
+                                {post.tags.map((tag, index) => (
+                                  <span
+                                    key={index}
+                                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                      isDark
+                                        ? "bg-purple-800/40 text-purple-200"
+                                        : "bg-purple-100 text-purple-700"
+                                    }`}
+                                  >
+                                    #{tag}
+                                  </span>
+                                ))}
+                              </div>
                             )}
-                          />
+                          </div>
                         </a>
 
                         {/* the style breaked by the hash tag content. fix it */}
