@@ -14,10 +14,19 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
     });
   }
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: "https://social.fastro.dev",
-    },
+  if (Deno.env.get("ENV") !== "DEVELOPMENT") {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "https://social.fastro.dev",
+      },
+    });
+  }
+
+  return await ctx.render({
+    title: "Fastro Social",
+    description: "A social network built with Fastro",
+    image: "https://social.fastro.dev/social.jpeg",
+    isLogin,
   });
 }

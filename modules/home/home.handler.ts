@@ -13,6 +13,11 @@ import {
   getCommentsByPostId,
 } from "@app/modules/home/home.service.ts";
 import { Context, HttpRequest } from "fastro/mod.ts";
+import {
+  createSeoDescription,
+  extractPostTitle,
+  extractTags,
+} from "@app/modules/home/post.handler.ts";
 
 export default async function homeHandler(req: HttpRequest, ctx: Context) {
   const ses = await getSession(req, ctx);
@@ -76,12 +81,19 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     const ses = await getSession(req, ctx);
     const username = ses?.username;
 
+    const title = extractPostTitle(content, username);
+    const description = createSeoDescription(content);
+    const tags: string[] = extractTags(content) || [];
+
     // Create the post
     const post = await createPost({
       content,
       author: username,
       avatar: ses?.avatar_url,
       image: body.image,
+      title,
+      description,
+      tags,
     });
 
     return new Response(JSON.stringify(post), {

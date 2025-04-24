@@ -11,13 +11,6 @@ export default function authMiddleware() {
     const origin = req.headers.get("Origin");
     const secFetchSite = req.headers.get("Sec-Fetch-Site");
     const secFetchMode = req.headers.get("Sec-Fetch-Mode");
-    const secFetchDest = req.headers.get("Sec-Fetch-Dest");
-
-    // Log received headers for debugging
-    console.log(`Auth Middleware - Received Origin: ${origin}`);
-    console.log(`Auth Middleware - Sec-Fetch-Site: ${secFetchSite}`);
-    console.log(`Auth Middleware - Sec-Fetch-Mode: ${secFetchMode}`);
-    console.log(`Auth Middleware - Sec-Fetch-Dest: ${secFetchDest}`);
 
     // Allow direct browser navigation (no Origin header, and appropriate Sec-Fetch-* headers)
     if (
@@ -42,9 +35,6 @@ export default function authMiddleware() {
       );
     }
 
-    // If we get here, either:
-    // 1. Origin is in allowed list, or
-    // 2. Origin is missing but it's not a navigation request (handled by earlier check)
     console.log("Auth Middleware - Allowing request.");
     return ctx.next();
   };

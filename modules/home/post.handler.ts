@@ -3,7 +3,10 @@ import { getPostById } from "@app/modules/home/home.service.ts";
 import { Context, HttpRequest } from "fastro/mod.ts";
 
 // Helper function to clean markdown for SEO description
-function createSeoDescription(markdown: string, maxLength = 150): string {
+export function createSeoDescription(
+  markdown: string,
+  maxLength = 150,
+): string {
   // Convert markdown to plain text
   let text = markdown;
 
@@ -33,7 +36,7 @@ function createSeoDescription(markdown: string, maxLength = 150): string {
 }
 
 // Extract a meaningful title from post content
-function extractPostTitle(
+export function extractPostTitle(
   content: string,
   author: string,
   maxLength = 70,
@@ -67,6 +70,28 @@ function extractPostTitle(
   }
 
   return firstParagraph;
+}
+
+export function extractTags(content: string): string[] | null {
+  // Get the last line of content
+  const lastLine = content.trim().split("\n").pop() || "";
+
+  // Only process if the last line contains hashtags
+  if (!lastLine.includes("#")) {
+    return null;
+  }
+
+  const tagRegex = /#(\w+)/g;
+  const tags: string[] = [];
+  let match;
+
+  while ((match = tagRegex.exec(lastLine)) !== null) {
+    if (match[1]) {
+      tags.push(match[1]);
+    }
+  }
+
+  return tags.length > 0 ? tags : null;
 }
 
 export default async function postDetailHandler(
@@ -105,10 +130,10 @@ export default async function postDetailHandler(
 
   const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
   const imageUrl = baseUrl + "/social.jpeg";
-  const seoDescription = createSeoDescription(post.content);
+  const seoDescription = post.description || createSeoDescription(post.content);
 
   // Generate a more meaningful title based on post content
-  let title = extractPostTitle(post.content, post.author);
+  let title = post.title || extractPostTitle(post.content, post.author);
 
   // Ensure the first character is uppercase
   if (title && title.length > 0) {

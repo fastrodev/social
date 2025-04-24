@@ -512,12 +512,6 @@ export default function Post({ data }: PageProps<{
     }
   };
 
-  const handleAttachClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
   const handleAttachmentClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -568,7 +562,7 @@ export default function Post({ data }: PageProps<{
         />
 
         <div className="max-w-xl mx-auto">
-          <main className="max-w-2xl mx-auto px-0 sm:px-4">
+          <main className="max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6">
             {/* Post Detail Card */}
             <div
               className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} px-6 py-4 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}

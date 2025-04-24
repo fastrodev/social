@@ -2,10 +2,13 @@ import { ulid } from "jsr:@std/ulid/ulid";
 import { kv } from "@app/utils/db.ts";
 
 interface PostInput {
+  title: string;
+  description: string;
   content: string;
   author: string;
   avatar?: string;
   image?: string;
+  tags?: string[];
 }
 
 interface Post {
@@ -17,6 +20,9 @@ interface Post {
   views?: number;
   avatar?: string;
   image?: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
 }
 
 export async function createPost(input: PostInput): Promise<Post> {
@@ -28,6 +34,9 @@ export async function createPost(input: PostInput): Promise<Post> {
     author: input.author,
     avatar: input.avatar,
     image: input.image,
+    title: input.title,
+    description: input.description,
+    tags: input.tags,
   };
 
   const primaryKey = ["posts", id];
