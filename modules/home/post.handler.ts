@@ -1,98 +1,17 @@
 import { getSession } from "@app/utils/session.ts";
-import { getPostById } from "@app/modules/home/home.service.ts";
+
 import { Context, HttpRequest } from "fastro/mod.ts";
-
-// Helper function to clean markdown for SEO description
-export function createSeoDescription(
-  markdown: string,
-  maxLength = 150,
-): string {
-  // Convert markdown to plain text
-  let text = markdown;
-
-  // Remove markdown headers (# Title)
-  text = text.replace(/^#+ .*$/gm, "").trim();
-
-  // Remove other markdown syntax
-  text = text
-    .replace(/[*_`~#>]+/g, "") // Remove formatting chars
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Replace links with just text
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Remove images
-    .replace(/\n+/g, " ") // Replace newlines with spaces
-    .replace(/\s+/g, " ") // Normalize whitespace
-    .trim();
-
-  // If after cleaning we have empty text, fall back to original with basic cleaning
-  if (!text) {
-    text = markdown.replace(/[#*_`~>]+/g, "").trim();
-  }
-
-  // Truncate to desired length
-  if (text.length > maxLength) {
-    return text.substring(0, maxLength) + "...";
-  }
-
-  return text;
-}
-
-// Extract a meaningful title from post content
-export function extractPostTitle(
-  content: string,
-  author: string,
-  maxLength = 140,
-): string {
-  // Check if content starts with a markdown header
-  const headerMatch = content.match(/^#+\s+(.+)$/m);
-
-  if (headerMatch && headerMatch[1]) {
-    // Return the header text exactly as is, only trimming whitespace
-    const headerTitle = headerMatch[1].trim();
-
-    return headerTitle.length > maxLength
-      ? headerTitle.substring(0, maxLength) + "..."
-      : headerTitle;
-  }
-
-  // If no header, use the first paragraph exactly as is
-  const firstParagraph = content
-    .split(/\n\s*\n/)[0] // Get first paragraph
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // Only remove images
-    .trim();
-
-  // If too long, truncate
-  if (firstParagraph.length > maxLength) {
-    return firstParagraph.substring(0, maxLength) + "...";
-  }
-
-  // If we couldn't extract anything meaningful, fall back to default
-  if (!firstParagraph || firstParagraph.length < 10) {
-    return `Post by ${author}`;
-  }
-
-  return firstParagraph;
-}
-
-export function extractTags(content: string): string[] | null {
-  // Get the last line of content
-  const lastLine = content.trim().split("\n").pop() || "";
-
-  // Only process if the last line contains hashtags
-  if (!lastLine.includes("#")) {
-    return null;
-  }
-
-  const tagRegex = /#(\w+)/g;
-  const tags: string[] = [];
-  let match;
-
-  while ((match = tagRegex.exec(lastLine)) !== null) {
-    if (match[1]) {
-      tags.push(match[1]);
-    }
-  }
-
-  return tags.length > 0 ? tags : null;
-}
+import {
+  createPost,
+  deletePostById,
+  editPostById,
+  getPostById,
+} from "@app/modules/home/post.service.ts";
+import {
+  createSeoDescription,
+  extractPostTitle,
+  extractTags,
+} from "../../utils/markdown.ts";
 
 export default async function postDetailHandler(
   req: HttpRequest,
@@ -115,7 +34,7 @@ export default async function postDetailHandler(
 
   // Get the post details
   const post = await getPostById(id);
-  console.log("Post retrieved:", post ? "Yes" : "No");
+  console.log("Post details:", post);
 
   if (!post) {
     // If post doesn't exist, redirect to home
@@ -160,4 +79,142 @@ export default async function postDetailHandler(
     url: `${baseUrl}/post/${id}`,
     publishDate: post.timestamp,
   });
+}
+
+export const editPostHandler = async (req: HttpRequest) => {
+  const id = req.params?.id;
+  if (!id) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Post ID is required",
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 400,
+      },
+    );
+  }
+
+  try {
+    const body = await req.json();
+
+    const post = await editPostById(id, body);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Post updated successfully",
+        data: post,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "Failed to update post",
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+        status: 500,
+      },
+    );
+  }
+};
+
+export async function postHandler(req: HttpRequest, ctx: Context) {
+  try {
+    const body = await req.json();
+    const content = body.content;
+
+    if (!content || typeof content !== "string" || content.trim() === "") {
+      return new Response(JSON.stringify({ error: "Content is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Get the user from session
+    const ses = await getSession(req, ctx);
+    const username = ses?.username;
+
+    const title = extractPostTitle(content, username);
+    const description = createSeoDescription(content);
+    const tags: string[] = extractTags(content) || [];
+
+    // Create the post
+    const post = await createPost({
+      content,
+      author: username,
+      avatar: ses?.avatar_url,
+      image: body.image,
+      title,
+      description,
+      tags,
+    });
+
+    return new Response(JSON.stringify(post), {
+      status: 201,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Error processing post request:", error);
+    return new Response(JSON.stringify({ error: "Invalid request" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+export async function deletePostHandler(req: HttpRequest, ctx: Context) {
+  try {
+    // Extract post ID from the URL path instead of query parameters
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split("/");
+    const id = pathParts[pathParts.length - 1]; // Get the last part of the path
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: "Post ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Get the user from session for authorization
+    const ses = await getSession(req, ctx);
+    if (!ses?.isLogin) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Delete the post
+    const success = await deletePostById(id);
+
+    if (!success) {
+      return new Response(JSON.stringify({ error: "Post not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error processing delete request:", error);
+    return new Response(JSON.stringify({ error: "Server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }

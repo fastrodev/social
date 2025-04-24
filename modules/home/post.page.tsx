@@ -13,7 +13,7 @@ import { EditIcon } from "@app/components/icons/edit.tsx"; // Add EditIcon impor
 import { ClipIcon } from "@app/components/icons/clip.tsx"; // Add ClipIcon import
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
-import { renderMarkdownWithHashtags } from "./utils/markdown.ts";
+import { renderMarkdownWithHashtags } from "../../utils/markdown.ts";
 
 interface Post {
   id: string;
