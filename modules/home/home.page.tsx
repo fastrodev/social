@@ -59,13 +59,13 @@ export default function Home({ data }: PageProps<{
   // Add a function to get a random default image
   const getRandomDefaultImage = () => {
     const images = [
-      "/i00vm5i00vm5i00v.jpeg",
-      "/m0zjohm0zjohm0zj.jpg",
-      "/6sftej6sftej6sft.jpg",
-      "/kbyeb2kbyeb2kbye.jpg",
-      "/91pymj91pymj91py.jpg",
-      "/midvcjmidvcjmidv.jpg",
-      "/ckp4shckp4shckp4.jpg",
+      "https://social.fastro.dev/img/i00vm5i00vm5i00v.jpeg",
+      "https://social.fastro.dev/img/m0zjohm0zjohm0zj.jpg",
+      "https://social.fastro.dev/img/6sftej6sftej6sft.jpg",
+      "https://social.fastro.dev/img/kbyeb2kbyeb2kbye.jpg",
+      "https://social.fastro.dev/img/91pymj91pymj91py.jpg",
+      "https://social.fastro.dev/img/midvcjmidvcjmidv.jpg",
+      "https://social.fastro.dev/img/ckp4shckp4shckp4.jpg",
     ];
     const randomIndex = Math.floor(Math.random() * images.length);
     return images[randomIndex];
