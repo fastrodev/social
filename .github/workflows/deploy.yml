@@ -124,61 +124,32 @@ jobs:
           CURRENT_SHA=${{ github.sha }}
           echo "Current image SHA: $CURRENT_SHA"
 
-          # Set appropriate timeout for gcloud commands
+          # Ensure we have proper permissions
           gcloud config set artifacts/location ${{ vars.GCP_REGION }}
 
-          # List all images with detailed output for debugging
-          echo "Listing all available images before cleanup:"
-          gcloud artifacts docker images list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
-            --format="table[box](digest.slice(0:12),tags,createTime)" \
-            --sort-by=~createTime
+          # List all tags with version creation time
+          echo "Listing all available images:"
+          gcloud artifacts docker tags list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
+            --sort-by=~CREATE_TIME \
+            --format="table[box](tag, create_time)"
 
-          # Extract all digests except the current build (keeping 5 most recent)
-          echo "Finding digests to keep and delete:"
+          # Keep current image and delete older ones
+          echo "Finding tags to delete..."
+          OLD_TAGS=$(gcloud artifacts docker tags list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
+            --format="value(tag)" | grep -v "^${CURRENT_SHA}$" || echo "")
 
-          # List all images by createTime (newest first), and keep only the 5 most recent
-          ALL_DIGESTS=$(gcloud artifacts docker images list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
-            --sort-by=~createTime \
-            --format="value(digest)")
-
-          # Keep track of how many images we've seen
-          COUNT=0
-          DIGESTS_TO_DELETE=""
-
-          # Process each digest
-          for DIGEST in $ALL_DIGESTS; do
-            COUNT=$((COUNT + 1))
-
-            # Only delete if it's beyond our keep count (5)
-            if [ $COUNT -gt 5 ]; then
-              if [ -n "$DIGESTS_TO_DELETE" ]; then
-                DIGESTS_TO_DELETE="$DIGESTS_TO_DELETE $DIGEST"
-              else
-                DIGESTS_TO_DELETE="$DIGEST"
-              fi
-            fi
-          done
-
-          # Delete old images by digest
-          if [ -z "$DIGESTS_TO_DELETE" ]; then
-            echo "No old images to delete (keeping 5 most recent)"
+          if [ -z "$OLD_TAGS" ]; then
+            echo "No old tags found to delete"
           else
-            echo "Found images to delete:"
-            for DIGEST in $DIGESTS_TO_DELETE; do
-              # Get the shortened digest for display
-              SHORT_DIGEST=$(echo $DIGEST | cut -d':' -f2 | cut -c1-12)
-              echo "Deleting image with digest: sha256:$SHORT_DIGEST..."
-
-              # Full image reference with digest
-              IMAGE_WITH_DIGEST="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image@$DIGEST"
-
-              # Perform the deletion
-              gcloud artifacts docker images delete "$IMAGE_WITH_DIGEST" --delete-tags --quiet || echo "Failed to delete image with digest $SHORT_DIGEST"
+            for TAG in $OLD_TAGS; do
+              echo "Deleting image with tag: $TAG"
+              gcloud artifacts docker tags delete ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image:$TAG --quiet || echo "Failed to delete tag $TAG"
             done
           fi
 
-          # List remaining images after cleanup
-          echo "Remaining images after cleanup:"
+          echo "Running garbage collection to clean up untagged images"
           gcloud artifacts docker images list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
-            --format="table[box](digest.slice(0:12),tags,createTime)" \
-            --sort-by=~createTime
+            --filter="NOT tags:*" --format="value(version)" | while read -r DIGEST; do
+            echo "Deleting untagged image: $DIGEST"
+            gcloud artifacts docker images delete ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image@$DIGEST --quiet || echo "Failed to delete untagged image $DIGEST"
+          done
