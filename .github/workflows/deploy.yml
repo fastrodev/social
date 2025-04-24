@@ -127,19 +127,20 @@ jobs:
           # Ensure we have proper permissions
           gcloud config set artifacts/location ${{ vars.GCP_REGION }}
 
-          # List all tags with version creation time
+          # List all tags with better timestamp formatting
           echo "Listing all available images:"
           gcloud artifacts docker tags list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
             --sort-by=~CREATE_TIME \
-            --format="table[box](tag, create_time)"
+            --format="table[box](tag,create_time.date('%Y-%m-%d %H:%M:%S %Z'))"
 
-          # Keep current image and delete older ones
-          echo "Finding tags to delete..."
+          # Keep only the 5 most recent images
+          echo "Finding old tags to delete..."
           OLD_TAGS=$(gcloud artifacts docker tags list ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/deno-repository/deno-cloudrun-image \
-            --format="value(tag)" | grep -v "^${CURRENT_SHA}$" || echo "")
+            --sort-by=~CREATE_TIME \
+            --format="value(tag)" | tail -n +6 || echo "")
 
           if [ -z "$OLD_TAGS" ]; then
-            echo "No old tags found to delete"
+            echo "No old tags to delete"
           else
             for TAG in $OLD_TAGS; do
               echo "Deleting image with tag: $TAG"
