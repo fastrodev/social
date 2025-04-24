@@ -26,9 +26,10 @@ interface Post {
   viewCount?: number;
   views?: number;
   isMarkdown?: boolean;
-  image?: string; // Add this field for image URL
-  title?: string; // Add this field for post title
-  tags?: string[]; // Add this field for tags
+  image?: string;
+  defaultImage?: string; // Add this field
+  title?: string;
+  tags?: string[];
 }
 
 export default function Home({ data }: PageProps<{
@@ -273,7 +274,8 @@ export default function Home({ data }: PageProps<{
     if (!postContent.trim()) return;
 
     setIsSubmitting(true);
-    const randomImage = imageUrl || getRandomDefaultImage();
+    // Assign random image only if no image was uploaded
+    const postImage = imageUrl || getRandomDefaultImage();
     try {
       const response = await fetch("/api/post", {
         method: "POST",
@@ -283,17 +285,17 @@ export default function Home({ data }: PageProps<{
         body: JSON.stringify({
           content: postContent,
           isMarkdown: true,
-          image: randomImage,
+          image: postImage,
+          defaultImage: postImage, // Store the default image
         }),
       });
 
       if (response.ok) {
         const newPost = await response.json();
         setPosts([newPost, ...posts]);
-        resetForm(); // Use this instead of just clearing postContent
+        resetForm();
         setSubmitSuccess(true);
 
-        // Reset success message after 3 seconds
         setTimeout(() => {
           setSubmitSuccess(false);
         }, 3000);
@@ -369,6 +371,11 @@ export default function Home({ data }: PageProps<{
         console.error("Failed to copy link:", err);
       });
     }
+  };
+
+  // Add this function to handle redirecting to edit mode
+  const handleEditPost = (postId: string) => {
+    window.location.href = `/post/${postId}?edit=true`;
   };
 
   const toggleTheme = () => {
@@ -722,28 +729,49 @@ export default function Home({ data }: PageProps<{
                                   {/* Share option for all users */}
                                   <button
                                     onClick={() => handleSharePost(post.id)}
-                                    className={`flex items-center w-full gap-x-2 px-3 py-2 text-sm ${
+                                    className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                                       isDark
-                                        ? "text-blue-400 hover:bg-gray-700"
-                                        : "text-blue-600 hover:bg-gray-100"
+                                        ? "text-gray-200 hover:bg-gray-700"
+                                        : "text-gray-700 hover:bg-gray-100"
                                     } rounded-md`}
                                   >
                                     <ShareIcon />
-                                    Share post
+                                    <span className="font-medium">
+                                      Share post
+                                    </span>
                                   </button>
+
+                                  {/* Edit option only for post author */}
+                                  {data.author === post.author && (
+                                    <button
+                                      onClick={() => handleEditPost(post.id)}
+                                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                                        isDark
+                                          ? "text-gray-200 hover:bg-gray-700"
+                                          : "text-gray-700 hover:bg-gray-100"
+                                      } rounded-md`}
+                                    >
+                                      <EditIcon />
+                                      <span className="font-medium">
+                                        Edit post
+                                      </span>
+                                    </button>
+                                  )}
 
                                   {/* Delete option only for post author */}
                                   {data.author === post.author && (
                                     <button
                                       onClick={() => handleDeletePost(post.id)}
-                                      className={`flex items-center w-full gap-x-2 px-3 py-2 text-sm ${
+                                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                                         isDark
-                                          ? "text-red-400 hover:bg-gray-700"
-                                          : "text-red-600 hover:bg-gray-100"
+                                          ? "text-gray-200 hover:bg-gray-700"
+                                          : "text-gray-700 hover:bg-gray-100"
                                       } rounded-md`}
                                     >
                                       <DeleteIcon />
-                                      Delete post
+                                      <span className="font-medium">
+                                        Delete post
+                                      </span>
                                     </button>
                                   )}
                                 </div>
@@ -754,11 +782,10 @@ export default function Home({ data }: PageProps<{
                         {/* End Modified Header Section */}
 
                         <a href={`/post/${post.id}`} className="block relative">
+                          {/* Modified image section */}
                           <div className="mb-3">
                             <img
-                              src={post.image
-                                ? post.image
-                                : getRandomDefaultImage()}
+                              src={post.image || post.defaultImage}
                               alt="Post attachment"
                               className="w-full h-[300px] rounded-lg object-cover"
                             />
