@@ -84,6 +84,7 @@ const htmlPlugin = {
           user: "Example User",
           title: "Join the Conversation",
           description: "Today's ideas become tomorrow's innovations",
+          github_auth: "https://web.fastro.dev/auth/github/signin",
         };
 
         const metaData = {

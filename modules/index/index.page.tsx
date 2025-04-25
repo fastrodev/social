@@ -12,6 +12,7 @@ export default function Index({ data }: PageProps<
     user: string;
     title: string;
     description: string;
+    github_auth: string;
     // youtube: string;
     // start: string;
   }
@@ -52,7 +53,9 @@ export default function Index({ data }: PageProps<
             <div className="flex flex-col gap-4 justify-center max-w-md mx-auto">
               {/* GitHub Login Button (Default) */}
               <a
-                href="/auth/github/signin"
+                href={data.github_auth
+                  ? data.github_auth
+                  : "/auth/github/signin"}
                 className="inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400"
               >
                 <GithubIcon />
