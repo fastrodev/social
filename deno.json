@@ -6,7 +6,8 @@
     "build": "deno run -A --unstable-kv main.ts --build ",
     "test": "rm -rf .hydrate && rm -rf cov && deno test -A --unstable-kv --coverage=cov && deno coverage cov",
     "coverage": "deno coverage cov --lcov > cov.lcov",
-    "cmd": "deno run -A --unstable-kv utils/cmd.ts"
+    "cmd": "deno run -A --unstable-kv utils/cmd.ts",
+    "public_build": "deno run -A utils/build.ts"
   },
   "lint": {
     "rules": {

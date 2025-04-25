@@ -1,8 +1,15 @@
+// deno-lint-ignore-file no-explicit-any
 import { h } from "preact";
 import * as esbuild from "npm:esbuild@0.25.3";
 import { renderToString } from "preact-render-to-string";
 import { indexLayout } from "../modules/index/index.layout.tsx";
 import Index from "../modules/index/index.page.tsx";
+import { denoPlugins } from "jsr:@luca/esbuild-deno-loader@^0.11.0";
+import postcss from "postcss";
+import tailwindCss, { Config } from "tailwindcss";
+import autoprefixer from "autoprefixer";
+import cssnano from "cssnano";
+import { TailwindPluginOptions } from "@app/middlewares/tailwind/types.ts";
 
 interface BuildResult {
   errors: esbuild.Message[];
@@ -14,6 +21,58 @@ interface PluginBuild {
   onEnd(callback: (result: BuildResult) => void | Promise<void>): void;
 }
 
+async function getPath() {
+  let twc;
+  try {
+    twc = await import(Deno.cwd() + "/tailwind.config.ts");
+  } catch (_err) {
+    twc = await import("../tailwind.config.ts");
+  }
+  return twc;
+}
+
+const twc = await getPath();
+
+function createProcessor(
+  config: {
+    staticDir: string;
+    dev: boolean;
+  },
+  options: TailwindPluginOptions,
+) {
+  const tailwindConfig = twc.default as Config;
+  const plugins = [
+    tailwindCss(tailwindConfig) as any,
+    autoprefixer(options.autoprefixer) as any,
+  ];
+
+  if (!config.dev) {
+    plugins.push(cssnano());
+  }
+
+  return postcss(plugins);
+}
+
+async function processCss(staticDir: string) {
+  try {
+    const processor = createProcessor({
+      staticDir,
+      dev: false,
+    }, {});
+
+    const path = Deno.cwd() + "/static/tailwind.css";
+    const content = Deno.readTextFileSync(path);
+    const result = await processor.process(content, {
+      from: undefined,
+    });
+    await Deno.writeTextFile("public/styles.css", result.css);
+    console.log("Tailwind CSS built successfully");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 const htmlPlugin = {
   name: "html",
   setup(build: PluginBuild) {
@@ -23,16 +82,14 @@ const htmlPlugin = {
       try {
         const pageData = {
           user: "Example User",
-          title: "Your Page Title",
-          description: "Your page description here",
-          youtube: "https://youtube.com/example",
-          start: "2023-01-01",
+          title: "Join the Conversation",
+          description: "Today's ideas become tomorrow's innovations",
         };
 
         const metaData = {
           title: pageData.title,
           description: pageData.description,
-          image: "/path/to/image.jpg",
+          image: "https://web.fastro.dev/social.jpeg",
         };
 
         const fullHtml = renderToString(
@@ -53,15 +110,25 @@ const htmlPlugin = {
 };
 
 try {
+  const cwd = Deno.cwd();
+  const configPath = `${cwd}/deno.json`;
+
+  await processCss(cwd + "/public");
+
   await esbuild.build({
-    entryPoints: ["modules/index/index.public.tsx"],
+    entryPoints: ["modules/index/index.page.tsx"],
     bundle: true,
     outfile: "public/js/bundle.js",
     format: "esm",
     loader: { ".tsx": "tsx" },
     jsxFactory: "h",
     jsxFragment: "Fragment",
-    plugins: [htmlPlugin],
+    plugins: [
+      htmlPlugin,
+      ...denoPlugins({
+        configPath,
+      }),
+    ],
     jsx: "automatic",
     jsxImportSource: "preact",
     metafile: true,

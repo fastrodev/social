@@ -3,3 +3,7 @@ node_modules/
 *.
 *.env
 *.json
+
+public/js/
+public/styles.css
+public/index.html
