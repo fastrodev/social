@@ -67,6 +67,13 @@ jobs:
       - name: Show Output
         run: echo ${{ steps.deploy.outputs.url }}
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.
+
+      - name: generate public files
+        run: deno task public_build
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
