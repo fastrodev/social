@@ -106,15 +106,8 @@ const htmlPlugin = {
           /</g,
           "\\u003c",
         );
-
-        const scripts = `
-          <script id="__DATA__" type="application/json">${serializedData}</script>
-          <script type="module">
-            import { hydrate } from 'https://esm.sh/preact@10.26.5';
-            import App from '/js/bundle.js';
-            const data = JSON.parse(document.getElementById('__DATA__').textContent);
-            hydrate(App({ data }), document.getElementById('root'));
-          </script>`;
+        const scripts =
+          `<script id="__DATA__" type="application/json">${serializedData}</script><script type="module">import{hydrate}from'https://esm.sh/preact@10.26.5';import App from'/js/bundle.js';hydrate(App({data:JSON.parse(document.getElementById('__DATA__').textContent)}),document.getElementById('root'))</script>`;
 
         fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
