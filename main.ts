@@ -10,14 +10,20 @@ import "@std/dotenv/load";
 
 const s = new Server();
 s.use((req, ctx) => {
-  req.headers.set("Access-Control-Allow-Origin", "http://localhost:8000");
-  req.headers.set("Access-Control-Allow-Origin", "https://web.fastro.dev");
-  req.headers.set("Access-Control-Allow-Origin", "https://social.fastro.dev");
-  req.headers.set("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
-  req.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods":
+      "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Custom-Header",
+    "Access-Control-Max-Age": "86400",
+  };
+
   if (req.method === "OPTIONS") {
-    // preflight
-    return ctx.send(null, 204);
+    return new Response(null, {
+      status: 204, // No Content
+      headers: corsHeaders,
+    });
   }
   return ctx.next();
 });
