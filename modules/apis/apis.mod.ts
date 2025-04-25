@@ -5,7 +5,7 @@ import {
   generateSignedUrl,
 } from "../../utils/signed-url.ts";
 
-export function apisModule(s: Fastro) {
+export default function apisModule(s: Fastro) {
   // --- Existing /api/signed-url endpoint for uploads ---
   s.post("/api/signed-url", async (req, res) => {
     try {
