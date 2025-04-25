@@ -22,6 +22,10 @@ s.use((req, ctx) => {
   );
 
   ctx.setHeaders(corsHeaders);
+  if (req.method === "OPTIONS") {
+    // preflight
+    return ctx.send(null, 204);
+  }
   return ctx.next();
 });
 s.use(authMiddleware());
