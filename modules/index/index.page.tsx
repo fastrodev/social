@@ -23,7 +23,7 @@ export default function Index({ data }: PageProps<
   useEffect(() => {
     const checkHealth = async () => {
       const maxRetries = 5;
-      const retryDelay = 2000; // 2 seconds
+      const retryDelay = 2000;
 
       for (let attempt = 0; attempt < maxRetries; attempt++) {
         try {
@@ -38,14 +38,12 @@ export default function Index({ data }: PageProps<
             return;
           }
 
-          // Wait before next retry
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         } catch (error) {
           console.error(`Health check attempt ${attempt + 1} failed:`, error);
           if (attempt === maxRetries - 1) {
             setIsChecking(false);
           }
-          // Continue to next retry
           await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
       }
@@ -55,9 +53,8 @@ export default function Index({ data }: PageProps<
     checkHealth();
   }, []);
 
-  // Update the button text based on state
   const buttonText = isChecking
-    ? "Checking Service..."
+    ? <span className="animate-ellipsis">Checking Service</span>
     : (isHealthy ? "Sign in with GitHub" : "Service Unavailable");
 
   return (

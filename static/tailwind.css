@@ -208,3 +208,31 @@
         animation: octocat-wave 560ms ease-in-out;
     }
 }
+
+@keyframes ellipsis {
+    0% {
+        content: '';
+    }
+
+    25% {
+        content: '.';
+    }
+
+    50% {
+        content: '..';
+    }
+
+    75% {
+        content: '...';
+    }
+
+    100% {
+        content: '';
+    }
+}
+
+.animate-ellipsis::after {
+    content: '';
+    display: inline-block;
+    animation: ellipsis 1.5s infinite;
+}
