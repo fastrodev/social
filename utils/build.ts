@@ -110,15 +110,7 @@ const htmlPlugin = {
         );
         const scripts =
           `<script id="__DATA__" type="application/json">${serializedData}</script>` +
-          `<script type="module" src="https://esm.sh/preact@10.26.5"></script>` +
-          `<script type="module">
-             import App from '/js/bundle.js';
-             import { hydrate } from 'preact';
-             hydrate(
-               App({ data: JSON.parse(document.getElementById('__DATA__').textContent) }),
-               document.getElementById('root')
-             );
-           </script>`;
+          `<script type="module" src="/js/bundle.js"></script>`;
 
         fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
@@ -149,11 +141,10 @@ Sitemap: https://social.fastro.dev/sitemap.xml`;
   await processCss(cwd + "/public");
 
   await esbuild.build({
-    entryPoints: ["modules/index/index.page.tsx"],
+    entryPoints: ["modules/index/index.client.tsx"],
     bundle: true,
     outfile: "public/js/bundle.js",
     format: "esm",
-    external: ["preact"],
     loader: { ".tsx": "tsx" },
     jsxFactory: "h",
     jsxFragment: "Fragment",
@@ -168,8 +159,6 @@ Sitemap: https://social.fastro.dev/sitemap.xml`;
     metafile: true,
     treeShaking: true,
     minify: true,
-    minifySyntax: true,
-    minifyWhitespace: true,
   });
 } catch (error) {
   console.error("Build failed:", error);
