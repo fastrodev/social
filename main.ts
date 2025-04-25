@@ -10,21 +10,18 @@ import "@std/dotenv/load";
 
 const s = new Server();
 s.use((req, ctx) => {
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods":
-      "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS",
-    "Access-Control-Allow-Headers":
-      "Content-Type, Authorization, X-Custom-Header",
-    "Access-Control-Max-Age": "86400",
-  };
+  const corsHeaders = new Headers(
+    {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods":
+        "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS",
+      "Access-Control-Allow-Headers":
+        "Content-Type, Authorization, X-Custom-Header",
+      "Access-Control-Max-Age": "86400",
+    },
+  );
 
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204, // No Content
-      headers: corsHeaders,
-    });
-  }
+  ctx.setHeaders(corsHeaders);
   return ctx.next();
 });
 s.use(authMiddleware());
