@@ -21,7 +21,7 @@ export default function Index({ data }: PageProps<
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const response = await fetch("https://web.fastro.dev/api/healthcheck");
+        const response = await fetch("https://fastro.dev/api/get");
         console.log("Health check response:", response);
         if (!response.ok) {
           setIsHealthy(false);

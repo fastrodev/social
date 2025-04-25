@@ -9,25 +9,7 @@ import authMiddleware from "@app/middlewares/auth/mod.ts";
 import "@std/dotenv/load";
 
 const s = new Server();
-s.use((req, ctx) => {
-  const corsHeaders = new Headers(
-    {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods":
-        "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS",
-      "Access-Control-Allow-Headers":
-        "Content-Type, Authorization, X-Custom-Header",
-      "Access-Control-Max-Age": "86400",
-    },
-  );
 
-  ctx.setHeaders(corsHeaders);
-  if (req.method === "OPTIONS") {
-    // preflight
-    return ctx.send(null, 204);
-  }
-  return ctx.next();
-});
 s.use(authMiddleware());
 s.use(tailwind());
 s.group(authModule);
