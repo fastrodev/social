@@ -109,7 +109,16 @@ const htmlPlugin = {
           "\\u003c",
         );
         const scripts =
-          `<script id="__DATA__" type="application/json">${serializedData}</script><script type="module">import{hydrate}from'https://esm.sh/preact@10.26.5';import App from'/js/bundle.js';hydrate(App({data:JSON.parse(document.getElementById('__DATA__').textContent)}),document.getElementById('root'))</script>`;
+          `<script id="__DATA__" type="application/json">${serializedData}</script>` +
+          `<script type="module" src="https://esm.sh/preact@10.26.5"></script>` +
+          `<script type="module">
+             import App from '/js/bundle.js';
+             import { hydrate } from 'preact';
+             hydrate(
+               App({ data: JSON.parse(document.getElementById('__DATA__').textContent) }),
+               document.getElementById('root')
+             );
+           </script>`;
 
         fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
@@ -144,6 +153,7 @@ Sitemap: https://social.fastro.dev/sitemap.xml`;
     bundle: true,
     outfile: "public/js/bundle.js",
     format: "esm",
+    external: ["preact"],
     loader: { ".tsx": "tsx" },
     jsxFactory: "h",
     jsxFragment: "Fragment",
