@@ -22,6 +22,7 @@ export default function Index({ data }: PageProps<
     const checkHealth = async () => {
       try {
         const response = await fetch("https://web.fastro.dev/api/healthcheck");
+        console.log("Health check response:", response);
         if (!response.ok) {
           setIsHealthy(false);
         }
