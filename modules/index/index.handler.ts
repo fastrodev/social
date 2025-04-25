@@ -26,7 +26,7 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
   return await ctx.render({
     title: "Fastro Social",
     description: "A social network built with Fastro",
-    image: "https://social.fastro.dev/social.jpeg",
+    image: "https://social.fastro.dev/img/social.jpeg",
     isLogin,
   });
 }

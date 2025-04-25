@@ -90,7 +90,7 @@ const htmlPlugin = {
         const metaData = {
           title: pageData.title,
           description: pageData.description,
-          image: "https://web.fastro.dev/social.jpeg",
+          image: "https://social.fastro.dev/img/social.jpeg",
         };
 
         const fullHtml = renderToString(

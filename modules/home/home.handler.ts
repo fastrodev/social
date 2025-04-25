@@ -21,7 +21,7 @@ export default async function homeHandler(req: HttpRequest, ctx: Context) {
   const posts = await getPosts();
 
   const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
-  const imageUrl = baseUrl + "/social.jpeg";
+  const imageUrl = "https://social.fastro.dev/img/social.jpeg";
 
   return await ctx.render({
     title: "Home",
