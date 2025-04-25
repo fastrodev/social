@@ -141,7 +141,7 @@ Sitemap: https://social.fastro.dev/sitemap.xml`;
   await processCss(cwd + "/public");
 
   await esbuild.build({
-    entryPoints: ["modules/index/index.client.tsx"],
+    entryPoints: ["./modules/index/index.client.tsx"], // ← make sure this points exactly at your client‑side hydrate file
     bundle: true,
     outfile: "public/js/bundle.js",
     format: "esm",

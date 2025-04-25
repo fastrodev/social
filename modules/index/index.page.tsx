@@ -17,7 +17,7 @@ export default function Index({ data }: PageProps<
   }
 >) {
   const [isHealthy, setIsHealthy] = useState(true);
-
+  console.log("Rendering Index with data:", data);
   useEffect(() => {
     const checkHealth = async () => {
       try {
