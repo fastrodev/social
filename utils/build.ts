@@ -93,13 +93,15 @@ const htmlPlugin = {
           image: "https://social.fastro.dev/img/social.jpeg",
         };
 
-        let fullHtml = renderToString(
-          indexLayout({
-            children: h(Index, { data: pageData }),
-            data: metaData,
-            nonce: "random-nonce-value",
-          }),
-        );
+        let fullHtml = `<!DOCTYPE html>${
+          renderToString(
+            indexLayout({
+              children: h(Index, { data: pageData }),
+              data: metaData,
+              nonce: "random-nonce-value",
+            }),
+          )
+        }`;
 
         // Serialize the data for client-side hydration
         const serializedData = JSON.stringify(pageData).replace(
@@ -123,6 +125,17 @@ const htmlPlugin = {
 try {
   const cwd = Deno.cwd();
   const configPath = `${cwd}/deno.json`;
+
+  // Create robots.txt
+  const robotsTxt = `User-agent: *
+Allow: /
+Disallow: /auth/
+Disallow: /api/
+    
+Sitemap: https://social.fastro.dev/sitemap.xml`;
+
+  await Deno.writeTextFile("public/robots.txt", robotsTxt);
+  console.log("robots.txt created successfully");
 
   await processCss(cwd + "/public");
 
