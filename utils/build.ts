@@ -93,13 +93,17 @@ const htmlPlugin = {
           image: "https://social.fastro.dev/img/social.jpeg",
         };
 
-        const fullHtml = renderToString(
+        let fullHtml = renderToString(
           indexLayout({
             children: h(Index, { data: pageData }),
             data: metaData,
             nonce: "random-nonce-value",
           }),
         );
+
+        const scripts =
+          `<script type="module" src="/js/bundle.js"></script><script type="module">import{hydrate}from'preact';import App from'/js/bundle.js';hydrate(App(),document.getElementById('root'))</script>`;
+        fullHtml = fullHtml.replace("</body>", `${scripts}\n</body>`);
 
         await Deno.writeTextFile("public/index.html", fullHtml);
         console.log("HTML file written successfully");
