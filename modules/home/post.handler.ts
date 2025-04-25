@@ -10,8 +10,8 @@ import {
 import {
   createSeoDescription,
   extractPostTitle,
-  extractTags,
 } from "../../utils/markdown.ts";
+import { extractTags } from "@app/utils/tags.ts";
 
 export default async function postDetailHandler(
   req: HttpRequest,

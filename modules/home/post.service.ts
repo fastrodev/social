@@ -3,8 +3,8 @@ import { ulid } from "jsr:@std/ulid/ulid";
 import {
   createSeoDescription,
   extractPostTitle,
-  extractTags,
 } from "../../utils/markdown.ts";
+import { extractTags } from "@app/utils/tags.ts";
 
 interface PostInput {
   title: string;

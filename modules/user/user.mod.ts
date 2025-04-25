@@ -7,7 +7,7 @@ import {
   updateUserHandler,
 } from "@app/modules/user/user.handler.ts";
 
-export function userModule(s: Fastro) {
+export default function userModule(s: Fastro) {
   s.get("/api/user", getAllUsers);
   s.get("/api/user/:userId", getUserByUserIdHandler);
   s.post("/api/user", createUserHandler);

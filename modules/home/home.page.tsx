@@ -15,6 +15,8 @@ import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
 import { renderMarkdownWithHashtags } from "../../utils/markdown.ts";
+import { extractTags } from "@app/utils/tags.ts";
+import { getRandomImage } from "@app/utils/random.ts";
 
 interface Post {
   id: string;
@@ -56,24 +58,6 @@ export default function Home({ data }: PageProps<{
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  // Add a function to get a random default image
-  const getRandomDefaultImage = () => {
-    const images = [
-      "https://social.fastro.dev/img/i00vm5i00vm5i00v.jpg",
-      "https://social.fastro.dev/img/m0zjohm0zjohm0zj.jpg",
-      "https://social.fastro.dev/img/6sftej6sftej6sft.jpg",
-      "https://social.fastro.dev/img/kbyeb2kbyeb2kbye.jpg",
-      "https://social.fastro.dev/img/91pymj91pymj91py.jpg",
-      "https://social.fastro.dev/img/midvcjmidvcjmidv.jpg",
-      "https://social.fastro.dev/img/ckp4shckp4shckp4.jpg",
-      "https://social.fastro.dev/img/wrp8skwrp8skwrp8.jpg",
-      "https://social.fastro.dev/img/8kwzn08kwzn08kwz.jpg",
-      "https://social.fastro.dev/img/yfzxmiyfzxmiyfzx.jpg",
-    ];
-    const randomIndex = Math.floor(Math.random() * images.length);
-    return images[randomIndex];
-  };
 
   // Detect mobile devices
   useEffect(() => {
@@ -274,8 +258,12 @@ export default function Home({ data }: PageProps<{
     if (!postContent.trim()) return;
 
     setIsSubmitting(true);
-    // Assign random image only if no image was uploaded
-    const postImage = imageUrl || getRandomDefaultImage();
+    // Extract tags from content
+    const extractedTags = extractTags(postContent);
+
+    // Assign random image based on tags only if no image was uploaded
+    const postImage = imageUrl || getRandomImage(extractedTags);
+
     try {
       const response = await fetch("/api/post", {
         method: "POST",
@@ -670,7 +658,7 @@ export default function Home({ data }: PageProps<{
                     posts.map((post) => (
                       <div
                         key={post.id}
-                        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+                        className={`${themeStyles.cardBg} rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
                       >
                         {/* Modified Header Section */}
                         <div className="flex items-center justify-between mb-3">

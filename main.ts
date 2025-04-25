@@ -1,13 +1,12 @@
 import Server from "fastro/mod.ts";
-import { indexModule } from "@app/modules/index/index.mod.ts";
-import { userModule } from "@app/modules/user/user.mod.ts";
+import userModule from "@app/modules/user/user.mod.ts";
+import indexModule from "@app/modules/index/index.mod.ts";
 import tailwind from "@app/middlewares/tailwind/mod.ts";
 import authModule from "@app/modules/auth/mod.tsx";
 import homeModule from "@app/modules/home/mod.ts";
-
-import "jsr:@std/dotenv/load";
 import { apisModule } from "@app/modules/apis/apis.mod.ts";
 import authMiddleware from "@app/middlewares/auth/mod.ts";
+import "jsr:@std/dotenv/load";
 
 const s = new Server();
 s.use(authMiddleware());
