@@ -102,8 +102,8 @@ const htmlPlugin = {
         );
 
         const scripts =
-          `<script type="module" src="/js/bundle.js"></script><script type="module">import{hydrate}from'preact';import App from'/js/bundle.js';hydrate(App(),document.getElementById('root'))</script>`;
-        fullHtml = fullHtml.replace("</body>", `${scripts}\n</body>`);
+          `<script type="module" src="/js/bundle.js"></script><script type="module">import{hydrate}from'/js/bundle.js';import{default as App}from'/js/bundle.js';hydrate(App(),document.getElementById('root'))</script>`;
+        fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
         await Deno.writeTextFile("public/index.html", fullHtml);
         console.log("HTML file written successfully");
