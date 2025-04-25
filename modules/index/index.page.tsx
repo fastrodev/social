@@ -16,24 +16,49 @@ export default function Index({ data }: PageProps<
     github_auth: string;
   }
 >) {
-  const [isHealthy, setIsHealthy] = useState(true);
+  const [isHealthy, setIsHealthy] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   console.log("Rendering Index with data:", data);
+
   useEffect(() => {
     const checkHealth = async () => {
-      try {
-        const response = await fetch("https://fastro.dev/api/get");
-        console.log("Health check response:", response);
-        if (!response.ok) {
-          setIsHealthy(false);
+      const maxRetries = 5;
+      const retryDelay = 2000; // 2 seconds
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const response = await fetch(
+            "https://web.fastro.dev/api/healthcheck",
+          );
+          console.log(`Health check attempt ${attempt + 1}:`, response);
+
+          if (response.ok) {
+            setIsHealthy(true);
+            setIsChecking(false);
+            return;
+          }
+
+          // Wait before next retry
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
+        } catch (error) {
+          console.error(`Health check attempt ${attempt + 1} failed:`, error);
+          if (attempt === maxRetries - 1) {
+            setIsChecking(false);
+          }
+          // Continue to next retry
+          await new Promise((resolve) => setTimeout(resolve, retryDelay));
         }
-      } catch (error) {
-        console.error("Health check failed:", error);
-        setIsHealthy(false);
       }
+      setIsChecking(false);
     };
 
     checkHealth();
   }, []);
+
+  // Update the button text based on state
+  const buttonText = isChecking
+    ? "Checking Service..."
+    : (isHealthy ? "Sign in with GitHub" : "Service Unavailable");
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
@@ -75,14 +100,16 @@ export default function Index({ data }: PageProps<
                   ? (data.github_auth || "/auth/github/signin")
                   : "#"}
                 className={`inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white ${
-                  isHealthy
+                  isChecking
+                    ? "bg-purple-500 cursor-wait"
+                    : isHealthy
                     ? "bg-purple-600 hover:bg-purple-700"
                     : "bg-gray-600 cursor-not-allowed"
                 } rounded-lg focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400`}
               >
                 <GithubIcon />
                 <span className="ml-2 text-lg">
-                  {isHealthy ? "Sign in with GitHub" : "Service Unavailable"}
+                  {buttonText}
                 </span>
               </a>
 
