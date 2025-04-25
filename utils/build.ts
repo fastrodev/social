@@ -102,7 +102,7 @@ const htmlPlugin = {
         );
 
         const scripts = `<script type="module">
-          import { hydrate } from 'https://esm.sh/preact@10.19.6';
+          import { hydrate } from 'https://esm.sh/preact@10.26.5';
           import App from '/js/bundle.js';
           hydrate(App(), document.getElementById('root'));
         </script>`;
