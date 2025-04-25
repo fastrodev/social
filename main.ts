@@ -9,6 +9,18 @@ import authMiddleware from "@app/middlewares/auth/mod.ts";
 import "@std/dotenv/load";
 
 const s = new Server();
+s.use((req, ctx) => {
+  req.headers.set("Access-Control-Allow-Origin", "http://localhost:8000");
+  req.headers.set("Access-Control-Allow-Origin", "https://web.fastro.dev");
+  req.headers.set("Access-Control-Allow-Origin", "https://social.fastro.dev");
+  req.headers.set("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+  req.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    // preflight
+    return ctx.send(null, 204);
+  }
+  return ctx.next();
+});
 s.use(authMiddleware());
 s.use(tailwind());
 s.group(authModule);

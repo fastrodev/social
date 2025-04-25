@@ -6,6 +6,7 @@ import { GoogleIcon } from "@app/components/icons/google.tsx";
 import { WhatsAppIcon } from "@app/components/icons/whatsapp.tsx";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { RibbonIcon } from "@app/components/icons/ribbon.tsx";
+import { useEffect, useState } from "preact/hooks";
 
 export default function Index({ data }: PageProps<
   {
@@ -13,10 +14,26 @@ export default function Index({ data }: PageProps<
     title: string;
     description: string;
     github_auth: string;
-    // youtube: string;
-    // start: string;
   }
 >) {
+  const [isHealthy, setIsHealthy] = useState(true);
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const response = await fetch("https://web.fastro.dev/api/healthcheck");
+        if (!response.ok) {
+          setIsHealthy(false);
+        }
+      } catch (error) {
+        console.error("Health check failed:", error);
+        setIsHealthy(false);
+      }
+    };
+
+    checkHealth();
+  }, []);
+
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
       {/* GitHub Ribbon - Top Right Corner */}
@@ -51,15 +68,21 @@ export default function Index({ data }: PageProps<
 
             {/* Login Buttons Container */}
             <div className="flex flex-col gap-4 justify-center max-w-md mx-auto">
-              {/* GitHub Login Button (Default) */}
+              {/* GitHub Login Button */}
               <a
-                href={data.github_auth
-                  ? data.github_auth
-                  : "/auth/github/signin"}
-                className="inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400"
+                href={isHealthy
+                  ? (data.github_auth || "/auth/github/signin")
+                  : "#"}
+                className={`inline-flex items-center justify-center px-5 py-4 text-base font-medium text-white ${
+                  isHealthy
+                    ? "bg-purple-600 hover:bg-purple-700"
+                    : "bg-gray-600 cursor-not-allowed"
+                } rounded-lg focus:ring-4 focus:ring-purple-300 transition-all duration-300 shadow-lg border-2 border-purple-400`}
               >
                 <GithubIcon />
-                <span className="ml-2 text-lg">Sign in with GitHub</span>
+                <span className="ml-2 text-lg">
+                  {isHealthy ? "Sign in with GitHub" : "Service Unavailable"}
+                </span>
               </a>
 
               <div className="flex items-center my-2">
