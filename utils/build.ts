@@ -101,11 +101,20 @@ const htmlPlugin = {
           }),
         );
 
-        const scripts = `<script type="module">
-          import { hydrate } from 'https://esm.sh/preact@10.26.5';
-          import App from '/js/bundle.js';
-          hydrate(App(), document.getElementById('root'));
-        </script>`;
+        // Serialize the data for client-side hydration
+        const serializedData = JSON.stringify(pageData).replace(
+          /</g,
+          "\\u003c",
+        );
+
+        const scripts = `
+          <script id="__DATA__" type="application/json">${serializedData}</script>
+          <script type="module">
+            import { hydrate } from 'https://esm.sh/preact@10.26.5';
+            import App from '/js/bundle.js';
+            const data = JSON.parse(document.getElementById('__DATA__').textContent);
+            hydrate(App({ data }), document.getElementById('root'));
+          </script>`;
 
         fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
