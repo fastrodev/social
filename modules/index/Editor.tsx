@@ -61,18 +61,22 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
     const postImage = imageUrl || getRandomImage(extractedTags);
 
     try {
-      const response = await fetch("https://web.fastro.dev/api/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://fastro.deno.dev/api/v1/post",
+        {
+          method: "POST",
+          // mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: postContent,
+            isMarkdown: true,
+            image: postImage,
+            defaultImage: postImage,
+          }),
         },
-        body: JSON.stringify({
-          content: postContent,
-          isMarkdown: true,
-          image: postImage,
-          defaultImage: postImage,
-        }),
-      });
+      );
 
       if (response.ok) {
         const newPost = await response.json();
