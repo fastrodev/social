@@ -106,6 +106,7 @@ export async function getPostsHandler(req: HttpRequest) {
       status: 200,
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch (error) {

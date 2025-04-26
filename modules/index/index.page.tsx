@@ -73,10 +73,18 @@ export default function Index({ data }: PageProps<
       }
 
       const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch posts");
+      const contentType = response.headers.get("content-type");
+
+      if (!response.ok || !contentType?.includes("application/json")) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
+
       const data = await response.json();
+
+      // Validate that data is an array
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid response format: expected an array");
+      }
 
       if (data.length < 4) {
         setHasMore(false);
@@ -88,6 +96,7 @@ export default function Index({ data }: PageProps<
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setHasMore(false); // Stop trying to load more if we hit an error
     } finally {
       setIsLoading(false);
     }
