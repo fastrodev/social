@@ -122,88 +122,87 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
               </div>
 
               {/* Right side: Icon Button */}
-              {data.isLogin && (
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setMenuOpenForPost(
-                        menuOpenForPost === post.id ? null : post.id,
-                      );
-                    }}
-                    className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
-                      isDark
-                        ? "text-gray-400 hover:text-gray-200"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                    aria-label="Post options"
-                  >
-                    <VDotsIcon />
-                  </button>
 
-                  {menuOpenForPost === post.id && (
-                    <div
-                      className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setMenuOpenForPost(
+                      menuOpenForPost === post.id ? null : post.id,
+                    );
+                  }}
+                  className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+                    isDark
+                      ? "text-gray-400 hover:text-gray-200"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                  aria-label="Post options"
+                >
+                  <VDotsIcon />
+                </button>
+
+                {menuOpenForPost === post.id && (
+                  <div
+                    className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+                      isDark
+                        ? "bg-gray-800 border border-gray-700"
+                        : "bg-white border border-gray-200"
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Share option for all users */}
+                    <button
+                      onClick={() => handleSharePost(post.id)}
+                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                         isDark
-                          ? "bg-gray-800 border border-gray-700"
-                          : "bg-white border border-gray-200"
-                      }`}
-                      onClick={(e) => e.stopPropagation()}
+                          ? "text-gray-200 hover:bg-gray-700"
+                          : "text-gray-700 hover:bg-gray-100"
+                      } rounded-md`}
                     >
-                      {/* Share option for all users */}
+                      <ShareIcon />
+                      <span className="font-medium">
+                        Share post
+                      </span>
+                    </button>
+
+                    {/* Edit option only for post author */}
+                    {data.author === post.author && (
                       <button
-                        onClick={() => handleSharePost(post.id)}
+                        onClick={() => handleEditPost(post.id)}
                         className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                           isDark
                             ? "text-gray-200 hover:bg-gray-700"
                             : "text-gray-700 hover:bg-gray-100"
                         } rounded-md`}
                       >
-                        <ShareIcon />
+                        <EditIcon />
                         <span className="font-medium">
-                          Share post
+                          Edit post
                         </span>
                       </button>
+                    )}
 
-                      {/* Edit option only for post author */}
-                      {data.author === post.author && (
-                        <button
-                          onClick={() => handleEditPost(post.id)}
-                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                            isDark
-                              ? "text-gray-200 hover:bg-gray-700"
-                              : "text-gray-700 hover:bg-gray-100"
-                          } rounded-md`}
-                        >
-                          <EditIcon />
-                          <span className="font-medium">
-                            Edit post
-                          </span>
-                        </button>
-                      )}
-
-                      {/* Delete option only for post author */}
-                      {data.author === post.author && (
-                        <button
-                          onClick={() => handleDeletePost(post.id)}
-                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                            isDark
-                              ? "text-gray-200 hover:bg-gray-700"
-                              : "text-gray-700 hover:bg-gray-100"
-                          } rounded-md`}
-                        >
-                          <DeleteIcon />
-                          <span className="font-medium">
-                            Delete post
-                          </span>
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+                    {/* Delete option only for post author */}
+                    {data.author === post.author && (
+                      <button
+                        onClick={() => handleDeletePost(post.id)}
+                        className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                          isDark
+                            ? "text-gray-200 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        } rounded-md`}
+                      >
+                        <DeleteIcon />
+                        <span className="font-medium">
+                          Delete post
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             {/* End Modified Header Section */}
 
