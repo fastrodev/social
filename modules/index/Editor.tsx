@@ -62,7 +62,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
 
     try {
       const response = await fetch(
-        "https://fastro.deno.dev/api/v1/post",
+        "https://web.fastro.dev/api/post",
         {
           method: "POST",
           // mode: "no-cors",

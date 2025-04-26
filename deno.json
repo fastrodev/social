@@ -1,7 +1,7 @@
 {
   "lock": false,
   "tasks": {
-    "dev": "ENV=DEVELOPMENT deno run -A --unstable-kv --watch main.ts",
+    "dev": "ENV=DEVELOPMENT deno run --reload -A --unstable-kv --watch main.ts",
     "start": "ENV=PRODUCTION deno run -A --unstable-kv main.ts",
     "build": "deno run -A --unstable-kv main.ts --build ",
     "test": "rm -rf .hydrate && rm -rf cov && deno test -A --unstable-kv --coverage=cov && deno coverage cov",
