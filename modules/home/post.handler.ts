@@ -15,8 +15,9 @@ import {
 import { extractTags } from "@app/utils/tags.ts";
 
 const CORS_HEADERS = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://social.fastro.dev",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 function generateAnonymousUsername(): string {
@@ -191,7 +192,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     if (!content || typeof content !== "string" || content.trim() === "") {
       return new Response(JSON.stringify({ error: "Content is required" }), {
         status: 400,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+        headers: { ...CORS_HEADERS },
       });
     }
 
@@ -252,10 +253,7 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "DELETE, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
+          ...CORS_HEADERS,
         },
       });
     }
@@ -266,19 +264,19 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
     if (!success) {
       return new Response(JSON.stringify({ error: "Post not found" }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...CORS_HEADERS },
       });
     }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...CORS_HEADERS },
     });
   } catch (error) {
     console.error("Error processing delete request:", error);
     return new Response(JSON.stringify({ error: "Server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...CORS_HEADERS },
     });
   }
 }
