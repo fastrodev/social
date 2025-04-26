@@ -38,6 +38,7 @@ function getCorsHeaders(req: HttpRequest): Record<string, string> {
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
+  console.log("CORS headers:", headers);
   return headers;
 }
 
@@ -180,12 +181,11 @@ function generateAvatarUrl(): string {
 export async function postHandler(req: HttpRequest, ctx: Context) {
   const corsHeaders = getCorsHeaders(req);
 
-  // Add handling for OPTIONS preflight request
+  // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
-    // Preflight requests need Allow-Origin, Allow-Methods, Allow-Headers
     return new Response(null, {
       status: 204,
-      headers: corsHeaders, // Use dynamic headers
+      headers: corsHeaders,
     });
   }
 
@@ -221,9 +221,17 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     });
 
     return new Response(JSON.stringify(post), {
-      status: 201,
-      headers: { "Content-Type": "application/json", ...corsHeaders },
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
     });
+
+    // return new Response(JSON.stringify(post), {
+    //   status: 201,
+    //   headers: { "Content-Type": "application/json", ...corsHeaders },
+    // });
   } catch (error) {
     console.error("Error processing post request:", error);
     return new Response(JSON.stringify({ error: "Invalid request" }), {
