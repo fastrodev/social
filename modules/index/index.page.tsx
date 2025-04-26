@@ -25,6 +25,7 @@ export default function Index({ data }: PageProps<
   const [isLoading, setIsLoading] = useState(true);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+  const [isEditorActive, setIsEditorActive] = useState(false);
 
   console.log("Rendering Index with data:", data);
 
@@ -123,18 +124,26 @@ export default function Index({ data }: PageProps<
           <main
             className={`max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6`}
           >
-            <Editor posts={posts} setPosts={setPosts} />
-            <PostList
+            <Editor
               posts={posts}
-              data={{
-                isLogin: false,
-                author: "anonymous",
-              }}
-              isDark={isDark}
-              isMobile={isMobile}
+              setPosts={setPosts}
+              setIsEditorActive={setIsEditorActive}
             />
-            {hasMore && <div id="scroll-sentinel" />}
-            {isLoading && <Skeleton />}
+            {!isEditorActive && (
+              <>
+                <PostList
+                  posts={posts}
+                  data={{
+                    isLogin: false,
+                    author: "anonymous",
+                  }}
+                  isDark={isDark}
+                  isMobile={isMobile}
+                />
+                {hasMore && <div id="scroll-sentinel" className="h-0 m-0" />}
+                {isLoading && <Skeleton />}
+              </>
+            )}
           </main>
         </div>
       </div>

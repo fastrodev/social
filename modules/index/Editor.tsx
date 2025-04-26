@@ -13,14 +13,14 @@ import { extractTags } from "@app/utils/tags.ts";
 import { getRandomImage } from "@app/utils/random.ts";
 import { Post } from "@app/modules/index/type.ts";
 
-// Add Props interface at the top
+// Update Props interface
 interface Props {
   posts: Post[];
   setPosts: (posts: Post[]) => void;
+  setIsEditorActive: (active: boolean) => void;
 }
 
-// Modify the Editor component to accept props
-export function Editor({ posts, setPosts }: Props) {
+export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
   const [postContent, setPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDark, _setIsDark] = useState(true);
@@ -91,15 +91,18 @@ export function Editor({ posts, setPosts }: Props) {
   const handleChange = (e: { currentTarget: { value: string } }) => {
     setPostContent(e.currentTarget.value);
     setIsEditing(!!e.currentTarget.value.trim());
+    setIsEditorActive(!!e.currentTarget.value.trim());
   };
 
   const handleTextareaFocus = () => {
     setIsEditing(true);
+    setIsEditorActive(true); // Add this line to hide posts when textarea is focused
   };
 
   const handleTextareaBlur = () => {
     if (!postContent.trim()) {
       setIsEditing(false);
+      setIsEditorActive(false); // Add this line to show posts when textarea is empty and loses focus
     }
   };
 
@@ -273,6 +276,7 @@ export function Editor({ posts, setPosts }: Props) {
     setPostContent("");
     setImageUrl(null);
     setIsEditing(false);
+    setIsEditorActive(false);
   };
 
   useEffect(() => {
