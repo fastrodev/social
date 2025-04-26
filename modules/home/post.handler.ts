@@ -190,6 +190,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
 
   // Handle preflight OPTIONS request
   if (req.method === "OPTIONS") {
+    console.log("Handling preflight OPTIONS request");
     return new Response(null, {
       status: 204,
       headers,
@@ -199,6 +200,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
   let responseStatus = 200;
 
   if (req.method === "POST") {
+    console.log("Handling POST request");
     // Parse the request body as JSON
     try {
       const body = await req.json();
