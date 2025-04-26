@@ -33,14 +33,9 @@ function generateAnonymousUsername(): string {
 
 function getCorsHeaders(req: HttpRequest): Record<string, string> {
   const origin = req.headers.get("origin");
-  // Explicitly type headers to include the optional Access-Control-Allow-Origin
   const headers: Record<string, string> = { ...BASE_CORS_HEADERS };
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
-  } else {
-    // Optionally handle disallowed origins, maybe return a default or no origin header
-    // For strictest security, only set the header if the origin is allowed.
-    // If no origin is matched, the browser will block the request.
   }
   return headers;
 }
@@ -163,29 +158,16 @@ export const editPostHandler = async (req: HttpRequest) => {
 
     const post = await editPostById(id, body);
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Post updated successfully",
-        data: post,
-      }),
-      {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-        status: 200,
-      },
-    );
+    return new Response(JSON.stringify(post), {
+      status: 201,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   } catch (error) {
     console.error("Error updating post:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: "Failed to update post",
-      }),
-      {
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-        status: 500,
-      },
-    );
+    return new Response(JSON.stringify({ error: "Failed to update post" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   }
 };
 
@@ -202,7 +184,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     // Preflight requests need Allow-Origin, Allow-Methods, Allow-Headers
     return new Response(null, {
       status: 204,
-      headers: corsHeaders, // Use dynamic headers
+      headers: getCorsHeaders(req), // Use dynamic headers
     });
   }
 
@@ -213,7 +195,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     if (!content || typeof content !== "string" || content.trim() === "") {
       return new Response(JSON.stringify({ error: "Content is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...getCorsHeaders(req) },
       });
     }
 
