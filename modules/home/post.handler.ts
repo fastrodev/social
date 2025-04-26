@@ -184,7 +184,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     // Preflight requests need Allow-Origin, Allow-Methods, Allow-Headers
     return new Response(null, {
       status: 204,
-      headers: getCorsHeaders(req), // Use dynamic headers
+      headers: corsHeaders, // Use dynamic headers
     });
   }
 
@@ -195,7 +195,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     if (!content || typeof content !== "string" || content.trim() === "") {
       return new Response(JSON.stringify({ error: "Content is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json", ...getCorsHeaders(req) },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 

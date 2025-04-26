@@ -63,7 +63,6 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
     try {
       const response = await fetch("https://web.fastro.dev/api/post", {
         method: "POST",
-        mode: "no-cors", // Add this line to bypass CORS
         headers: {
           "Content-Type": "application/json",
         },
@@ -75,17 +74,13 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
         }),
       });
 
-      // IMPORTANT: With mode: 'no-cors', you can't:
-      // 1. Check response.ok
-      // 2. Access response.json() or any response data
-      // 3. Know if the request actually succeeded
-
-      // Best you can do is assume it worked
-      resetForm();
-
-      // Can't get the new post ID or data, so can't properly update UI
-      // This creates a poor user experience - they won't see their new post
-      // until they refresh the page
+      if (response.ok) {
+        const newPost = await response.json();
+        setPosts([newPost, ...posts]);
+        resetForm();
+      } else {
+        console.error("Failed to create post");
+      }
     } catch (error) {
       console.error("Error submitting post:", error);
     } finally {
