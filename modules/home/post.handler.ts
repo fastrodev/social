@@ -14,15 +14,35 @@ import {
 } from "../../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://social.fastro.dev",
+const ALLOWED_ORIGINS = [
+  "https://social.fastro.dev",
+  "https://web.fastro.dev", // Add other allowed origins here
+  "http://localhost:3000", // Example for local development
+];
+
+const BASE_CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Allow-Credentials": "true", // Often needed if handling sessions/cookies across origins
 };
 
 function generateAnonymousUsername(): string {
   const randomNum = Math.floor(1000 + Math.random() * 9000); // Generates number between 1000-9999
   return `user${randomNum}`;
+}
+
+function getCorsHeaders(req: HttpRequest): Record<string, string> {
+  const origin = req.headers.get("origin");
+  // Explicitly type headers to include the optional Access-Control-Allow-Origin
+  const headers: Record<string, string> = { ...BASE_CORS_HEADERS };
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  } else {
+    // Optionally handle disallowed origins, maybe return a default or no origin header
+    // For strictest security, only set the header if the origin is allowed.
+    // If no origin is matched, the browser will block the request.
+  }
+  return headers;
 }
 
 export default async function postDetailHandler(
@@ -94,6 +114,7 @@ export default async function postDetailHandler(
 }
 
 export async function getPostsHandler(req: HttpRequest) {
+  const corsHeaders = getCorsHeaders(req);
   try {
     // Get query parameters for pagination and filtering
     const url = new URL(req.url);
@@ -110,20 +131,19 @@ export async function getPostsHandler(req: HttpRequest) {
 
     return new Response(JSON.stringify(posts), {
       status: 200,
-      headers: {
-        ...CORS_HEADERS,
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error fetching posts:", error);
     return new Response(JSON.stringify({ error: "Failed to fetch posts" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }
 
 export const editPostHandler = async (req: HttpRequest) => {
+  const corsHeaders = getCorsHeaders(req);
   const id = req.params?.id;
   if (!id) {
     return new Response(
@@ -132,9 +152,7 @@ export const editPostHandler = async (req: HttpRequest) => {
         message: "Post ID is required",
       }),
       {
-        headers: {
-          ...CORS_HEADERS,
-        },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 400,
       },
     );
@@ -152,7 +170,7 @@ export const editPostHandler = async (req: HttpRequest) => {
         data: post,
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 200,
       },
     );
@@ -164,7 +182,7 @@ export const editPostHandler = async (req: HttpRequest) => {
         message: "Failed to update post",
       }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
         status: 500,
       },
     );
@@ -177,11 +195,14 @@ function generateAvatarUrl(): string {
 }
 
 export async function postHandler(req: HttpRequest, ctx: Context) {
+  const corsHeaders = getCorsHeaders(req);
+
   // Add handling for OPTIONS preflight request
   if (req.method === "OPTIONS") {
+    // Preflight requests need Allow-Origin, Allow-Methods, Allow-Headers
     return new Response(null, {
       status: 204,
-      headers: CORS_HEADERS,
+      headers: corsHeaders, // Use dynamic headers
     });
   }
 
@@ -192,7 +213,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     if (!content || typeof content !== "string" || content.trim() === "") {
       return new Response(JSON.stringify({ error: "Content is required" }), {
         status: 400,
-        headers: { ...CORS_HEADERS },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -218,22 +239,19 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
 
     return new Response(JSON.stringify(post), {
       status: 201,
-      headers: {
-        ...CORS_HEADERS,
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error processing post request:", error);
     return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
-      headers: {
-        ...CORS_HEADERS,
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }
 
 export async function deletePostHandler(req: HttpRequest, ctx: Context) {
+  const corsHeaders = getCorsHeaders(req);
   try {
     // Extract post ID from the URL path instead of query parameters
     const url = new URL(req.url);
@@ -243,7 +261,7 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
     if (!id) {
       return new Response(JSON.stringify({ error: "Post ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -252,9 +270,7 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
     if (!ses?.isLogin) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: {
-          ...CORS_HEADERS,
-        },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -264,19 +280,19 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
     if (!success) {
       return new Response(JSON.stringify({ error: "Post not found" }), {
         status: 404,
-        headers: { ...CORS_HEADERS },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { ...CORS_HEADERS },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error processing delete request:", error);
     return new Response(JSON.stringify({ error: "Server error" }), {
       status: 500,
-      headers: { ...CORS_HEADERS },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }
