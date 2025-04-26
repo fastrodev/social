@@ -32,7 +32,7 @@
     "@preact/signals": "npm:@preact/signals@^2.0.3",
     "preact-render-to-string": "npm:preact-render-to-string@^6.5.13",
     "preact/jsx-runtime": "npm:preact@10.26.5/jsx-runtime",
-    "fastro/": "https://raw.githubusercontent.com/fastrodev/fastro/v0.94.8/",
+    "fastro/": "https://raw.githubusercontent.com/fastrodev/fastro/v0.94.7/",
     "@app/": "./"
   },
   "compilerOptions": {
