@@ -23,41 +23,10 @@ export default function Index({ data }: PageProps<
   const [isMobile, setIsMobile] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   console.log("Rendering Index with data:", data);
-
-  useEffect(() => {
-    const checkHealth = async () => {
-      const maxRetries = 5;
-      const retryDelay = 2000;
-
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-          const response = await fetch(
-            "https://web.fastro.dev/api/healthcheck",
-          );
-          console.log(`Health check attempt ${attempt + 1}:`, response);
-
-          if (response.ok) {
-            setIsHealthy(true);
-            setIsChecking(false);
-            return;
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, retryDelay));
-        } catch (error) {
-          console.error(`Health check attempt ${attempt + 1} failed:`, error);
-          if (attempt === maxRetries - 1) {
-            setIsChecking(false);
-          }
-          await new Promise((resolve) => setTimeout(resolve, retryDelay));
-        }
-      }
-      setIsChecking(false);
-    };
-
-    checkHealth();
-  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -70,23 +39,59 @@ export default function Index({ data }: PageProps<
   }, []);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("/api/posts?limit=10");
-        if (!response.ok) {
-          throw new Error("Failed to fetch posts");
-        }
-        const data = await response.json();
-        setPosts(data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setIsLoading(false);
+    const handleScroll = async (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasMore && !isLoading) {
+        setIsLoading(true);
+        await fetchPosts(false);
       }
     };
 
-    fetchPosts();
+    const observer = new IntersectionObserver(handleScroll, {
+      root: null,
+      threshold: 1.0,
+    });
+
+    const sentinel = document.getElementById("scroll-sentinel");
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, cursor]);
+
+  useEffect(() => {
+    fetchPosts(true);
   }, []);
+
+  const fetchPosts = async (isInitial: boolean = false) => {
+    try {
+      const url = new URL("/api/posts", window.location.origin);
+      url.searchParams.set("limit", "4");
+      if (!isInitial && cursor) {
+        url.searchParams.set("cursor", cursor);
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+      }
+      const data = await response.json();
+
+      if (data.length < 4) {
+        setHasMore(false);
+      }
+
+      if (data.length > 0) {
+        setCursor(data[data.length - 1].id);
+        setPosts((prev) => isInitial ? data : [...prev, ...data]);
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
@@ -109,17 +114,17 @@ export default function Index({ data }: PageProps<
             className={`max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6`}
           >
             <Editor posts={posts} setPosts={setPosts} />
-            {isLoading ? <Skeleton /> : (
-              <PostList
-                posts={posts}
-                data={{
-                  isLogin: false,
-                  author: "anonymous",
-                }}
-                isDark={isDark}
-                isMobile={isMobile}
-              />
-            )}
+            <PostList
+              posts={posts}
+              data={{
+                isLogin: false,
+                author: "anonymous",
+              }}
+              isDark={isDark}
+              isMobile={isMobile}
+            />
+            {hasMore && <div id="scroll-sentinel" />}
+            {isLoading && <Skeleton />}
           </main>
         </div>
       </div>

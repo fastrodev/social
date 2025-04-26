@@ -93,202 +93,195 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {posts.length > 0
-        ? (
-          posts.map((post) => (
-            <div
-              key={post.id}
-              className={`${themeStyles.cardBg} rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
-            >
-              {/* Modified Header Section */}
-              <div className="flex items-center justify-between mb-3">
-                {/* Left side: Avatar and Author */}
-                <div className="flex items-center">
-                  <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                    <img
-                      src={post.avatar}
-                      alt={post.author}
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <p className={`font-medium ${themeStyles.text}`}>
-                      {post.author}
-                    </p>
-                    <p className="text-gray-500 text-xs">
-                      {new Date(post.timestamp).toLocaleString()}
-                    </p>
-                  </div>
+    <>
+      {posts.length > 0 && (
+        posts.map((post) => (
+          <div
+            key={post.id}
+            className={`${themeStyles.cardBg} rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+          >
+            {/* Modified Header Section */}
+            <div className="flex items-center justify-between mb-3">
+              {/* Left side: Avatar and Author */}
+              <div className="flex items-center">
+                <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  <img
+                    src={post.avatar}
+                    alt={post.author}
+                    className="w-full h-full rounded-full"
+                  />
                 </div>
+                <div className="ml-3">
+                  <p className={`font-medium ${themeStyles.text}`}>
+                    {post.author}
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    {new Date(post.timestamp).toLocaleString()}
+                  </p>
+                </div>
+              </div>
 
-                {/* Right side: Icon Button */}
-                {data.isLogin && (
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setMenuOpenForPost(
-                          menuOpenForPost === post.id ? null : post.id,
-                        );
-                      }}
-                      className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+              {/* Right side: Icon Button */}
+              {data.isLogin && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setMenuOpenForPost(
+                        menuOpenForPost === post.id ? null : post.id,
+                      );
+                    }}
+                    className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+                      isDark
+                        ? "text-gray-400 hover:text-gray-200"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                    aria-label="Post options"
+                  >
+                    <VDotsIcon />
+                  </button>
+
+                  {menuOpenForPost === post.id && (
+                    <div
+                      className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
                         isDark
-                          ? "text-gray-400 hover:text-gray-200"
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "bg-gray-800 border border-gray-700"
+                          : "bg-white border border-gray-200"
                       }`}
-                      aria-label="Post options"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <VDotsIcon />
-                    </button>
-
-                    {menuOpenForPost === post.id && (
-                      <div
-                        className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+                      {/* Share option for all users */}
+                      <button
+                        onClick={() => handleSharePost(post.id)}
+                        className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                           isDark
-                            ? "bg-gray-800 border border-gray-700"
-                            : "bg-white border border-gray-200"
-                        }`}
-                        onClick={(e) => e.stopPropagation()}
+                            ? "text-gray-200 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        } rounded-md`}
                       >
-                        {/* Share option for all users */}
+                        <ShareIcon />
+                        <span className="font-medium">
+                          Share post
+                        </span>
+                      </button>
+
+                      {/* Edit option only for post author */}
+                      {data.author === post.author && (
                         <button
-                          onClick={() => handleSharePost(post.id)}
+                          onClick={() => handleEditPost(post.id)}
                           className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                             isDark
                               ? "text-gray-200 hover:bg-gray-700"
                               : "text-gray-700 hover:bg-gray-100"
                           } rounded-md`}
                         >
-                          <ShareIcon />
+                          <EditIcon />
                           <span className="font-medium">
-                            Share post
+                            Edit post
                           </span>
                         </button>
+                      )}
 
-                        {/* Edit option only for post author */}
-                        {data.author === post.author && (
-                          <button
-                            onClick={() => handleEditPost(post.id)}
-                            className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                              isDark
-                                ? "text-gray-200 hover:bg-gray-700"
-                                : "text-gray-700 hover:bg-gray-100"
-                            } rounded-md`}
-                          >
-                            <EditIcon />
-                            <span className="font-medium">
-                              Edit post
-                            </span>
-                          </button>
-                        )}
-
-                        {/* Delete option only for post author */}
-                        {data.author === post.author && (
-                          <button
-                            onClick={() => handleDeletePost(post.id)}
-                            className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                              isDark
-                                ? "text-gray-200 hover:bg-gray-700"
-                                : "text-gray-700 hover:bg-gray-100"
-                            } rounded-md`}
-                          >
-                            <DeleteIcon />
-                            <span className="font-medium">
-                              Delete post
-                            </span>
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {/* End Modified Header Section */}
-
-              <a href={`/post/${post.id}`} className="block relative">
-                {/* Modified image section */}
-                <div className="mb-3">
-                  <img
-                    src={post.image || post.defaultImage}
-                    alt="Post attachment"
-                    className="w-full h-[300px] rounded-lg object-cover"
-                  />
-                </div>
-
-                <div
-                  className={`markdown-body prose prose-sm dark:prose-invert max-w-none prose-a:no-underline prose-a:font-normal prose-p:my-2 ${themeStyles.text}`}
-                >
-                  <h2 className="text-xl font-extrabold mb-2">
-                    {post.title ? post.title : post.content}
-                  </h2>
-
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-1">
-                      {post.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      {/* Delete option only for post author */}
+                      {data.author === post.author && (
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                             isDark
-                              ? "bg-purple-800/40 text-purple-200"
-                              : "bg-purple-100 text-purple-700"
-                          }`}
+                              ? "text-gray-200 hover:bg-gray-700"
+                              : "text-gray-700 hover:bg-gray-100"
+                          } rounded-md`}
                         >
-                          #{tag}
-                        </span>
-                      ))}
+                          <DeleteIcon />
+                          <span className="font-medium">
+                            Delete post
+                          </span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
+              )}
+            </div>
+            {/* End Modified Header Section */}
+
+            <a href={`/post/${post.id}`} className="block relative">
+              {/* Modified image section */}
+              <div className="mb-3">
+                <img
+                  src={post.image || post.defaultImage}
+                  alt="Post attachment"
+                  className="w-full h-[300px] rounded-lg object-cover"
+                />
+              </div>
+
+              <div
+                className={`markdown-body prose prose-sm dark:prose-invert max-w-none prose-a:no-underline prose-a:font-normal prose-p:my-2 ${themeStyles.text}`}
+              >
+                <h2 className="text-xl font-extrabold mb-2">
+                  {post.title ? post.title : post.content}
+                </h2>
+
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-1">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          isDark
+                            ? "bg-purple-800/40 text-purple-200"
+                            : "bg-purple-100 text-purple-700"
+                        }`}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </a>
+
+            {/* the style breaked by the hash tag content. fix it */}
+            <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
+              <a
+                href={`/post/${post.id}`}
+                className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
+                  themeStyles.link.split(" ")[0]
+                }`}
+              >
+                <CommentIcon />
+                <span>
+                  {post.commentCount
+                    ? (
+                      <>
+                        {post.commentCount}{" "}
+                        {post.commentCount === 1 ? "comment" : "comments"}
+                      </>
+                    )
+                    : (
+                      "Add comment"
+                    )}
+                </span>
               </a>
 
-              {/* the style breaked by the hash tag content. fix it */}
-              <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
-                <a
-                  href={`/post/${post.id}`}
-                  className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
-                    themeStyles.link.split(" ")[0]
-                  }`}
-                >
-                  <CommentIcon />
-                  <span>
-                    {post.commentCount
-                      ? (
-                        <>
-                          {post.commentCount}{" "}
-                          {post.commentCount === 1 ? "comment" : "comments"}
-                        </>
-                      )
-                      : (
-                        "Add comment"
-                      )}
-                  </span>
-                </a>
-
-                <div
-                  className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
-                >
-                  <span className="flex items-center gap-x-2">
-                    <ViewIcon />
-                    {post.views || post.viewCount || 0} views
-                  </span>
-                </div>
+              <div
+                className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
+              >
+                <span className="flex items-center gap-x-2">
+                  <ViewIcon />
+                  {post.views || post.viewCount || 0} views
+                </span>
               </div>
             </div>
-          ))
-        )
-        : (
-          <div
-            className={`${themeStyles.cardBg} rounded-lg p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
-              !isMobile ? "backdrop-blur-lg" : ""
-            }`}
-          >
-            <p>No posts yet. Be the first to post something!</p>
           </div>
-        )}
-    </div>
+        ))
+      )}
+    </>
+    // <div className="flex flex-col gap-4">
+    //   {posts.length > }
+    // </div>
   );
 }
 
