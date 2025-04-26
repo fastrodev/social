@@ -14,6 +14,13 @@ import {
 } from "../../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "https://social.fastro.dev",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
+
 function generateAnonymousUsername(): string {
   const randomNum = Math.floor(1000 + Math.random() * 9000); // Generates number between 1000-9999
   return `user${randomNum}`;
@@ -179,12 +186,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "https://social.fastro.dev",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400", // 24 hours cache for preflight
-      },
+      headers: CORS_HEADERS,
     });
   }
 
@@ -195,7 +197,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     if (!content || typeof content !== "string" || content.trim() === "") {
       return new Response(JSON.stringify({ error: "Content is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
       });
     }
 
@@ -223,9 +225,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
       status: 201,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://social.fastro.dev",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        ...CORS_HEADERS,
       },
     });
   } catch (error) {
@@ -234,7 +234,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
       status: 400,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://social.fastro.dev",
+        ...CORS_HEADERS,
       },
     });
   }
