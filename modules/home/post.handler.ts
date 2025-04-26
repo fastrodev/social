@@ -21,9 +21,10 @@ const ALLOWED_ORIGINS = [
 ];
 
 const BASE_CORS_HEADERS = {
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Access-Control-Allow-Credentials": "true", // Often needed if handling sessions/cookies across origins
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Max-Age": "86400",
 };
 
 function generateAnonymousUsername(): string {
