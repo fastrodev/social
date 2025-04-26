@@ -15,10 +15,8 @@ import {
 import { extractTags } from "@app/utils/tags.ts";
 
 const CORS_HEADERS = {
+  "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Max-Age": "86400",
 };
 
 function generateAnonymousUsername(): string {
@@ -112,8 +110,7 @@ export async function getPostsHandler(req: HttpRequest) {
     return new Response(JSON.stringify(posts), {
       status: 200,
       headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        ...CORS_HEADERS,
       },
     });
   } catch (error) {
@@ -135,10 +132,7 @@ export const editPostHandler = async (req: HttpRequest) => {
       }),
       {
         headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "PUT, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
+          ...CORS_HEADERS,
         },
         status: 400,
       },
@@ -224,7 +218,6 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     return new Response(JSON.stringify(post), {
       status: 201,
       headers: {
-        "Content-Type": "application/json",
         ...CORS_HEADERS,
       },
     });
@@ -233,7 +226,6 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
       headers: {
-        "Content-Type": "application/json",
         ...CORS_HEADERS,
       },
     });
