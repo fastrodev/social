@@ -61,7 +61,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
     const postImage = imageUrl || getRandomImage(extractedTags);
 
     try {
-      const response = await fetch("/api/post", {
+      const response = await fetch("https://web.fastro.dev/api/post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -123,13 +123,16 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
 
     try {
       // 1. Get the DELETE signed URL from the backend
-      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const deleteUrlResponse = await fetch(
+        "https://web.fastro.dev/api/delete-signed-url",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filename }),
         },
-        body: JSON.stringify({ filename }),
-      });
+      );
 
       if (!deleteUrlResponse.ok) {
         const errorData = await deleteUrlResponse.text();
@@ -207,14 +210,17 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
       console.log("Requesting signed URL for:", filename);
 
       // Get a signed URL from our API
-      const signedUrlResponse = await fetch("/api/signed-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const signedUrlResponse = await fetch(
+        "https://web.fastro.dev/api/signed-url",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Send both filename and contentType
+          body: JSON.stringify({ filename, contentType: file.type }),
         },
-        // Send both filename and contentType
-        body: JSON.stringify({ filename, contentType: file.type }),
-      });
+      );
 
       if (!signedUrlResponse.ok) {
         const errorData = await signedUrlResponse.text();

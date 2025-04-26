@@ -28,9 +28,18 @@ export default function apisModule(s: Fastro) {
       // Pass contentType to the generation function
       const signedUrlResponse = await generateSignedUrl(filename, contentType);
 
-      return res.send({
-        signedUrl: signedUrlResponse.signedUrl,
-      });
+      return res.send(
+        {
+          signedUrl: signedUrlResponse.signedUrl,
+        },
+        200,
+        new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }),
+      );
     } catch (error) {
       console.error("Error generating signed URL:", error);
       return res.send({
@@ -54,7 +63,16 @@ export default function apisModule(s: Fastro) {
       // Generate the delete signed URL using the new utility function
       const deleteUrlResponse = await generateDeleteSignedUrl(filename);
 
-      return res.send(deleteUrlResponse); // Send { signedUrl: "..." }
+      return res.send(
+        deleteUrlResponse,
+        200,
+        new Headers({
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        }),
+      ); // Send { signedUrl: "..." }
     } catch (error) {
       console.error("Error generating delete signed URL:", error);
 
