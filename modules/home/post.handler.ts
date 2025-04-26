@@ -175,6 +175,19 @@ function generateAvatarUrl(): string {
 }
 
 export async function postHandler(req: HttpRequest, ctx: Context) {
+  // Add handling for OPTIONS preflight request
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "https://social.fastro.dev",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400", // 24 hours cache for preflight
+      },
+    });
+  }
+
   try {
     const body = await req.json();
     const content = body.content;
@@ -210,7 +223,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
       status: 201,
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://social.fastro.dev",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       },
@@ -219,7 +232,10 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     console.error("Error processing post request:", error);
     return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "https://social.fastro.dev",
+      },
     });
   }
 }
