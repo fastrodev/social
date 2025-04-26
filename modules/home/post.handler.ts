@@ -17,7 +17,7 @@ import { extractTags } from "@app/utils/tags.ts";
 const ALLOWED_ORIGINS = [
   "https://social.fastro.dev",
   "https://web.fastro.dev", // Add other allowed origins here
-  "http://localhost:3000", // Example for local development
+  "http://localhost:8000", // Example for local development
 ];
 
 const BASE_CORS_HEADERS = {
