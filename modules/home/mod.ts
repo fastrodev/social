@@ -5,6 +5,7 @@ import postDetailComponent from "@app/modules/home/post.page.tsx";
 import postDetailHandler, {
   deletePostHandler,
   editPostHandler,
+  getPostsHandler,
   postHandler,
 } from "@app/modules/home/post.handler.ts";
 import { Fastro } from "fastro/mod.ts";
@@ -31,6 +32,7 @@ export default function (s: Fastro) {
   s.post("/api/post", postHandler);
   s.put("/api/post/:id", editPostHandler);
   s.delete("/api/post/:id", deletePostHandler);
+  s.get("/api/posts", getPostsHandler);
   s.post("/api/comment", commentHandler);
   s.get("/api/comments/:id", getCommentsHandler);
   s.delete("/api/comments/:id", deleteCommentHandler);

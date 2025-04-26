@@ -57,6 +57,63 @@ interface Comment {
   avatar?: string;
 }
 
+interface GetPostsOptions {
+  limit: number;
+  cursor?: string | null;
+  tag?: string | null;
+}
+
+export async function getPostsFromDb(
+  { limit, cursor, tag }: GetPostsOptions,
+): Promise<Post[]> {
+  console.log("Fetching posts with options:", { limit, cursor, tag });
+
+  // Get all posts
+  const postsResults: Post[] = [];
+  const iterator = kv.list<Post>({ prefix: ["posts"] });
+
+  for await (const entry of iterator) {
+    // Filter by tag if specified
+    if (tag && (!entry.value.tags || !entry.value.tags.includes(tag))) {
+      continue;
+    }
+    postsResults.push(entry.value);
+  }
+
+  // Get comment counts
+  const commentCounts = new Map<string, number>();
+  const commentsIterator = kv.list<Comment>({ prefix: ["comments"] });
+
+  for await (const entry of commentsIterator) {
+    const postId = entry.value.postId;
+    commentCounts.set(postId, (commentCounts.get(postId) || 0) + 1);
+  }
+
+  // Add metadata and sort posts
+  const postsWithMetadata = postsResults.map((post) => ({
+    ...post,
+    commentCount: commentCounts.get(post.id) || 0,
+    views: post.views || 0,
+  }));
+
+  // Sort posts by timestamp (newest first)
+  const sortedPosts = postsWithMetadata.sort((a, b) =>
+    new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+
+  // Handle cursor-based pagination
+  let startIndex = 0;
+  if (cursor) {
+    startIndex = sortedPosts.findIndex((post) => post.id === cursor) + 1;
+  }
+
+  // Return paginated results
+  const paginatedPosts = sortedPosts.slice(startIndex, startIndex + limit);
+
+  console.log(`Retrieved ${paginatedPosts.length} posts`);
+  return paginatedPosts;
+}
+
 export async function editPostById(
   id: string,
   updates: PostUpdateInput,

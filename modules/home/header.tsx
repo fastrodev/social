@@ -8,6 +8,7 @@ export default function Header(
     isLogin: boolean;
     avatar_url: string;
     html_url: string;
+    base_url?: string;
     title?: string;
     previous_url?: string;
     isDark?: boolean;
@@ -84,7 +85,12 @@ export default function Header(
       </div>
       <div class={`flex items-center space-x-3`}>
         {!props.isLogin && (
-          <a class={`${linkTextColorClass}`} href="/auth/github/signin">
+          <a
+            class={`${linkTextColorClass}`}
+            href={props.base_url
+              ? props.base_url + "/auth/github/signin"
+              : `/auth/github/signin`}
+          >
             Sign in
           </a>
         )}

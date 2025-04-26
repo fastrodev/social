@@ -6,12 +6,18 @@ import {
   deletePostById,
   editPostById,
   getPostById,
+  getPostsFromDb,
 } from "@app/modules/home/post.service.ts";
 import {
   createSeoDescription,
   extractPostTitle,
 } from "../../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
+
+function generateAnonymousUsername(): string {
+  const randomNum = Math.floor(1000 + Math.random() * 9000); // Generates number between 1000-9999
+  return `user${randomNum}`;
+}
 
 export default async function postDetailHandler(
   req: HttpRequest,
@@ -81,6 +87,36 @@ export default async function postDetailHandler(
   });
 }
 
+export async function getPostsHandler(req: HttpRequest) {
+  try {
+    // Get query parameters for pagination and filtering
+    const url = new URL(req.url);
+    const limit = parseInt(url.searchParams.get("limit") || "10");
+    const cursor = url.searchParams.get("cursor");
+    const tag = url.searchParams.get("tag");
+
+    // Get posts from service
+    const posts = await getPostsFromDb({
+      limit,
+      cursor,
+      tag,
+    });
+
+    return new Response(JSON.stringify(posts), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return new Response(JSON.stringify({ error: "Failed to fetch posts" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
 export const editPostHandler = async (req: HttpRequest) => {
   const id = req.params?.id;
   if (!id) {
@@ -127,6 +163,11 @@ export const editPostHandler = async (req: HttpRequest) => {
   }
 };
 
+function generateAvatarUrl(): string {
+  const randomDigit = Math.floor(Math.random() * 10) + 1; // Generate random number between 1-10
+  return `https://avatars.githubusercontent.com/u/18680635${randomDigit}?v=4`;
+}
+
 export async function postHandler(req: HttpRequest, ctx: Context) {
   try {
     const body = await req.json();
@@ -141,7 +182,8 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
 
     // Get the user from session
     const ses = await getSession(req, ctx);
-    const username = ses?.username;
+    const username = ses?.username || generateAnonymousUsername();
+    const avatar = ses?.avatar_url || generateAvatarUrl();
 
     const title = extractPostTitle(content, username);
     const description = createSeoDescription(content);
@@ -151,7 +193,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
     const post = await createPost({
       content,
       author: username,
-      avatar: ses?.avatar_url,
+      avatar: avatar,
       image: body.image,
       title,
       description,

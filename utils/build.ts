@@ -85,6 +85,9 @@ const htmlPlugin = {
           title: "Join the Conversation",
           description: "Today's ideas become tomorrow's innovations",
           github_auth: "https://web.fastro.dev/auth/github/signin",
+          base_url: Deno.env.get("ENV") === "DEV"
+            ? ""
+            : "https://social.fastro.dev",
         };
 
         const metaData = {
