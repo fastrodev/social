@@ -87,9 +87,11 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
       ? "text-purple-400 hover:text-purple-300"
       : "text-purple-600 hover:text-purple-500",
     cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-    cardGlow: isDark
-      ? "shadow-2xl shadow-purple-500/30"
-      : "shadow-lg shadow-gray-200/30",
+    cardGlow: isMobile
+      ? "" // No shadow on mobile
+      : isDark
+      ? "shadow-lg shadow-purple-500/20"
+      : "shadow-md shadow-gray-200/20",
   };
 
   return (
@@ -212,7 +214,8 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                 <img
                   src={post.image || post.defaultImage}
                   alt="Post attachment"
-                  className="w-full h-[300px] rounded-none object-cover"
+                  className="w-full h-auto max-h-[200px] sm:max-h-[300px] rounded-none object-cover"
+                  loading="lazy" // Add lazy loading
                 />
               </div>
 
