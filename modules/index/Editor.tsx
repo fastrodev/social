@@ -65,7 +65,6 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
         "https://web.fastro.dev/api/post",
         {
           method: "POST",
-          // mode: "no-cors",
           headers: {
             "Content-Type": "application/json",
           },

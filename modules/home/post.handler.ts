@@ -1,5 +1,4 @@
 import { getSession } from "@app/utils/session.ts";
-
 import { Context, HttpRequest } from "fastro/mod.ts";
 import {
   createPost,
@@ -179,107 +178,50 @@ function generateAvatarUrl(): string {
 }
 
 export async function postHandler(req: HttpRequest, ctx: Context) {
-  console.log("Handling post request");
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Credentials": "true",
-    "Access-Control-Max-Age": "86400", // 24 hours cache for preflight requests
-  };
+  const corsHeaders = getCorsHeaders(req);
+  try {
+    const body = await req.json();
+    const content = body.content;
 
-  // Handle preflight OPTIONS request
-  if (req.method === "OPTIONS") {
-    console.log("Handling preflight OPTIONS request");
-    return new Response(null, {
-      status: 204,
-      headers,
+    if (!content || typeof content !== "string" || content.trim() === "") {
+      return new Response(JSON.stringify({ error: "Content is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const ses = await getSession(req, ctx);
+    const username = ses?.username || generateAnonymousUsername();
+    const avatar = ses?.avatar_url || generateAvatarUrl();
+
+    const title = extractPostTitle(content, username);
+    const description = createSeoDescription(content);
+    const tags: string[] = extractTags(content) || [];
+
+    const post = await createPost({
+      content,
+      author: username,
+      avatar: avatar,
+      image: body.image,
+      title,
+      description,
+      tags,
+    });
+
+    return new Response(JSON.stringify(post), {
+      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Error processing post request:", error);
+    return new Response(JSON.stringify({ error: "Invalid request" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
-  let responseBody;
-  let responseStatus = 200;
-
-  if (req.method === "POST") {
-    console.log("Handling POST request");
-    // Parse the request body as JSON
-    try {
-      const body = await req.json();
-      responseBody = { message: "Received POST request", data: body };
-    } catch (error) {
-      console.error("Error parsing JSON:", error);
-      responseBody = { error: "Invalid JSON" };
-      responseStatus = 400;
-    }
-  }
-
-  return new Response(JSON.stringify(responseBody), {
-    status: responseStatus,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-    },
-  });
-
-  // const corsHeaders = getCorsHeaders(req);
-
-  // // Handle preflight OPTIONS request
-  // if (req.method === "OPTIONS") {
-  //   return new Response(null, {
-  //     status: 204,
-  //     headers: corsHeaders,
-  //   });
-  // }
-
-  // try {
-  //   const body = await req.json();
-  //   const content = body.content;
-
-  //   if (!content || typeof content !== "string" || content.trim() === "") {
-  //     return new Response(JSON.stringify({ error: "Content is required" }), {
-  //       status: 400,
-  //       headers: { "Content-Type": "application/json", ...corsHeaders },
-  //     });
-  //   }
-
-  //   // Get the user from session
-  //   const ses = await getSession(req, ctx);
-  //   const username = ses?.username || generateAnonymousUsername();
-  //   const avatar = ses?.avatar_url || generateAvatarUrl();
-
-  //   const title = extractPostTitle(content, username);
-  //   const description = createSeoDescription(content);
-  //   const tags: string[] = extractTags(content) || [];
-
-  //   // Create the post
-  //   const post = await createPost({
-  //     content,
-  //     author: username,
-  //     avatar: avatar,
-  //     image: body.image,
-  //     title,
-  //     description,
-  //     tags,
-  //   });
-
-  //   return new Response(JSON.stringify(post), {
-  //     status: 200,
-  //     headers: {
-  //       ...corsHeaders,
-  //       "Content-Type": "application/json",
-  //     },
-  //   });
-
-  //   // return new Response(JSON.stringify(post), {
-  //   //   status: 201,
-  //   //   headers: { "Content-Type": "application/json", ...corsHeaders },
-  //   // });
-  // } catch (error) {
-  //   console.error("Error processing post request:", error);
-  //   return new Response(JSON.stringify({ error: "Invalid request" }), {
-  //     status: 400,
-  //     headers: { "Content-Type": "application/json", ...corsHeaders },
-  //   });
-  // }
 }
 
 export async function deletePostHandler(req: HttpRequest, ctx: Context) {
