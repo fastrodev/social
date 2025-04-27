@@ -90,8 +90,8 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
     cardGlow: isMobile
       ? "" // No shadow on mobile
       : isDark
-      ? "shadow-lg shadow-purple-500/20"
-      : "shadow-md shadow-gray-200/20",
+      ? "shadow-[0_0_25px_5px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
+      : "shadow-[0_0_20px_5px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
   };
 
   return (
