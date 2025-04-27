@@ -333,44 +333,46 @@ export function Skeleton() {
       {[...Array(1)].map((_, i) => (
         <div
           key={i}
-          className="bg-gray-800/90 flex flex-col rounded-lg px-6 py-4 border border-gray-700 shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] relative"
+          className="bg-gray-800/90 flex flex-col rounded-lg px-6 py-4 border border-gray-700 relative"
         >
+          {/* Header */}
           <div className="flex items-center justify-between mb-3">
-            {/* Avatar and username skeleton */}
             <div className="flex items-center">
               <div className="mt-1 w-8 h-8 bg-gray-700/50 rounded-full animate-pulse flex-shrink-0" />
               <div className="ml-3">
-                {/* Username skeleton */}
-                <div className="h-4 bg-gray-700/50 rounded w-24 animate-pulse" />
-                {/* Time skeleton */}
-                <div className="h-3 bg-gray-700/50 rounded w-16 animate-pulse mt-1" />
+                <div className="h-5 bg-gray-700/50 rounded w-28 animate-pulse" />
+                <div className="h-3 bg-gray-700/50 rounded w-24 animate-pulse mt-1.5" />
               </div>
             </div>
-            {/* Options button skeleton */}
-            <div className="h-8 w-8 bg-gray-700/50 rounded-full animate-pulse" />
+            <div className="relative">
+              <div className="w-8 h-8 bg-gray-700/50 rounded-full animate-pulse" />
+            </div>
           </div>
 
-          {/* Image skeleton with title overlay */}
+          {/* Image Container */}
           <div className="-mx-6 mb-4 relative">
-            <div className="h-[200px] bg-gray-700/50 animate-pulse w-full" />
-            {/* Title overlay skeleton */}
+            <div className="w-full h-[200px] sm:h-[300px] bg-gray-700/50 animate-pulse" />
+
+            {/* Tag overlay */}
+            <div className="absolute top-2 right-2 flex flex-wrap gap-1 max-w-[70%] justify-end">
+              <div className="h-5 bg-purple-800/50 rounded-full w-16 animate-pulse" />
+            </div>
+
+            {/* Title overlay */}
             <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
-              <div className="h-6 bg-gray-700/50 rounded w-3/4 animate-pulse" />
+              <div className="h-7 bg-gray-700/50 rounded w-full animate-pulse" />
             </div>
           </div>
 
-          {/* Footer skeleton */}
+          {/* Footer */}
           <div className="flex items-center justify-between">
-            {/* Comment section skeleton */}
             <div className="flex items-center gap-x-1">
-              <div className="h-5 w-5 bg-gray-700/50 rounded animate-pulse" />
-              <div className="h-3 w-20 bg-gray-700/50 rounded animate-pulse ml-2" />
+              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse" />
+              <div className="h-4 bg-gray-700/50 rounded w-24 animate-pulse ml-2" />
             </div>
-
-            {/* Views section skeleton */}
             <div className="flex items-center gap-x-2">
-              <div className="h-5 w-5 bg-gray-700/50 rounded animate-pulse" />
-              <div className="h-3 w-16 bg-gray-700/50 rounded animate-pulse" />
+              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse" />
+              <div className="h-4 bg-gray-700/50 rounded w-16 animate-pulse" />
             </div>
           </div>
         </div>
