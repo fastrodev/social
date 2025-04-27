@@ -40,26 +40,15 @@ export default function Index({ data }: PageProps<
   }, []);
 
   useEffect(() => {
-    const handleScroll = async (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && hasMore && !isLoading) {
-        setIsLoading(true);
-        await fetchPosts(false);
+    const handleLoadMore = () => {
+      if (hasMore && !isLoading) {
+        fetchPosts(false);
       }
     };
 
-    const observer = new IntersectionObserver(handleScroll, {
-      root: null,
-      threshold: 1.0,
-    });
-
-    const sentinel = document.getElementById("scroll-sentinel");
-    if (sentinel) {
-      observer.observe(sentinel);
-    }
-
-    return () => observer.disconnect();
-  }, [hasMore, isLoading, cursor]);
+    window.addEventListener("loadMorePosts", handleLoadMore);
+    return () => window.removeEventListener("loadMorePosts", handleLoadMore);
+  }, [hasMore, isLoading]);
 
   useEffect(() => {
     fetchPosts(true);
@@ -67,6 +56,7 @@ export default function Index({ data }: PageProps<
 
   const fetchPosts = async (isInitial: boolean = false) => {
     try {
+      setIsLoading(true);
       // const url = new URL("/api/posts", window.location.origin);
       const url = new URL("https://web.fastro.dev/api/posts");
       url.searchParams.set("limit", "4");
@@ -88,13 +78,31 @@ export default function Index({ data }: PageProps<
         throw new Error("Invalid response format: expected an array");
       }
 
+      // Check if we received any posts
+      if (data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      // Set the cursor to the last post's ID for pagination
+      setCursor(data[data.length - 1].id);
+
+      // Check if we have fewer posts than requested (indicates end of data)
       if (data.length < 4) {
         setHasMore(false);
       }
 
-      if (data.length > 0) {
-        setCursor(data[data.length - 1].id);
-        setPosts((prev) => isInitial ? data : [...prev, ...data]);
+      // Ensure we don't duplicate posts by checking IDs
+      if (isInitial) {
+        setPosts(data);
+      } else {
+        setPosts((prev) => {
+          // Get existing post IDs
+          const existingIds = new Set(prev.map((post) => post.id));
+          // Filter out any duplicates
+          const newPosts = data.filter((post) => !existingIds.has(post.id));
+          return [...prev, ...newPosts];
+        });
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -168,10 +176,7 @@ export default function Index({ data }: PageProps<
                   )
                   : (
                     <>
-                      {hasMore && posts.length > 0 && (
-                        <div id="scroll-sentinel" className="h-0 m-0" />
-                      )}
-                      {isLoading && <Skeleton />}
+                      {isLoading && !isMobile && <Skeleton />}
                     </>
                   )}
               </>

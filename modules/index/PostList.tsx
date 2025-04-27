@@ -6,7 +6,7 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 
 interface Props {
   posts: Post[];
@@ -20,6 +20,8 @@ interface Props {
 
 export function PostList({ posts, data, isDark, isMobile }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
+  // Add a ref for the scroll sentinel
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -32,6 +34,28 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  // Add effect for infinite scrolling on desktop
+  useEffect(() => {
+    if (isMobile) return; // Skip for mobile, as they use button
+
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting) {
+        // Dispatch a custom event when sentinel is visible
+        window.dispatchEvent(new CustomEvent("loadMorePosts"));
+      }
+    }, {
+      root: null,
+      threshold: 0.1, // Trigger when 10% of the element is visible
+    });
+
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isMobile, posts.length]); // Re-run when posts length changes
 
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this post?")) {
@@ -279,6 +303,15 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
             </div>
           </div>
         ))
+      )}
+
+      {/* Add sentinel at the end of the list for infinite scrolling */}
+      {!isMobile && posts.length > 0 && (
+        <div
+          ref={sentinelRef}
+          className="h-10 w-full opacity-0"
+          aria-hidden="true"
+        />
       )}
     </>
   );
