@@ -12,97 +12,77 @@ function getTimeBasedGreeting(): string {
   const hour = new Date().getHours();
 
   if (hour === 6) {
-    const morningGreetings = [
-      "Selamat pagi! Bangun dan bersinar! Ini adalah hari baru dengan kesempatan baru. Apa tujuan Anda hari ini?",
-      "Pagi telah tiba! Dampak positif apa yang akan Anda buat hari ini?",
-      "Fajar baru, hari baru! Kemungkinan apa yang akan Anda jelajahi?",
-      "Selamat pagi! Siapa cepat dia dapat. Apa kemenangan pertama Anda hari ini?",
-      "Pagi yang cerah! Potensi Anda hari ini tak terbatas. Apa yang akan Anda capai?",
-      "Pagi yang segar, pola pikir yang segar! Perspektif baru apa yang akan memandu Anda hari ini?",
-      "Energi pagi diaktifkan! Salurkan ke prioritas terpenting Anda hari ini.",
-      "Bangkit dengan tujuan! Pagi ini menandai awal dari sesuatu yang luar biasa.",
-      "Halo, pagi! Dunia penuh dengan kemungkinan yang menunggu sentuhan Anda hari ini.",
-      "Optimisme pagi di puncaknya! Tantangan apa yang akan Anda ubah menjadi peluang?",
-      "Fajar hari baru! Pilihan pagi Anda menentukan nada - buatlah berarti!",
-      "Selamat pagi dunia! Hari ini adalah kanvas kosong - karya apa yang akan Anda ciptakan?",
-      "Suasana pagi! Sambut hari ini dengan energi yang pantas didapatkan!",
+    const morningQuotes = [
+      "Pagi penuh dengan sinar matahari dan harapan. - Kate Chopin",
+      "Pagi adalah waktu penting dalam sehari, karena bagaimana Anda menghabiskan pagi Anda sering kali menentukan seperti apa hari yang akan Anda jalani. - Lemony Snicket",
+      "Setiap pagi membawa potensi baru, tetapi jika Anda terus memikirkan kegagalan hari sebelumnya, Anda cenderung mengabaikan peluang luar biasa. - Harvey Mackay",
+      "Tuliskan di hati Anda bahwa setiap hari adalah hari terbaik dalam setahun. - Ralph Waldo Emerson",
+      "Matahari belum pernah menemukanku masih di tempat tidur selama lima puluh tahun. - Thomas Jefferson",
+      "Anda harus bangun setiap pagi dengan tekad jika ingin tidur dengan kepuasan. - George Lorimer",
+      "Angin di fajar memiliki rahasia untuk diceritakan kepada Anda. Jangan kembali tidur. - Rumi",
+      "Saya bangun setiap pagi pukul sembilan dan mencari koran pagi. Kemudian saya melihat halaman obituari. Jika nama saya tidak ada di sana, saya bangun. - Benjamin Franklin",
+      "Setiap pagi kita dilahirkan kembali. Apa yang kita lakukan hari ini adalah yang terpenting. - Buddha",
+      "Ketika Anda bangun di pagi hari, pikirkan betapa berharganya hak istimewa untuk hidup - untuk bernapas, berpikir, menikmati, mencintai. - Marcus Aurelius",
     ];
-    return morningGreetings[
-      Math.floor(Math.random() * morningGreetings.length)
-    ];
+    return morningQuotes[Math.floor(Math.random() * morningQuotes.length)];
   } else if (hour === 13) {
-    const afternoonGreetings = [
-      "Tambahan energi siang hari! Semoga hari Anda berjalan lancar. Ingatlah untuk mengambil momen untuk bernapas dan memfokuskan kembali.",
-      "Periksa tengah hari! Bagaimana produktivitas Anda? Waktunya untuk penyegaran cepat?",
-      "Motivasi siang hari! Hari sudah setengah berlalu - manfaatkan sisanya!",
-      "Jeda siang! Bagaimana hari Anda berkembang? Saatnya menilai kembali prioritas untuk dampak maksimal.",
-      "Pemeriksaan momentum tengah hari! Jaga energi positif mengalir sepanjang sore.",
-      "Waktu refleksi siang! Apa yang telah Anda capai sejauh ini dan apa selanjutnya?",
-      "Kebijaksanaan jam makan siang: Sore hari adalah kesempatan kedua Anda untuk membuat hari ini luar biasa!",
-      "Tombol reset siang hari! Jernihkan pikiran, fokuskan kembali energi Anda, dan selesaikan dengan kuat.",
-      "Salam tengah hari! Ingat bahwa kemajuan konsisten mengalahkan kesempurnaan sporadis.",
-      "Peregangan siang hari! Berdiri, bernapas dalam-dalam, dan berkomitmen kembali pada tujuan penting Anda.",
-      "Perspektif siang: Anda tidak hanya sibuk, Anda sedang membangun sesuatu yang bermakna!",
-      "Suasana siang yang cerah! Biarkan produktivitas Anda bersinar secerah matahari siang.",
-      "Pengingat siang: Kesejahteraan Anda penting! Luangkan waktu untuk memeriksa diri Anda sendiri.",
+    const afternoonQuotes = [
+      "Hidup adalah apa yang terjadi ketika Anda sibuk membuat rencana lain. - John Lennon",
+      "Siang hari tahu apa yang tidak pernah diduga oleh pagi hari. - Robert Frost",
+      "Orang yang bekerja adalah orang yang bahagia. Orang yang menganggur adalah orang yang menderita. - Benjamin Franklin",
+      "Masa depan milik mereka yang percaya pada keindahan impian mereka. - Eleanor Roosevelt",
+      "Tidak semua yang mengembara tersesat. - J.R.R. Tolkien",
+      "Satu-satunya cara untuk melakukan pekerjaan hebat adalah mencintai apa yang Anda lakukan. - Steve Jobs",
+      "Jika kesempatan tidak mengetuk, bangunlah sebuah pintu. - Milton Berle",
+      "Kesuksesan bukanlah akhir, kegagalan tidak fatal: Keberanianlah untuk melanjutkan yang penting. - Winston Churchill",
+      "Waktu terbaik untuk menanam pohon adalah 20 tahun yang lalu. Waktu terbaik kedua adalah sekarang. - Pepatah Cina",
+      "Anda kehilangan 100% tembakan yang tidak Anda ambil. - Wayne Gretzky",
     ];
-    return afternoonGreetings[
-      Math.floor(Math.random() * afternoonGreetings.length)
-    ];
+    return afternoonQuotes[Math.floor(Math.random() * afternoonQuotes.length)];
   } else if (hour === 16) {
-    const lateAfternoonGreetings = [
-      "Memeriksa sore hari! Bagaimana hari Anda? Masih ada waktu untuk mencapai sesuatu yang berarti sebelum hari berakhir.",
-      "Tahap akhir hari kerja! Apa satu hal lagi yang bisa Anda capai?",
-      "Waktu refleksi sore! Apa kemenangan Anda hari ini, dan apa yang masih dalam daftar Anda?",
-      "Jendela kesempatan jam 4 sore! Anda masih punya waktu untuk membuat hari ini berarti dengan cara yang istimewa.",
-      "Pemeriksaan energi sore! Apa yang paling membutuhkan perhatian Anda sebelum mengakhiri hari?",
-      "Produktivitas di jam keemasan! Jadikan jam kerja terakhir ini bersinar dengan usaha terfokus.",
-      "Persiapan akhir sore dimulai! Prioritaskan tugas Anda yang tersisa dengan bijak.",
-      "Sprint terakhir hari! Apa yang layak mendapatkan energi dan perhatian Anda sebelum waktu tutup?",
-      "Inspirasi akhir hari: Selesaikan lebih kuat dari yang Anda mulai, bahkan ketika energi memudar.",
-      "Hampir selesai! Tugas penting apa yang dapat Anda selesaikan sebelum hari kerja berakhir?",
-      "Zona penyelesaian sore! Saatnya menyelesaikan hal-hal kecil dan mempersiapkan diri untuk besok.",
-      "Pengingat jam 4 sore: Diri Anda di masa depan akan berterima kasih karena menyelesaikan hari dengan kuat!",
-      "Cek sore hari: Jangan biarkan sempurna menjadi musuh dari selesai saat Anda mengakhiri hari ini.",
+    const lateAfternoonQuotes = [
+      "Jangan menghitung hari-hari, buatlah hari-hari itu berarti. - Muhammad Ali",
+      "Suatu hari nanti bukanlah hari dalam seminggu. - Denise Brennan-Nelson",
+      "Rahasia untuk maju adalah memulai. - Mark Twain",
+      "Waktu Anda terbatas, jangan sia-siakan dengan menjalani hidup orang lain. - Steve Jobs",
+      "Pesimis mengeluh tentang angin; optimis berharap itu berubah; realis menyesuaikan layar. - William Arthur Ward",
+      "Saya belum gagal. Saya baru saja menemukan 10.000 cara yang tidak berhasil. - Thomas Edison",
+      "Satu-satunya batasan untuk mewujudkan hari esok adalah keraguan kita hari ini. - Franklin D. Roosevelt",
+      "Tidak masalah seberapa lambat Anda melangkah selama Anda tidak berhenti. - Confucius",
+      "Kualitas bukanlah tindakan, melainkan kebiasaan. - Aristotle",
+      "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan. - Walt Disney",
     ];
-    return lateAfternoonGreetings[
-      Math.floor(Math.random() * lateAfternoonGreetings.length)
+    return lateAfternoonQuotes[
+      Math.floor(Math.random() * lateAfternoonQuotes.length)
     ];
   } else if (hour === 20) {
-    const eveningGreetings = [
-      "Refleksi malam! Saat hari mulai berakhir, apa pencapaian terbesar Anda hari ini? Saatnya mengisi ulang untuk petualangan besok.",
-      "Mengakhiri hari? Luangkan waktu untuk merayakan apa yang telah Anda capai!",
-      "Suasana malam! Saatnya bersantai dan bersiap untuk hari lain penuh kemungkinan esok.",
-      "Momen syukur malam hari! Tiga hal apa yang berjalan baik hari ini yang Anda hargai?",
-      "Kebijaksanaan malam: Usaha hari ini menjadi hasil besok. Beristirahatlah dengan baik!",
-      "Mode istirahat malam diaktifkan! Saatnya beralih dari mode produktivitas ke mode pemulihan.",
-      "Bintang-bintang mulai tampak! Saat hari Anda berakhir, momen apa yang paling bersinar bagi Anda?",
-      "Refleksi malam: Kemajuan tidak selalu terlihat dalam sekejap, tapi Anda terus maju!",
-      "Pikiran senja: Lepaskan tantangan hari ini dan sambut potensi esok hari.",
-      "Ritual akhir hari: Rayakan kemenangan, belajar dari kegagalan, dan bersiap untuk awal yang baru.",
-      "Pengingat malam: Istirahat bukan kemalasan, tapi persiapan untuk produktivitas masa depan!",
-      "Malam menjelang! Saatnya mematikan pikiran dan mengisi ulang semangat Anda.",
-      "Mantra malam: Anda sudah melakukan yang terbaik hari ini, dan itu selalu cukup.",
+    const eveningQuotes = [
+      "Semakin gelap malam, semakin terang bintang-bintang. - Fyodor Dostoevsky",
+      "Setiap malam, ketika saya tidur, saya mati. Dan keesokan paginya, ketika saya bangun, saya dilahirkan kembali. - Mahatma Gandhi",
+      "Malam lebih hidup dan lebih kaya warnanya daripada siang hari. - Vincent Van Gogh",
+      "Apa yang dilakukan karena cinta selalu terjadi di luar baik dan jahat. - Friedrich Nietzsche",
+      "Ada waktu untuk banyak kata, dan ada juga waktu untuk tidur. - Homer",
+      "Di akhir hari, kita bisa menanggung lebih banyak dari yang kita kira. - Frida Kahlo",
+      "Manusia adalah jenius ketika dia bermimpi. - Akira Kurosawa",
+      "Jangan pernah tidur dalam keadaan marah. Tetaplah bangun dan bertengkar. - Phyllis Diller",
+      "Saya pikir cara terbaik untuk mendapatkan tidur nyenyak adalah bekerja keras sepanjang hari. Jika Anda bekerja keras dan, tentu saja, berolahraga. - William H. McRaven",
+      "Malam adalah ibu dari nasihat. - Pepatah Yunani",
     ];
-    return eveningGreetings[
-      Math.floor(Math.random() * eveningGreetings.length)
-    ];
+    return eveningQuotes[Math.floor(Math.random() * eveningQuotes.length)];
   } else {
-    const defaultGreetings = [
-      "Halo! Semoga hari Anda menyenangkan!",
-      "Salam! Setiap momen adalah kesempatan untuk membuat perubahan positif.",
-      "Hai teman! Ingatlah bahwa perjalanan Anda penting, jam berapapun sekarang.",
-      "Memeriksa dengan pengingat ramah bahwa Anda melakukannya dengan baik!",
-      "Halo! Mengambil langkah kecil secara konsisten mengarah pada hasil besar.",
-      "Pengingat ramah: Kesejahteraan Anda penting setiap jam sepanjang hari.",
-      "Saatnya untuk momen kesadaran singkat. Tarik napas dalam-dalam!",
-      "Jam berapapun sekarang, selalu momen yang tepat untuk merayakan kemajuan Anda.",
-      "Mengirimkan energi positif untuk Anda, apa pun jamnya!",
-      "Ingat: Setiap momen mengandung benih kesempatan.",
+    const defaultQuotes = [
+      "Jadilah diri sendiri; orang lain sudah ada. - Oscar Wilde",
+      "Dua hal tidak terbatas: alam semesta dan kebodohan manusia; dan saya tidak yakin tentang alam semesta. - Albert Einstein",
+      "Dalam tiga kata saya dapat merangkum semua yang saya pelajari tentang hidup: hidup terus berlanjut. - Robert Frost",
+      "Satu-satunya perjalanan yang mustahil adalah yang tidak pernah Anda mulai. - Tony Robbins",
+      "Hidup adalah apa yang kita buat, selalu begitu, dan akan selalu begitu. - Grandma Moses",
+      "Tujuan hidup kita adalah untuk bahagia. - Dalai Lama",
+      "Anda hanya hidup sekali, tetapi jika Anda melakukannya dengan benar, sekali saja sudah cukup. - Mae West",
+      "Banyak kegagalan hidup adalah orang-orang yang tidak menyadari betapa dekatnya mereka dengan kesuksesan ketika mereka menyerah. - Thomas A. Edison",
+      "Tidak pernah terlambat untuk menjadi apa yang seharusnya Anda menjadi. - George Eliot",
+      "Kemarin adalah sejarah, besok adalah misteri, hari ini adalah hadiah Tuhan, itulah sebabnya kita menyebutnya saat ini. - Bill Keane",
     ];
-    return defaultGreetings[
-      Math.floor(Math.random() * defaultGreetings.length)
-    ];
+    return defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
   }
 }
 
