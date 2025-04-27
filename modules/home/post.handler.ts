@@ -15,8 +15,51 @@ import { extractTags } from "@app/utils/tags.ts";
 import { getCorsHeaders } from "@app/utils/headers.ts";
 
 function generateAnonymousUsername(): string {
+  const colors = [
+    "red",
+    "blue",
+    "green",
+    "yellow",
+    "purple",
+    "orange",
+    "pink",
+    "teal",
+    "cyan",
+    "lime",
+    "amber",
+    "indigo",
+    "violet",
+    "magenta",
+  ];
+
+  const animals = [
+    "panda",
+    "tiger",
+    "lion",
+    "eagle",
+    "dolphin",
+    "wolf",
+    "fox",
+    "bear",
+    "koala",
+    "owl",
+    "hawk",
+    "whale",
+    "shark",
+    "zebra",
+    "giraffe",
+    "elephant",
+    "penguin",
+    "rabbit",
+    "deer",
+    "turtle",
+  ];
+
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
   const randomNum = Math.floor(1000 + Math.random() * 9000); // Generates number between 1000-9999
-  return `user${randomNum}`;
+
+  return `${randomColor}-${randomAnimal}-${randomNum}`;
 }
 
 export default async function postDetailHandler(
