@@ -7,12 +7,13 @@ interface PostData {
   image: string;
   defaultImage: string;
 }
-function getTimeBasedGreeting(): string {
+function getTimeBasedGreeting(index = 0): string {
   const hour = new Date().getHours();
   const dayOfMonth = new Date().getDate();
 
   const getDailyQuote = (quotes: string[]) => {
-    const seed = (dayOfMonth * 31 + hour) % quotes.length;
+    // Tambahkan index agar setiap post di satu run dapat berbeda
+    const seed = (dayOfMonth * 31 + hour + index) % quotes.length;
     return quotes[seed];
   };
 
@@ -139,7 +140,7 @@ function getTimeBasedGreeting(): string {
   }
 }
 
-async function postToApi() {
+async function postToApi(index = 0) {
   // Get the image URL from environment or generate one
   let postImage = Deno.env.get("POST_IMAGE");
 
@@ -148,7 +149,7 @@ async function postToApi() {
     postImage = generateImageUrl();
   }
 
-  const postContent = getTimeBasedGreeting();
+  const postContent = getTimeBasedGreeting(index);
 
   const postData: PostData = {
     content: postContent,
@@ -198,7 +199,7 @@ function getRandomDelay(minMs: number, maxMs: number): number {
 }
 
 for (let i = 0; i < 5; i++) {
-  await postToApi();
+  await postToApi(i);
   if (i < 4) {
     const delay = getRandomDelay(30000, 120000);
     console.log(
