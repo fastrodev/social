@@ -104,6 +104,13 @@ export default function Index({ data }: PageProps<
     }
   };
 
+  const themeStyles = {
+    button: isDark
+      ? "bg-purple-600 text-white hover:bg-purple-700"
+      : "bg-purple-500 text-white hover:bg-purple-600",
+    // Add any other theme styles you need here
+  };
+
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
       <div className="fixed inset-0 z-0 opacity-20">
@@ -140,8 +147,33 @@ export default function Index({ data }: PageProps<
                   isDark={isDark}
                   isMobile={isMobile}
                 />
-                {hasMore && <div id="scroll-sentinel" className="h-0 m-0" />}
-                {isLoading && <Skeleton />}
+                {isMobile && posts.length > 0
+                  ? (
+                    // load more posts when scrolled to the bottom
+                    <>
+                      {hasMore && (
+                        <div className="mt-2 mb-4 flex justify-center">
+                          <button
+                            onClick={() => fetchPosts(false)}
+                            disabled={isLoading}
+                            className={`px-4 py-2 rounded-lg ${themeStyles.button} ${
+                              isLoading ? "opacity-50" : ""
+                            }`}
+                          >
+                            {isLoading ? "Loading..." : "Load More Posts"}
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )
+                  : (
+                    <>
+                      {hasMore && posts.length > 0 && (
+                        <div id="scroll-sentinel" className="h-0 m-0" />
+                      )}
+                      {isLoading && <Skeleton />}
+                    </>
+                  )}
               </>
             )}
           </main>
