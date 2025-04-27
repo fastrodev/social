@@ -176,7 +176,7 @@ export default function Index({ data }: PageProps<
                   )
                   : (
                     <>
-                      {isLoading && !isMobile && <Skeleton />}
+                      {isLoading && <Skeleton />}
                     </>
                   )}
               </>

@@ -300,10 +300,17 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
 
   const renderMarkdown = renderMarkdownWithHashtags;
 
+  // Conditionally apply glow effect based on device type
+  const cardGlowClass = isMobile
+    ? ""
+    : isDark
+    ? "shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]"
+    : "shadow-[0_0_10px_2px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]";
+
   return (
     <>
       <div
-        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
+        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg ${cardGlowClass}`}
       >
         <form
           onSubmit={handleSubmit}
@@ -403,7 +410,9 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
               : (
                 <div className="relative">
                   <textarea
-                    placeholder="What's on your mind?"
+                    placeholder={isEditing
+                      ? "# Replace with your title\n\n\nReplace this template content with yours\n\n\n#replace-with-your-tag"
+                      : "What's on your mind?"}
                     value={postContent}
                     onInput={handleChange}
                     onFocus={handleTextareaFocus}
@@ -427,19 +436,17 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                         : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
                     }`}
                   />
-                  {!postContent.trim() && (
-                    <div
-                      className={`absolute ${
-                        isMobile
-                          ? "bottom-2 right-2 text-[8px]"
-                          : "bottom-3 right-3 text-xs"
-                      } italic ${themeStyles.footer}`}
-                    >
-                      Posts auto-delete after 1 week for non-logged-in users.
-                    </div>
-                  )}
                 </div>
               )}
+
+            {!isEditing && (
+              <div
+                className={`text-xs text-right italic ${themeStyles.footer} -mt-3`}
+              >
+                Your posts will automatically disappear after 7 days unless you
+                create an account.
+              </div>
+            )}
 
             {/* Fixed positioning with consistent margin */}
             {isEditing && (
