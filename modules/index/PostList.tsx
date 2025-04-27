@@ -290,28 +290,47 @@ export function Skeleton() {
       {[...Array(1)].map((_, i) => (
         <div
           key={i}
-          className="bg-gray-800/90 rounded-lg p-6 animate-pulse border border-gray-700"
+          className="bg-gray-800/90 rounded-lg px-6 py-4 animate-pulse border border-gray-700 shadow-lg shadow-purple-500/20 relative"
         >
-          <div className="flex items-center space-x-3 mb-4">
-            {/* Avatar skeleton */}
-            <div className="h-10 w-10 bg-gray-700/50 rounded-full animate-pulse" />
-            <div className="space-y-2 flex-1">
-              {/* Username skeleton */}
-              <div className="h-4 bg-gray-700/50 rounded w-24 animate-pulse" />
-              {/* Time skeleton */}
-              <div className="h-3 bg-gray-700/50 rounded w-16 animate-pulse" />
+          <div className="flex items-center justify-between mb-3">
+            {/* Avatar and username skeleton */}
+            <div className="flex items-center">
+              <div className="mt-1 w-8 h-8 bg-gray-700/50 rounded-full animate-pulse flex-shrink-0" />
+              <div className="ml-3">
+                {/* Username skeleton */}
+                <div className="h-4 bg-gray-700/50 rounded w-24 animate-pulse" />
+                {/* Time skeleton */}
+                <div className="h-3 bg-gray-700/50 rounded w-16 animate-pulse mt-1" />
+              </div>
             </div>
+            {/* Options button skeleton */}
+            <div className="h-8 w-8 bg-gray-700/50 rounded-full animate-pulse" />
           </div>
+
+          {/* Image skeleton with correct positioning */}
+          <div className="-mx-6 mb-4">
+            <div className="h-48 bg-gray-700/50 animate-pulse w-full" />
+          </div>
+
           {/* Content skeleton */}
           <div className="space-y-3">
-            <div className="h-4 bg-gray-700/50 rounded w-full animate-pulse" />
-            <div className="h-4 bg-gray-700/50 rounded w-5/6 animate-pulse" />
-            <div className="h-4 bg-gray-700/50 rounded w-4/6 animate-pulse" />
+            {/* Title skeleton */}
+            <div className="h-6 bg-gray-700/50 rounded w-3/4 animate-pulse" />
           </div>
-          {/* Footer skeleton */}
-          <div className="flex items-center space-x-4 mt-4">
-            <div className="h-8 w-16 bg-gray-700/50 rounded animate-pulse" />
-            <div className="h-8 w-16 bg-gray-700/50 rounded animate-pulse" />
+
+          {/* Footer skeleton with border-t */}
+          <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between mt-4">
+            {/* Comment section skeleton */}
+            <div className="flex items-center gap-x-1">
+              <div className="h-5 w-5 bg-gray-700/50 rounded animate-pulse" />
+              <div className="h-3 w-20 bg-gray-700/50 rounded animate-pulse ml-2" />
+            </div>
+
+            {/* Views section skeleton */}
+            <div className="flex items-center gap-x-2">
+              <div className="h-5 w-5 bg-gray-700/50 rounded animate-pulse" />
+              <div className="h-3 w-16 bg-gray-700/50 rounded animate-pulse" />
+            </div>
           </div>
         </div>
       ))}
