@@ -12,33 +12,11 @@ import {
   extractPostTitle,
 } from "../../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
-
-const ALLOWED_ORIGINS = [
-  "https://social.fastro.dev",
-  "https://web.fastro.dev", // Add other allowed origins here
-  "http://localhost:8000", // Example for local development
-];
-
-const BASE_CORS_HEADERS = {
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Access-Control-Allow-Credentials": "true",
-  "Access-Control-Max-Age": "86400",
-};
+import { getCorsHeaders } from "@app/utils/headers.ts";
 
 function generateAnonymousUsername(): string {
   const randomNum = Math.floor(1000 + Math.random() * 9000); // Generates number between 1000-9999
   return `user${randomNum}`;
-}
-
-function getCorsHeaders(req: HttpRequest): Record<string, string> {
-  const origin = req.headers.get("origin");
-  const headers: Record<string, string> = { ...BASE_CORS_HEADERS };
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    headers["Access-Control-Allow-Origin"] = origin;
-  }
-  console.log("CORS headers:", headers);
-  return headers;
 }
 
 export default async function postDetailHandler(
