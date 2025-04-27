@@ -296,7 +296,16 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
               >
                 <span className="flex items-center gap-x-2">
                   <ViewIcon />
-                  {post.views || post.viewCount || 0} views
+                  {(post.views || post.viewCount || 0) === 0
+                    ? "Be the first viewer"
+                    : (
+                      <>
+                        {post.views || post.viewCount || 0}{" "}
+                        {(post.views || post.viewCount || 0) === 1
+                          ? "view"
+                          : "views"}
+                      </>
+                    )}
                 </span>
               </div>
             </div>
