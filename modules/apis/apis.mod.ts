@@ -1,16 +1,13 @@
 import { Fastro } from "fastro/core/server/types.ts";
-// Import both functions
 import {
   generateDeleteSignedUrl,
   generateSignedUrl,
 } from "../../utils/signed-url.ts";
 
 export default function apisModule(s: Fastro) {
-  // --- Existing /api/signed-url endpoint for uploads ---
   s.post("/api/signed-url", async (req, res) => {
     try {
       const body = await req.json();
-      // Destructure both filename and contentType
       const { filename, contentType } = body;
 
       if (!filename || typeof filename !== "string") {
@@ -18,14 +15,12 @@ export default function apisModule(s: Fastro) {
           error: "Invalid request: filename is required",
         });
       }
-      // Also validate contentType (optional but recommended)
       if (!contentType || typeof contentType !== "string") {
         return res.status(400).send({
           error: "Invalid request: contentType is required",
         });
       }
 
-      // Pass contentType to the generation function
       const signedUrlResponse = await generateSignedUrl(filename, contentType);
 
       return res.send(
@@ -48,7 +43,6 @@ export default function apisModule(s: Fastro) {
     }
   });
 
-  // --- NEW: API endpoint to get a DELETE signed URL ---
   s.post("/api/delete-signed-url", async (req, res) => {
     try {
       const body = await req.json();
@@ -60,7 +54,6 @@ export default function apisModule(s: Fastro) {
         });
       }
 
-      // Generate the delete signed URL using the new utility function
       const deleteUrlResponse = await generateDeleteSignedUrl(filename);
 
       return res.send(
@@ -83,7 +76,6 @@ export default function apisModule(s: Fastro) {
     }
   });
 
-  // add healthcheck endpoint
   s.get("/api/healthcheck", (_req, ctx) => {
     try {
       return new Response("API is healthy", {

@@ -5,7 +5,7 @@ import { useEffect, useState } from "preact/hooks";
 import Header from "@app/modules/home/header.tsx";
 
 import { Editor } from "@app/modules/index/Editor.tsx";
-import { PostList, Skeleton } from "@app/modules/index/PostList.tsx";
+import { PostList, Skeleton } from "../post/PostList.tsx";
 import { Post } from "@app/modules/index/type.ts";
 
 export default function Index({ data }: PageProps<

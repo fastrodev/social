@@ -6,7 +6,7 @@ import {
   editPostById,
   getPostById,
   getPostsFromDb,
-} from "@app/modules/home/post.service.ts";
+} from "./post.service.ts";
 import {
   createSeoDescription,
   extractPostTitle,
@@ -194,8 +194,9 @@ export const editPostHandler = async (req: HttpRequest) => {
 };
 
 function generateAvatarUrl(): string {
-  const randomDigit = Math.floor(Math.random() * 10) + 1; // Generate random number between 1-10
-  return `https://avatars.githubusercontent.com/u/18680635${randomDigit}?v=4`;
+  // Generate a random 3-digit number between 100-999
+  const randomDigits = Math.floor(100 + Math.random() * 900);
+  return `https://avatars.githubusercontent.com/u/1868${randomDigits}?v=4`;
 }
 
 export async function postHandler(req: HttpRequest, ctx: Context) {

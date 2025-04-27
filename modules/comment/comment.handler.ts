@@ -5,8 +5,8 @@ import {
   createComment,
   deleteCommentById,
   getCommentsByPostId,
-} from "@app/modules/home/comment.service.ts";
-// Handle comment creation
+} from "./comment.service.ts";
+
 export async function commentHandler(req: HttpRequest, ctx: Context) {
   try {
     const body = await req.json();

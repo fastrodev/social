@@ -4,6 +4,8 @@ import indexModule from "@app/modules/index/index.mod.ts";
 import tailwind from "@app/middlewares/tailwind/mod.ts";
 import authModule from "@app/modules/auth/mod.tsx";
 import homeModule from "@app/modules/home/mod.ts";
+import postModule from "@app/modules/post/mod.ts";
+import commentModule from "@app/modules/comment/mod.ts";
 import apisModule from "@app/modules/apis/apis.mod.ts";
 import authMiddleware from "@app/middlewares/auth/mod.ts";
 import "@std/dotenv/load";
@@ -17,6 +19,8 @@ s.group(indexModule);
 s.group(userModule);
 s.group(homeModule);
 s.group(apisModule);
+s.group(postModule);
+s.group(commentModule);
 s.serve({
   port: Number(Deno.env.get("PORT")) || 8000,
 });

@@ -235,12 +235,15 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
             <a href={`/post/${post.id}`} className="block relative">
               {/* Modified image section with title overlay */}
               <div className="-mx-6 mb-4 relative">
-                <img
-                  src={post.image || post.defaultImage}
-                  alt="Post attachment"
-                  className="w-full h-auto max-h-[200px] sm:max-h-[300px] rounded-none object-cover"
-                  loading="lazy"
-                />
+                <div className="w-full h-[200px] sm:h-[300px]">
+                  {/* Fixed height container */}
+                  <img
+                    src={post.image || post.defaultImage}
+                    alt="Post attachment"
+                    className="w-full h-full rounded-none object-cover"
+                    loading="lazy"
+                  />
+                </div>
                 {/* Title overlay positioned at bottom of image */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
                   {post.tags && post.tags.length > 0 && (

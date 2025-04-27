@@ -1,7 +1,7 @@
 import { getSession } from "@app/utils/session.ts";
 
 import { Context, HttpRequest } from "fastro/mod.ts";
-import { getPosts } from "@app/modules/home/post.service.ts";
+import { getPosts } from "../post/post.service.ts";
 
 export default async function homeHandler(req: HttpRequest, ctx: Context) {
   const ses = await getSession(req, ctx);

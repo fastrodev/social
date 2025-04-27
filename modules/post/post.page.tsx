@@ -1,6 +1,6 @@
 // deno-lint-ignore-file
 import { useEffect, useRef, useState } from "preact/hooks";
-import Header from "./header.tsx";
+import Header from "../home/header.tsx";
 import { JSX } from "preact/jsx-runtime";
 import { PageProps } from "fastro/mod.ts";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
