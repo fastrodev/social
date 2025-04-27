@@ -113,7 +113,9 @@ const htmlPlugin = {
         );
         const scripts =
           `<script id="__DATA__" type="application/json">${serializedData}</script>` +
-          `<script type="module" src="/js/bundle.js"></script>`;
+          `<script type="module" src="/js/bundle.js?v=${
+            new Date().getTime()
+          }"></script>`;
 
         fullHtml = fullHtml.replace("</body>", `${scripts}</body>`);
 
