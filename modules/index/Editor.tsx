@@ -416,8 +416,8 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                           ? "min-h-[150px] h-[200px]"
                           : "min-h-[300px] h-[400px]"
                         : isMobile
-                        ? "min-h-[45px] h-[45px]"
-                        : "min-h-[55px] h-[55px]"
+                        ? "min-h-[55px] h-[45px]"
+                        : "min-h-[65px] h-[55px]"
                     } max-h-[600px] 
                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
                           scrollbar-thin scrollbar-track-transparent transition-all duration-300
@@ -429,9 +429,13 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                   />
                   {!postContent.trim() && (
                     <div
-                      className={`absolute bottom-3 right-3 text-xs italic ${themeStyles.footer}`}
+                      className={`absolute ${
+                        isMobile
+                          ? "bottom-2 right-2 text-[8px]"
+                          : "bottom-3 right-3 text-xs"
+                      } italic ${themeStyles.footer}`}
                     >
-                      Posts auto-delete after 1 week for non-login users
+                      Posts auto-delete after 1 week for non-logged-in users.
                     </div>
                   )}
                 </div>
