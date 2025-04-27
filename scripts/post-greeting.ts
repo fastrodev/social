@@ -190,7 +190,7 @@ function generateImageUrl(): string {
   return `https://picsum.photos/seed/${id}/800/600.jpg`;
 }
 
-async function sleep(ms: number) {
+function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

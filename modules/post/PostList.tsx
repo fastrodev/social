@@ -236,7 +236,6 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
               {/* Modified image section with title overlay */}
               <div className="-mx-6 mb-4 relative">
                 <div className="w-full h-[200px] sm:h-[300px]">
-                  {/* Fixed height container */}
                   <img
                     src={post.image || post.defaultImage}
                     alt="Post attachment"
@@ -244,24 +243,27 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                     loading="lazy"
                   />
                 </div>
-                {/* Title overlay positioned at bottom of image */}
+
+                {/* Tags moved to top-right overlay */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="absolute top-2 right-2 flex flex-wrap gap-1 max-w-[70%] justify-end">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                          isDark
+                            ? "bg-purple-800/80 text-purple-200 backdrop-blur-sm"
+                            : "bg-purple-100/90 text-purple-700 backdrop-blur-sm"
+                        }`}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Title overlay remains at bottom */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-x-2 mb-1">
-                      {post.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                            isDark
-                              ? "bg-purple-800/60 text-purple-200"
-                              : "bg-purple-100/80 text-purple-700"
-                          }`}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                   <h2 className="text-xl font-extrabold text-white line-clamp-3">
                     {post.title ? post.title : post.content}
                   </h2>
