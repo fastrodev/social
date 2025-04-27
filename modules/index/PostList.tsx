@@ -244,7 +244,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                 {/* Title overlay positioned at bottom of image */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
                   {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
+                    <div className="flex flex-wrap gap-x-2 mb-1">
                       {post.tags.map((tag, index) => (
                         <span
                           key={index}
