@@ -233,44 +233,40 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
             {/* End Modified Header Section */}
 
             <a href={`/post/${post.id}`} className="block relative">
-              {/* Modified image section: no horizontal gap/padding */}
-              <div className="-mx-6 mb-4">
+              {/* Modified image section with title overlay */}
+              <div className="-mx-6 mb-4 relative">
                 <img
                   src={post.image || post.defaultImage}
                   alt="Post attachment"
                   className="w-full h-auto max-h-[200px] sm:max-h-[300px] rounded-none object-cover"
-                  loading="lazy" // Add lazy loading
+                  loading="lazy"
                 />
-              </div>
-
-              <div
-                className={`markdown-body prose prose-sm dark:prose-invert max-w-none prose-a:no-underline prose-a:font-normal prose-p:my-2 ${themeStyles.text}`}
-              >
-                <h2 className="text-xl font-extrabold mb-2">
-                  {post.title ? post.title : post.content}
-                </h2>
-
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-1">
-                    {post.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                          isDark
-                            ? "bg-purple-800/40 text-purple-200"
-                            : "bg-purple-100 text-purple-700"
-                        }`}
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {/* Title overlay positioned at bottom of image */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {post.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                            isDark
+                              ? "bg-purple-800/60 text-purple-200"
+                              : "bg-purple-100/80 text-purple-700"
+                          }`}
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <h2 className="text-xl font-extrabold text-white truncate">
+                    {post.title ? post.title : post.content}
+                  </h2>
+                </div>
               </div>
             </a>
 
-            {/* the style breaked by the hash tag content. fix it */}
-            <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
+            <div className="flex items-center justify-between">
               <a
                 href={`/post/${post.id}`}
                 className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
