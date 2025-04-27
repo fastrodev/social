@@ -804,7 +804,7 @@ export default function Post({ data }: PageProps<{
 
               {/* Stats section with top and bottom borders */}
               <div
-                className={`flex items-center justify-between -mx-6 py-3 space-x-4 border-t border-b ${
+                className={`flex items-center justify-between -mx-6 px-6 py-3 space-x-4 border-t border-b ${
                   isDark ? "border-gray-700/50" : "border-gray-200/70"
                 } mb-4`}
               >
