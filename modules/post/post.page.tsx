@@ -993,7 +993,7 @@ export default function Post({ data }: PageProps<{
                   )
                   : (
                     <div
-                      className={`text-center py-4 ${themeStyles.text} opacity-70 text-sm mt-6 pt-6 border-t`} // Added mt-6, pt-6 and border-t
+                      className={`text-center py-4 ${themeStyles.text} opacity-70 text-sm -mx-6 mt-6 pt-6 px-6 border-t`} // Added mt-6, pt-6 and border-t
                       style={{
                         borderColor: isDark
                           ? "rgba(255,255,255,0.1)"
