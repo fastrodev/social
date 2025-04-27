@@ -47,8 +47,8 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
       : "text-purple-600 hover:text-purple-500",
     cardBorder: isDark ? "border-gray-700" : "border-gray-200",
     cardGlow: isDark
-      ? "shadow-2xl shadow-purple-500/30"
-      : "shadow-lg shadow-gray-200/30",
+      ? "shadow-[0_0_20px_8px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
+      : "shadow-[0_0_20px_8px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
   };
 
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
