@@ -262,7 +262,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                       ))}
                     </div>
                   )}
-                  <h2 className="text-xl font-extrabold text-white truncate">
+                  <h2 className="text-xl font-extrabold text-white line-clamp-3">
                     {post.title ? post.title : post.content}
                   </h2>
                 </div>
