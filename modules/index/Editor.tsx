@@ -401,31 +401,40 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                 </div>
               )
               : (
-                <textarea
-                  placeholder="What's on your mind?"
-                  value={postContent}
-                  onInput={handleChange}
-                  onFocus={handleTextareaFocus}
-                  onBlur={handleTextareaBlur}
-                  required
-                  className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
-                        resize-none ${
-                    isEditing
-                      ? isMobile
-                        ? "min-h-[150px] h-[200px]"
-                        : "min-h-[300px] h-[400px]"
-                      : isMobile
-                      ? "min-h-[45px] h-[45px]"
-                      : "min-h-[55px] h-[55px]"
-                  } max-h-[600px] 
-                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
-                        ${
-                    isDark
-                      ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                      : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                  }`}
-                />
+                <div className="relative">
+                  <textarea
+                    placeholder="What's on your mind?"
+                    value={postContent}
+                    onInput={handleChange}
+                    onFocus={handleTextareaFocus}
+                    onBlur={handleTextareaBlur}
+                    required
+                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
+                          resize-none ${
+                      isEditing
+                        ? isMobile
+                          ? "min-h-[150px] h-[200px]"
+                          : "min-h-[300px] h-[400px]"
+                        : isMobile
+                        ? "min-h-[45px] h-[45px]"
+                        : "min-h-[55px] h-[55px]"
+                    } max-h-[600px] 
+                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                          scrollbar-thin scrollbar-track-transparent transition-all duration-300
+                          ${
+                      isDark
+                        ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                        : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                    }`}
+                  />
+                  {!postContent.trim() && (
+                    <div
+                      className={`absolute bottom-3 right-3 text-xs italic ${themeStyles.footer}`}
+                    >
+                      Posts auto-delete after 1 week for non-login users
+                    </div>
+                  )}
+                </div>
               )}
 
             {/* Fixed positioning with consistent margin */}
