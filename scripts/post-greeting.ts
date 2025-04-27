@@ -13,92 +13,92 @@ function getTimeBasedGreeting(): string {
 
   if (hour === 6) {
     const morningGreetings = [
-      "Good morning! Rise and shine! It's a brand new day with fresh opportunities. What are your goals today?",
-      "Morning has broken! What positive impact will you make today?",
-      "A new dawn, a new day! What possibilities will you explore?",
-      "Good morning! The early bird catches the success. What's your first win going to be today?",
-      "Morning sunshine! Your potential today is limitless. What will you accomplish?",
-      "Fresh morning, fresh mindset! What new perspective will guide you today?",
-      "Morning energy activated! Channel it into your most important priorities today.",
-      "Rise with purpose! This morning marks the beginning of something amazing.",
-      "Hello, morning! The world is full of possibilities waiting for your touch today.",
-      "Morning optimism at its peak! What challenge will you transform into an opportunity?",
-      "Dawn of a new day! Your morning choices set the tone - make them count!",
-      "Good morning world! Today is a blank canvas - what masterpiece will you create?",
-      "Morning vibes! Embrace this day with the energy it deserves!",
+      "Selamat pagi! Bangun dan bersinar! Ini adalah hari baru dengan kesempatan baru. Apa tujuan Anda hari ini?",
+      "Pagi telah tiba! Dampak positif apa yang akan Anda buat hari ini?",
+      "Fajar baru, hari baru! Kemungkinan apa yang akan Anda jelajahi?",
+      "Selamat pagi! Siapa cepat dia dapat. Apa kemenangan pertama Anda hari ini?",
+      "Pagi yang cerah! Potensi Anda hari ini tak terbatas. Apa yang akan Anda capai?",
+      "Pagi yang segar, pola pikir yang segar! Perspektif baru apa yang akan memandu Anda hari ini?",
+      "Energi pagi diaktifkan! Salurkan ke prioritas terpenting Anda hari ini.",
+      "Bangkit dengan tujuan! Pagi ini menandai awal dari sesuatu yang luar biasa.",
+      "Halo, pagi! Dunia penuh dengan kemungkinan yang menunggu sentuhan Anda hari ini.",
+      "Optimisme pagi di puncaknya! Tantangan apa yang akan Anda ubah menjadi peluang?",
+      "Fajar hari baru! Pilihan pagi Anda menentukan nada - buatlah berarti!",
+      "Selamat pagi dunia! Hari ini adalah kanvas kosong - karya apa yang akan Anda ciptakan?",
+      "Suasana pagi! Sambut hari ini dengan energi yang pantas didapatkan!",
     ];
     return morningGreetings[
       Math.floor(Math.random() * morningGreetings.length)
     ];
   } else if (hour === 13) {
     const afternoonGreetings = [
-      "Afternoon energy boost! Hope your day is going well. Remember to take a moment to breathe and refocus.",
-      "Mid-day check-in! How's your productivity? Time for a quick refresh?",
-      "Afternoon motivation! The day is half over - make the rest count!",
-      "Afternoon pause! How's your day unfolding? Time to reassess priorities for maximum impact.",
-      "Midday momentum check! Keep the positive energy flowing through the afternoon.",
-      "Afternoon reflection time! What have you accomplished so far and what's next?",
-      "Lunchtime wisdom: The afternoon is your second chance to make today amazing!",
-      "Afternoon reset button! Clear your mind, refocus your energy, and finish strong.",
-      "Midday greetings! Remember that consistent progress beats sporadic perfection.",
-      "The afternoon stretch! Stand up, breathe deep, and recommit to your important goals.",
-      "Afternoon perspective: You're not just busy, you're building something meaningful!",
-      "Sunny afternoon vibes! Let your productivity shine as bright as the midday sun.",
-      "Afternoon reminder: Your well-being matters! Take a moment to check in with yourself.",
+      "Tambahan energi siang hari! Semoga hari Anda berjalan lancar. Ingatlah untuk mengambil momen untuk bernapas dan memfokuskan kembali.",
+      "Periksa tengah hari! Bagaimana produktivitas Anda? Waktunya untuk penyegaran cepat?",
+      "Motivasi siang hari! Hari sudah setengah berlalu - manfaatkan sisanya!",
+      "Jeda siang! Bagaimana hari Anda berkembang? Saatnya menilai kembali prioritas untuk dampak maksimal.",
+      "Pemeriksaan momentum tengah hari! Jaga energi positif mengalir sepanjang sore.",
+      "Waktu refleksi siang! Apa yang telah Anda capai sejauh ini dan apa selanjutnya?",
+      "Kebijaksanaan jam makan siang: Sore hari adalah kesempatan kedua Anda untuk membuat hari ini luar biasa!",
+      "Tombol reset siang hari! Jernihkan pikiran, fokuskan kembali energi Anda, dan selesaikan dengan kuat.",
+      "Salam tengah hari! Ingat bahwa kemajuan konsisten mengalahkan kesempurnaan sporadis.",
+      "Peregangan siang hari! Berdiri, bernapas dalam-dalam, dan berkomitmen kembali pada tujuan penting Anda.",
+      "Perspektif siang: Anda tidak hanya sibuk, Anda sedang membangun sesuatu yang bermakna!",
+      "Suasana siang yang cerah! Biarkan produktivitas Anda bersinar secerah matahari siang.",
+      "Pengingat siang: Kesejahteraan Anda penting! Luangkan waktu untuk memeriksa diri Anda sendiri.",
     ];
     return afternoonGreetings[
       Math.floor(Math.random() * afternoonGreetings.length)
     ];
   } else if (hour === 16) {
     const lateAfternoonGreetings = [
-      "Late afternoon check-in! How's your day been? There's still time to accomplish something meaningful before the day ends.",
-      "Final stretch of the workday! What's one more thing you can accomplish?",
-      "Afternoon reflection time! What were your wins today, and what's still on your list?",
-      "The 4pm opportunity window! You still have time to make today count in a special way.",
-      "Late afternoon energy check! What needs your attention most before you wrap up today?",
-      "Golden hour productivity! Make these final working hours shine with focused effort.",
-      "Afternoon wind-down beginning! Prioritize your remaining tasks wisely.",
-      "Day's final sprint! What deserves your energy and attention before closing time?",
-      "Late day inspiration: Finish stronger than you started, even when energy wanes.",
-      "Almost there! What important task can you complete before the workday ends?",
-      "Afternoon completion zone! Time to tie up loose ends and prepare for tomorrow.",
-      "4pm reminder: Your future self will thank you for finishing strong today!",
-      "Late afternoon check: Don't let perfect be the enemy of done as you wrap up today.",
+      "Memeriksa sore hari! Bagaimana hari Anda? Masih ada waktu untuk mencapai sesuatu yang berarti sebelum hari berakhir.",
+      "Tahap akhir hari kerja! Apa satu hal lagi yang bisa Anda capai?",
+      "Waktu refleksi sore! Apa kemenangan Anda hari ini, dan apa yang masih dalam daftar Anda?",
+      "Jendela kesempatan jam 4 sore! Anda masih punya waktu untuk membuat hari ini berarti dengan cara yang istimewa.",
+      "Pemeriksaan energi sore! Apa yang paling membutuhkan perhatian Anda sebelum mengakhiri hari?",
+      "Produktivitas di jam keemasan! Jadikan jam kerja terakhir ini bersinar dengan usaha terfokus.",
+      "Persiapan akhir sore dimulai! Prioritaskan tugas Anda yang tersisa dengan bijak.",
+      "Sprint terakhir hari! Apa yang layak mendapatkan energi dan perhatian Anda sebelum waktu tutup?",
+      "Inspirasi akhir hari: Selesaikan lebih kuat dari yang Anda mulai, bahkan ketika energi memudar.",
+      "Hampir selesai! Tugas penting apa yang dapat Anda selesaikan sebelum hari kerja berakhir?",
+      "Zona penyelesaian sore! Saatnya menyelesaikan hal-hal kecil dan mempersiapkan diri untuk besok.",
+      "Pengingat jam 4 sore: Diri Anda di masa depan akan berterima kasih karena menyelesaikan hari dengan kuat!",
+      "Cek sore hari: Jangan biarkan sempurna menjadi musuh dari selesai saat Anda mengakhiri hari ini.",
     ];
     return lateAfternoonGreetings[
       Math.floor(Math.random() * lateAfternoonGreetings.length)
     ];
   } else if (hour === 20) {
     const eveningGreetings = [
-      "Evening reflections! As the day winds down, what was your biggest win today? Time to recharge for tomorrow's adventures.",
-      "Winding down for the day? Take a moment to celebrate what you accomplished!",
-      "Evening vibes! Time to relax and prepare for another day of possibilities tomorrow.",
-      "Evening gratitude moment! What three things went well today that you appreciate?",
-      "Nightfall wisdom: Today's efforts become tomorrow's results. Rest well!",
-      "Evening wind-down activated! Time to switch from productivity to recovery mode.",
-      "Stars are appearing! As your day concludes, what moment shined brightest for you?",
-      "Evening reflection: Progress isn't always visible in the moment, but you're moving forward!",
-      "Twilight thoughts: Let go of today's challenges and embrace tomorrow's potential.",
-      "Day's end ritual: Celebrate wins, learn from setbacks, and prepare for a fresh start.",
-      "Evening reminder: Rest isn't laziness, it's preparation for future productivity!",
-      "Night settling in! Time to power down your mind and recharge your spirit.",
-      "Evening mantra: You did your best today, and that's always enough.",
+      "Refleksi malam! Saat hari mulai berakhir, apa pencapaian terbesar Anda hari ini? Saatnya mengisi ulang untuk petualangan besok.",
+      "Mengakhiri hari? Luangkan waktu untuk merayakan apa yang telah Anda capai!",
+      "Suasana malam! Saatnya bersantai dan bersiap untuk hari lain penuh kemungkinan esok.",
+      "Momen syukur malam hari! Tiga hal apa yang berjalan baik hari ini yang Anda hargai?",
+      "Kebijaksanaan malam: Usaha hari ini menjadi hasil besok. Beristirahatlah dengan baik!",
+      "Mode istirahat malam diaktifkan! Saatnya beralih dari mode produktivitas ke mode pemulihan.",
+      "Bintang-bintang mulai tampak! Saat hari Anda berakhir, momen apa yang paling bersinar bagi Anda?",
+      "Refleksi malam: Kemajuan tidak selalu terlihat dalam sekejap, tapi Anda terus maju!",
+      "Pikiran senja: Lepaskan tantangan hari ini dan sambut potensi esok hari.",
+      "Ritual akhir hari: Rayakan kemenangan, belajar dari kegagalan, dan bersiap untuk awal yang baru.",
+      "Pengingat malam: Istirahat bukan kemalasan, tapi persiapan untuk produktivitas masa depan!",
+      "Malam menjelang! Saatnya mematikan pikiran dan mengisi ulang semangat Anda.",
+      "Mantra malam: Anda sudah melakukan yang terbaik hari ini, dan itu selalu cukup.",
     ];
     return eveningGreetings[
       Math.floor(Math.random() * eveningGreetings.length)
     ];
   } else {
     const defaultGreetings = [
-      "Hello there! Hope you're having a wonderful day!",
-      "Greetings! Every moment is a chance to make positive changes.",
-      "Hi friend! Remember that your journey matters, whatever time it is.",
-      "Checking in with a friendly reminder that you're doing great!",
-      "Hello! Taking small steps consistently leads to big results.",
-      "Friendly reminder: Your well-being matters at every hour of the day.",
-      "Time for a quick mindfulness moment. Take a deep breath!",
-      "Whatever time it is, it's always a good moment to celebrate your progress.",
-      "Sending positive energy your way, no matter the hour!",
-      "Remember: Each moment contains the seed of opportunity.",
+      "Halo! Semoga hari Anda menyenangkan!",
+      "Salam! Setiap momen adalah kesempatan untuk membuat perubahan positif.",
+      "Hai teman! Ingatlah bahwa perjalanan Anda penting, jam berapapun sekarang.",
+      "Memeriksa dengan pengingat ramah bahwa Anda melakukannya dengan baik!",
+      "Halo! Mengambil langkah kecil secara konsisten mengarah pada hasil besar.",
+      "Pengingat ramah: Kesejahteraan Anda penting setiap jam sepanjang hari.",
+      "Saatnya untuk momen kesadaran singkat. Tarik napas dalam-dalam!",
+      "Jam berapapun sekarang, selalu momen yang tepat untuk merayakan kemajuan Anda.",
+      "Mengirimkan energi positif untuk Anda, apa pun jamnya!",
+      "Ingat: Setiap momen mengandung benih kesempatan.",
     ];
     return defaultGreetings[
       Math.floor(Math.random() * defaultGreetings.length)
