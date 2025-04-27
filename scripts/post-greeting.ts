@@ -9,6 +9,16 @@ interface PostData {
 }
 function getTimeBasedGreeting(): string {
   const hour = new Date().getHours();
+  // Mendapatkan hari dalam bulan sebagai seed untuk konsistensi
+  const dayOfMonth = new Date().getDate();
+
+  // Menggunakan jam + hari untuk memilih kutipan spesifik
+  // Ini akan memberikan kutipan berbeda per jam dan per hari
+  const getDailyQuote = (quotes: string[]) => {
+    // Menggunakan deterministik seed berdasarkan hari
+    const seed = (dayOfMonth * 31 + hour) % quotes.length;
+    return quotes[seed];
+  };
 
   if (hour === 6) {
     const morningQuotes = [
@@ -23,7 +33,7 @@ function getTimeBasedGreeting(): string {
       "Setiap pagi kita dilahirkan kembali. Apa yang kita lakukan hari ini adalah yang terpenting. (Buddha)\n#quote",
       "Ketika Anda bangun di pagi hari, pikirkan betapa berharganya hak istimewa untuk hidup - untuk bernapas, berpikir, menikmati, mencintai. (Marcus Aurelius)\n#quote",
     ];
-    return morningQuotes[Math.floor(Math.random() * morningQuotes.length)];
+    return getDailyQuote(morningQuotes);
   } else if (hour === 13) {
     const afternoonQuotes = [
       "Hidup adalah apa yang terjadi ketika Anda sibuk membuat rencana lain. (John Lennon)\n#quote",
@@ -37,7 +47,7 @@ function getTimeBasedGreeting(): string {
       "Waktu terbaik untuk menanam pohon adalah 20 tahun yang lalu. Waktu terbaik kedua adalah sekarang. (Pepatah Cina)\n#quote",
       "Anda kehilangan 100% tembakan yang tidak Anda ambil. (Wayne Gretzky)\n#quote",
     ];
-    return afternoonQuotes[Math.floor(Math.random() * afternoonQuotes.length)];
+    return getDailyQuote(afternoonQuotes);
   } else if (hour === 16) {
     const lateAfternoonQuotes = [
       "Jangan menghitung hari-hari, buatlah hari-hari itu berarti. (Muhammad Ali)\n#quote",
@@ -51,9 +61,7 @@ function getTimeBasedGreeting(): string {
       "Kualitas bukanlah tindakan, melainkan kebiasaan. (Aristotle)\n#quote",
       "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan. (Walt Disney)\n#quote",
     ];
-    return lateAfternoonQuotes[
-      Math.floor(Math.random() * lateAfternoonQuotes.length)
-    ];
+    return getDailyQuote(lateAfternoonQuotes);
   } else if (hour === 20) {
     const eveningQuotes = [
       "Semakin gelap malam, semakin terang bintang-bintang. (Fyodor Dostoevsky)\n#quote",
@@ -67,7 +75,7 @@ function getTimeBasedGreeting(): string {
       "Saya pikir cara terbaik untuk mendapatkan tidur nyenyak adalah bekerja keras sepanjang hari. Jika Anda bekerja keras dan, tentu saja, berolahraga. (William H. McRaven)\n#quote",
       "Malam adalah ibu dari nasihat. (Pepatah Yunani)\n#quote",
     ];
-    return eveningQuotes[Math.floor(Math.random() * eveningQuotes.length)];
+    return getDailyQuote(eveningQuotes);
   } else {
     const defaultQuotes = [
       "Jadilah diri sendiri; orang lain sudah ada. (Oscar Wilde)\n#quote",
@@ -81,7 +89,7 @@ function getTimeBasedGreeting(): string {
       "Tidak pernah terlambat untuk menjadi apa yang seharusnya Anda menjadi. (George Eliot)\n#quote",
       "Kemarin adalah sejarah, besok adalah misteri, hari ini adalah hadiah Tuhan, itulah sebabnya kita menyebutnya saat ini. (Bill Keane)\n#quote",
     ];
-    return defaultQuotes[Math.floor(Math.random() * defaultQuotes.length)];
+    return getDailyQuote(defaultQuotes);
   }
 }
 
