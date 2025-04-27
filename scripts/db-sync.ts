@@ -5,7 +5,7 @@ const BUCKET_NAME = Deno.env.get("GCS_BUCKET") || "your-bucket-name";
 const DB_PATH = "/app/db/sqlite.db";
 const WAL_PATH = "/app/db/sqlite.db-wal";
 const SHM_PATH = "/app/db/sqlite.db-shm";
-const SYNC_INTERVAL_MS = 10 * 60000; // 10 minutes in milliseconds
+const SYNC_INTERVAL_MS = 5 * 60000; // 5 minutes in milliseconds
 
 const storage = new Storage();
 const bucket = storage.bucket(BUCKET_NAME);
