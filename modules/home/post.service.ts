@@ -14,6 +14,7 @@ interface PostInput {
   avatar?: string;
   image?: string;
   tags?: string[];
+  expired?: boolean;
 }
 
 interface Post {
@@ -184,11 +185,10 @@ export async function createPost(input: PostInput): Promise<Post> {
   };
 
   const primaryKey = ["posts", id];
-  console.log("Creating post with ID:", id);
-
+  const opt = input.expired ? { expireIn: 60 * 60 * 24 * 7 } : undefined;
   const atomic = kv.atomic()
     .check({ key: primaryKey, versionstamp: null })
-    .set(primaryKey, post);
+    .set(primaryKey, post, opt);
 
   const res = await atomic.commit();
   console.log("Post creation result:", res);

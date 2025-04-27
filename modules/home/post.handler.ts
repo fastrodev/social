@@ -184,6 +184,7 @@ export async function postHandler(req: HttpRequest, ctx: Context) {
       title,
       description,
       tags,
+      expired: ses?.username ? false : true,
     });
 
     return new Response(JSON.stringify(post), {
