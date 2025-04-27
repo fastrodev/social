@@ -100,7 +100,7 @@ export default function Header(
           class={`${linkTextColorClass}`}
           href={props.isLogin
             ? props.html_url
-            : "https://github.com/fastrodev/fastro"}
+            : "https://github.com/fastrodev/social"}
         >
           {!props.avatar_url ? <GithubSvg /> : (
             <img
