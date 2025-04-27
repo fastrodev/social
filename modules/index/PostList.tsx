@@ -319,7 +319,7 @@ export function Skeleton() {
       {[...Array(1)].map((_, i) => (
         <div
           key={i}
-          className="bg-gray-800/90 rounded-lg px-6 py-4 animate-pulse border border-gray-700 shadow-lg shadow-purple-500/20 relative"
+          className="bg-gray-800/90 flex flex-col rounded-lg px-6 py-4 border border-gray-700 shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] relative"
         >
           <div className="flex items-center justify-between mb-3">
             {/* Avatar and username skeleton */}
@@ -336,19 +336,17 @@ export function Skeleton() {
             <div className="h-8 w-8 bg-gray-700/50 rounded-full animate-pulse" />
           </div>
 
-          {/* Image skeleton with correct positioning */}
-          <div className="-mx-6 mb-4">
-            <div className="h-48 bg-gray-700/50 animate-pulse w-full" />
+          {/* Image skeleton with title overlay */}
+          <div className="-mx-6 mb-4 relative">
+            <div className="h-[200px] bg-gray-700/50 animate-pulse w-full" />
+            {/* Title overlay skeleton */}
+            <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
+              <div className="h-6 bg-gray-700/50 rounded w-3/4 animate-pulse" />
+            </div>
           </div>
 
-          {/* Content skeleton */}
-          <div className="space-y-3">
-            {/* Title skeleton */}
-            <div className="h-6 bg-gray-700/50 rounded w-3/4 animate-pulse" />
-          </div>
-
-          {/* Footer skeleton with border-t */}
-          <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between mt-4">
+          {/* Footer skeleton */}
+          <div className="flex items-center justify-between">
             {/* Comment section skeleton */}
             <div className="flex items-center gap-x-1">
               <div className="h-5 w-5 bg-gray-700/50 rounded animate-pulse" />
