@@ -657,7 +657,7 @@ export default function Post({ data }: PageProps<{
                   <img
                     src={postData.image}
                     alt="Post image"
-                    className="w-full rounded-lg object-cover"
+                    className="w-full object-cover"
                     loading="lazy" // Add lazy loading
                   />
                 </div>
