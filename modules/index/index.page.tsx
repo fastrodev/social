@@ -129,7 +129,7 @@ export default function Index({ data }: PageProps<
         {/* Main Content Section */}
         <div className="max-w-xl mx-auto">
           <main
-            className={`max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6`}
+            className={`max-w-2xl mx-auto relative flex flex-col gap-y-4 sm:gap-y-6`}
           >
             <Editor
               posts={posts}

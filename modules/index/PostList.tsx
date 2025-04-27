@@ -100,7 +100,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
         posts.map((post) => (
           <div
             key={post.id}
-            className={`${themeStyles.cardBg} rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
           >
             {/* Modified Header Section */}
             <div className="flex items-center justify-between mb-3">
@@ -281,16 +281,13 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
         ))
       )}
     </>
-    // <div className="flex flex-col gap-4">
-    //   {posts.length > }
-    // </div>
   );
 }
 
 export function Skeleton() {
   return (
     <div className="space-y-4">
-      {[...Array(3)].map((_, i) => (
+      {[...Array(1)].map((_, i) => (
         <div
           key={i}
           className="bg-gray-800/90 rounded-lg p-6 animate-pulse border border-gray-700"
