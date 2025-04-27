@@ -41,14 +41,6 @@ interface PostUpdateInput {
   tags?: string[];
 }
 
-// Comment interface
-interface CommentInput {
-  content: string;
-  postId: string;
-  author: string;
-  avatar?: string;
-}
-
 interface Comment {
   id: string;
   content: string;
