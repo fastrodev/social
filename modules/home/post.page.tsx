@@ -645,11 +645,20 @@ export default function Post({ data }: PageProps<{
 
               {/* Post Image (if available) */}
               {!isEditing && postData.image && (
-                <div className="my-4">
+                // <div className="my-4">
+                //   <img
+                //     src={postData.image}
+                //     alt="Post image"
+                //     className="w-full rounded-lg object-cover"
+                //   />
+                // </div>
+                //  {/* Modified image section: no horizontal gap/padding */}
+                <div className="-mx-6 mb-4">
                   <img
                     src={postData.image}
-                    alt="Post image"
-                    className="w-full rounded-lg object-cover"
+                    alt="Post attachment"
+                    className="w-full h-auto max-h-[200px] sm:max-h-[300px] rounded-none object-cover"
+                    loading="lazy" // Add lazy loading
                   />
                 </div>
               )}
