@@ -207,12 +207,12 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
             {/* End Modified Header Section */}
 
             <a href={`/post/${post.id}`} className="block relative">
-              {/* Modified image section */}
-              <div className="mb-3">
+              {/* Modified image section: no horizontal gap/padding */}
+              <div className="-mx-6 mb-4">
                 <img
                   src={post.image || post.defaultImage}
                   alt="Post attachment"
-                  className="w-full h-[300px] rounded-lg object-cover"
+                  className="w-full h-[300px] rounded-none object-cover"
                 />
               </div>
 

@@ -1,8 +1,0 @@
-POST https://fastro.dev/api/v1/post
-Content-Type: application/json
-
-{
-  "title": "My First Post",
-  "content": "This is the content of my first post.",
-  "tags": ["introduction", "first post"]
-}
