@@ -7,6 +7,46 @@ interface PostData {
   image: string;
   defaultImage: string;
 }
+
+async function checkApiHealth(
+  maxRetries = 5,
+  delayMs = 2000,
+): Promise<boolean> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const healthcheckUrl = `https://web.fastro.dev/api/healthcheck`;
+      const response = await fetch(healthcheckUrl);
+
+      if (response.ok) {
+        console.log(`API healthcheck passed on attempt ${attempt}`);
+        return true;
+      }
+
+      console.warn(
+        `Healthcheck attempt ${attempt}/${maxRetries} failed: ${response.status} ${response.statusText}`,
+      );
+
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delayMs / 1000} seconds before retry...`);
+        await sleep(delayMs);
+      }
+    } catch (error) {
+      console.error(
+        `Healthcheck attempt ${attempt}/${maxRetries} error:`,
+        error,
+      );
+
+      if (attempt < maxRetries) {
+        console.log(`Waiting ${delayMs / 1000} seconds before retry...`);
+        await sleep(delayMs);
+      }
+    }
+  }
+
+  console.error(`API healthcheck failed after ${maxRetries} attempts`);
+  return false;
+}
+
 function getTimeBasedGreeting(index = 0): string {
   const hour = new Date().getHours();
   const dayOfMonth = new Date().getDate();
@@ -198,13 +238,24 @@ function getRandomDelay(minMs: number, maxMs: number): number {
   return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
 }
 
-for (let i = 0; i < 5; i++) {
-  await postToApi(i);
-  if (i < 4) {
-    const delay = getRandomDelay(30000, 120000);
-    console.log(
-      `Menunggu ${Math.round(delay / 1000)} detik sebelum post berikutnya...`,
-    );
-    await sleep(delay);
+try {
+  const isHealthy = await checkApiHealth();
+  if (!isHealthy) {
+    console.error("API is not healthy, aborting posts");
+    Deno.exit(1);
   }
+
+  for (let i = 0; i < 5; i++) {
+    await postToApi(i);
+    if (i < 4) {
+      const delay = getRandomDelay(30000, 120000);
+      console.log(
+        `Menunggu ${Math.round(delay / 1000)} detik sebelum post berikutnya...`,
+      );
+      await sleep(delay);
+    }
+  }
+} catch (error) {
+  console.error("Error during execution:", error);
+  Deno.exit(1);
 }
