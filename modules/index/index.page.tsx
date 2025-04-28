@@ -59,7 +59,7 @@ export default function Index({ data }: PageProps<
       setIsLoading(true);
       // const url = new URL("/api/posts", window.location.origin);
       const url = new URL("https://web.fastro.dev/api/posts");
-      url.searchParams.set("limit", "4");
+      url.searchParams.set("limit", "10");
       if (!isInitial && cursor) {
         url.searchParams.set("cursor", cursor);
       }
