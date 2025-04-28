@@ -125,7 +125,8 @@ export default function Index({ data }: PageProps<
         <HexaIcon />
       </div>
 
-      <div className="relative z-10 min-h-screen">
+      {/* Container of header and main content */}
+      <div className="relative z-10 min-h-screen flex flex-col">
         <Header
           isLogin={false}
           avatar_url=""
@@ -135,15 +136,14 @@ export default function Index({ data }: PageProps<
         />
 
         {/* Main Content Section */}
-        <div className="max-w-xl mx-auto">
-          <main
-            className={`max-w-2xl mx-auto relative flex flex-col gap-y-4 sm:gap-y-6`}
-          >
+        <div className="max-w-2xl mx-auto flex-1 w-full flex items-center justify-center">
+          <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
             <Editor
               posts={posts}
               setPosts={setPosts}
               setIsEditorActive={setIsEditorActive}
             />
+
             {!isEditorActive && (
               <>
                 <PostList
@@ -176,7 +176,6 @@ export default function Index({ data }: PageProps<
                   )
                   : (
                     <>
-                      {isLoading && <Skeleton />}
                     </>
                   )}
               </>
