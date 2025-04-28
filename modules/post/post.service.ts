@@ -177,7 +177,7 @@ export async function createPost(input: PostInput): Promise<Post> {
   };
 
   const primaryKey = ["posts", id];
-  const opt = input.expired ? { expireIn: 60 * 60 * 24 * 7 } : undefined;
+  const opt = input.expired ? { expireIn: 7 * 24 * 60 * 60 * 1000 } : undefined; // 7 days
   const atomic = kv.atomic()
     .check({ key: primaryKey, versionstamp: null })
     .set(primaryKey, post, opt);
