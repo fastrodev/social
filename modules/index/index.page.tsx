@@ -137,7 +137,7 @@ export default function Index({ data }: PageProps<
         />
 
         {/* Main Content Section */}
-        <div className="max-w-2xl mx-auto flex-1 w-full flex items-center justify-center">
+        <div className="max-w-xl mx-auto flex-1 w-full flex items-center justify-center">
           <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
             {(posts.length === 0 || isLoading) && <Welcome key="welcome" />}
             <Editor
