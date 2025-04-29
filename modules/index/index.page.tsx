@@ -138,6 +138,27 @@ export default function Index({ data }: PageProps<
         {/* Main Content Section */}
         <div className="max-w-2xl mx-auto flex-1 w-full flex items-center justify-center">
           <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
+            {(posts.length === 0 || isLoading) && (
+              <div className={`mb-4 text-center`}>
+                <h2
+                  className="text-3xl sm:text-4xl font-bold"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to right, #c084fc, #ec4899)",
+                    backgroundClip: "text",
+                    color: "transparent",
+                    textShadow: "0 0 15px rgba(192, 132, 252, 0.5)",
+                    animation: "pulse 2s infinite ease-in-out",
+                  }}
+                >
+                  Welcome to Fastro Social
+                </h2>
+                <p className="text-base sm:text-lg opacity-80">
+                  Join the conversation! Share your thoughts and ideas with the
+                  world.
+                </p>
+              </div>
+            )}
             <Editor
               posts={posts}
               setPosts={setPosts}
