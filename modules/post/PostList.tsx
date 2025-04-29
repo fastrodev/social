@@ -236,7 +236,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
             <a href={`/post/${post.id}`} className="block relative">
               {/* Modified image section with title overlay */}
               <div className="-mx-6 mb-4 relative">
-                <div className="w-full h-[200px] sm:h-[300px]">
+                <div className="w-full h-[600px] sm:h-[450px]">
                   <img
                     src={post.image || post.defaultImage}
                     alt="Post attachment"
@@ -266,7 +266,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                   )}
 
                   {/* Title comes after tags */}
-                  <h2 className="text-xl font-extrabold text-white line-clamp-3">
+                  <h2 className="text-xl font-extrabold text-white line-clamp-5">
                     {post.title ? post.title : post.content}
                   </h2>
                 </div>

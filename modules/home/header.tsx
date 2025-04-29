@@ -69,7 +69,7 @@ export default function Header(
 
   return (
     <div
-      class={`container flex justify-between max-w-6xl mx-auto text-center text-sm py-6 px-3 ${textColorClass}`}
+      class={`container flex justify-between max-w-6xl mx-auto text-center text-sm py-2 px-2 ${textColorClass}`}
     >
       <div class={`flex space-x-2 items-center`}>
         <a href="/" class={`text-gray-100`}>
