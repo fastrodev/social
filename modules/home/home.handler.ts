@@ -19,6 +19,7 @@ export default async function homeHandler(req: HttpRequest, ctx: Context) {
   const html_url = ses?.html_url;
   const author = ses?.username;
   const posts = await getPosts();
+  console.log("author", author);
 
   const baseUrl = Deno.env.get("BASE_URL") || "https://social.fastro.dev";
   const imageUrl = "https://social.fastro.dev/img/social.jpeg";

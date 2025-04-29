@@ -42,7 +42,7 @@ export default function Header(
   const borderClass = isDark ? "border-gray-700" : "border-gray-200";
 
   const defaultTitle = "Fastro Social";
-  const headerTitle = props.isLogin ? "Home" : (props.message || defaultTitle);
+  const headerTitle = props.isLogin ? props.message : defaultTitle;
 
   // Close dropdown when clicking outside
   const handleClickOutside = () => {

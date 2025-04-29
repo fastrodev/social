@@ -1,65 +1,36 @@
 // deno-lint-ignore-file
-import { useEffect, useRef, useState } from "preact/hooks";
-import Header from "./header.tsx";
-import { JSX } from "preact/jsx-runtime";
-import { PageProps } from "fastro/mod.ts";
+import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
-import { CommentIcon } from "@app/components/icons/comment.tsx";
-import { ViewIcon } from "@app/components/icons/view.tsx";
-import { DeleteIcon } from "@app/components/icons/delete.tsx";
-import { ClipIcon } from "@app/components/icons/clip.tsx";
-import { SubmitIcon } from "@app/components/icons/submit.tsx"; // Make sure this path is correct
-import { VDotsIcon } from "@app/components/icons/vdots.tsx"; // Import the VdotsIcon
-import { ShareIcon } from "@app/components/icons/share.tsx"; // Import the ShareIcon
-import { EditIcon } from "@app/components/icons/edit.tsx";
-import { XIcon } from "@app/components/icons/x.tsx";
-import { CancelIcon } from "@app/components/icons/cancel.tsx";
-import { renderMarkdownWithHashtags } from "../../utils/markdown.ts";
-import { extractTags } from "@app/utils/tags.ts";
-import { getRandomImage } from "@app/utils/random.ts";
+import { useEffect, useState } from "preact/hooks";
+import Header from "@app/modules/home/header.tsx";
 
-interface Post {
-  id: string;
-  content: string;
-  timestamp: string;
-  author: string;
-  avatar: string;
-  commentCount?: number;
-  viewCount?: number;
-  views?: number;
-  isMarkdown?: boolean;
-  image?: string;
-  defaultImage?: string; // Add this field
-  title?: string;
-  tags?: string[];
-}
+import { Editor } from "@app/modules/index/Editor.tsx";
+import { PostList, Skeleton } from "../post/PostList.tsx";
+import { Post } from "@app/modules/index/type.ts";
 
-export default function Home({ data }: PageProps<{
-  user: string;
-  title: string;
-  description: string;
-  baseUrl: string;
-  isLogin: boolean;
-  avatar_url: string;
-  html_url: string;
-  author: string;
-  message?: string;
-  posts: Post[];
-}>) {
-  const [postContent, setPostContent] = useState("");
-  const [posts, setPosts] = useState<Post[]>(data.posts || []);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+export default function Home({ data }: PageProps<
+  {
+    author: string;
+    title: string;
+    description: string;
+    github_auth: string;
+    base_url?: string;
+    isLogin: boolean;
+    avatar_url: string;
+  }
+>) {
+  const [_isHealthy, setIsHealthy] = useState(false);
+  const [_isChecking, setIsChecking] = useState(true);
   const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const [showPreviewMode, setShowPreviewMode] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [isEditorActive, setIsEditorActive] = useState(false);
 
-  // Detect mobile devices
+  console.log("Rendering Index with data:", data);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -70,791 +41,150 @@ export default function Home({ data }: PageProps<{
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => {
-      setMenuOpenForPost(null);
+    const handleLoadMore = () => {
+      if (hasMore && !isLoading) {
+        fetchPosts(false);
+      }
     };
 
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    window.addEventListener("loadMorePosts", handleLoadMore);
+    return () => window.removeEventListener("loadMorePosts", handleLoadMore);
+  }, [hasMore, isLoading]);
+
+  useEffect(() => {
+    fetchPosts(true);
   }, []);
 
-  const renderMarkdown = renderMarkdownWithHashtags;
-
-  const handleFileSelect = async (
-    e: JSX.TargetedEvent<HTMLInputElement, Event>,
-  ) => {
-    const file = e.currentTarget.files?.[0];
-    if (!file) return;
-
-    // Check if file is an image
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file (JPEG, PNG, etc.)");
-      return;
-    }
-
-    setUploadingImage(true);
-
+  const fetchPosts = async (isInitial: boolean = false) => {
     try {
-      // Generate a unique filename
-      const extension = file.name.split(".").pop();
-      const filename = `uploads/${Date.now()}-${
-        Math.random()
-          .toString(36)
-          .substring(2, 15)
-      }.${extension}`;
-
-      console.log("Requesting signed URL for:", filename);
-
-      // Get a signed URL from our API
-      const signedUrlResponse = await fetch("/api/signed-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Send both filename and contentType
-        body: JSON.stringify({ filename, contentType: file.type }),
-      });
-
-      if (!signedUrlResponse.ok) {
-        const errorData = await signedUrlResponse.text();
-        console.error("Signed URL response error:", errorData);
-        throw new Error(`Failed to get signed URL: ${errorData}`);
+      setIsLoading(true);
+      // const url = new URL("/api/posts", window.location.origin);
+      const url = new URL("https://web.fastro.dev/api/posts");
+      url.searchParams.set("limit", "10");
+      if (!isInitial && cursor) {
+        url.searchParams.set("cursor", cursor);
       }
 
-      const data = await signedUrlResponse.json();
-      console.log("Signed URL received:", data);
+      const response = await fetch(url);
+      const contentType = response.headers.get("content-type");
 
-      if (!data.signedUrl) {
-        throw new Error("No signed URL returned from server");
+      if (!response.ok || !contentType?.includes("application/json")) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      const { signedUrl } = data;
+      const data = await response.json();
 
-      // Upload the file using the signed URL
-      console.log("Uploading to signed URL...");
-      const uploadResponse = await fetch(signedUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": file.type,
-          // Add this header back, matching the one in signed-url.ts
-          "x-goog-content-length-range": "0,10485760",
-        },
-        body: file,
-      });
-
-      if (!uploadResponse.ok) {
-        const uploadErrorText = await uploadResponse.text();
-        console.error("Upload error details:", uploadErrorText);
-        throw new Error(
-          `Failed to upload image: ${uploadResponse.status} ${uploadResponse.statusText}`,
-        );
+      // Validate that data is an array
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid response format: expected an array");
       }
 
-      console.log("Upload successful");
-
-      // Extract the public URL (IMPORTANT: The URL structure must be correct for your bucket)
-      // If your bucket is set up for public access, you can use this URL format
-      const publicUrl =
-        `https://storage.googleapis.com/replix-394315-file/${filename}`;
-      console.log("Setting public URL:", publicUrl);
-      setImageUrl(publicUrl);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      alert(
-        `Failed to upload image: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
-      );
-    } finally {
-      setUploadingImage(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const handleAttachmentClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleRemoveImage = async () => {
-    if (!imageUrl) return;
-
-    // Extract filename from the public URL
-    const urlParts = imageUrl.split("/");
-    const filename = urlParts.slice(4).join("/");
-
-    if (!filename) {
-      console.error("Could not extract filename from URL:", imageUrl);
-      setImageUrl(null); // Clear preview even if we can't delete
-      return;
-    }
-
-    console.log("Requesting DELETE signed URL for filename:", filename);
-
-    try {
-      // 1. Get the DELETE signed URL from the backend
-      const deleteUrlResponse = await fetch("/api/delete-signed-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filename }),
-      });
-
-      if (!deleteUrlResponse.ok) {
-        const errorData = await deleteUrlResponse.text();
-        console.error("Failed to get DELETE signed URL:", errorData);
-        alert("Could not prepare file deletion request. Please try again.");
-        // Decide if you want to clear the preview here or not
-        // setImageUrl(null);
-        return; // Stop if we can't get the URL
+      // Check if we received any posts
+      if (data.length === 0) {
+        setHasMore(false);
+        return;
       }
 
-      const data = await deleteUrlResponse.json();
-      if (!data.signedUrl) {
-        throw new Error("No DELETE signed URL returned from server");
+      // Set the cursor to the last post's ID for pagination
+      setCursor(data[data.length - 1].id);
+
+      // Check if we have fewer posts than requested (indicates end of data)
+      if (data.length < 4) {
+        setHasMore(false);
       }
 
-      const deleteSignedUrl = data.signedUrl;
-      console.log("DELETE Signed URL received.");
-
-      // 2. Use the signed URL to execute the DELETE request
-      console.log("Executing DELETE request using signed URL...");
-      const deleteResponse = await fetch(deleteSignedUrl, {
-        method: "DELETE",
-        // No body or Content-Type needed for standard GCS DELETE via signed URL
-      });
-
-      if (!deleteResponse.ok) {
-        // Handle potential errors during the actual delete operation
-        const deleteErrorText = await deleteResponse.text();
-        console.error("Error executing DELETE signed URL:", deleteErrorText);
-        // Inform user, but maybe still clear preview
-        alert(
-          "Failed to delete the file from storage. It might have already been deleted.",
-        );
+      // Ensure we don't duplicate posts by checking IDs
+      if (isInitial) {
+        setPosts(data);
       } else {
-        console.log("File deleted successfully using signed URL.");
-      }
-    } catch (error) {
-      console.error("Error during the delete process:", error);
-    } finally {
-      // Always remove the image preview from the UI after attempting deletion
-      setImageUrl(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
-    e.preventDefault();
-
-    if (!postContent.trim()) return;
-
-    setIsSubmitting(true);
-    // Extract tags from content
-    const extractedTags = extractTags(postContent);
-
-    // Assign random image based on tags only if no image was uploaded
-    const postImage = imageUrl || getRandomImage(extractedTags);
-
-    try {
-      const response = await fetch("/api/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content: postContent,
-          isMarkdown: true,
-          image: postImage,
-          defaultImage: postImage, // Store the default image
-        }),
-      });
-
-      if (response.ok) {
-        const newPost = await response.json();
-        setPosts([newPost, ...posts]);
-        resetForm();
-        setSubmitSuccess(true);
-
-        setTimeout(() => {
-          setSubmitSuccess(false);
-        }, 3000);
-      } else {
-        console.error("Failed to create post");
-      }
-    } catch (error) {
-      console.error("Error submitting post:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleChange = (e: { currentTarget: { value: string } }) => {
-    setPostContent(e.currentTarget.value);
-    setIsEditing(!!e.currentTarget.value.trim());
-  };
-
-  const handleTextareaFocus = () => {
-    setIsEditing(true);
-  };
-
-  const handleTextareaBlur = () => {
-    // Only set editing to false if there's no content
-    if (!postContent.trim()) {
-      setIsEditing(false);
-    }
-  };
-
-  const resetForm = () => {
-    setPostContent("");
-    setImageUrl(null);
-    setIsEditing(false);
-  };
-
-  const handleDeletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/post/${postId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setPosts(posts.filter((post) => post.id !== postId));
-      } else {
-        console.error("Failed to delete post");
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
-  };
-
-  const handleSharePost = async (postId: string) => {
-    const postUrl = `https://social.fastro.dev/post/${postId}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Check out this post",
-          url: postUrl,
+        setPosts((prev) => {
+          // Get existing post IDs
+          const existingIds = new Set(prev.map((post) => post.id));
+          // Filter out any duplicates
+          const newPosts = data.filter((post) => !existingIds.has(post.id));
+          return [...prev, ...newPosts];
         });
-      } catch (error) {
-        console.error("Error sharing:", error);
       }
-    } else {
-      // Fallback to copying to clipboard
-      navigator.clipboard.writeText(postUrl).then(() => {
-        alert("Link copied to clipboard!");
-      }).catch((err) => {
-        console.error("Failed to copy link:", err);
-      });
-    }
-  };
-
-  // Add this function to handle redirecting to edit mode
-  const handleEditPost = (postId: string) => {
-    window.location.href = `/post/${postId}?edit=true`;
-  };
-
-  const toggleTheme = () => {
-    try {
-      const newTheme = !isDark;
-      setIsDark(newTheme);
-      // Save theme preference to session storage
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem("theme", newTheme ? "dark" : "light");
-      }
-    } catch (e) {
-      console.error("Error saving theme to sessionStorage:", e);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setHasMore(false); // Stop trying to load more if we hit an error
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const themeStyles = {
-    background: isDark ? "#0f172a" : "#f8fafc",
-    cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
-    text: isDark ? "text-gray-100" : "text-gray-800",
-    input: isDark
-      ? "bg-gray-700/30 border-gray-600 text-white placeholder-gray-400"
-      : "bg-gray-100/70 border-gray-300 text-gray-900 placeholder-gray-500",
     button: isDark
-      ? "bg-purple-600 hover:bg-purple-700"
-      : "bg-purple-500 hover:bg-purple-600",
-    footer: isDark ? "text-gray-400" : "text-gray-600",
-    link: isDark
-      ? "text-purple-400 hover:text-purple-300"
-      : "text-purple-600 hover:text-purple-500",
-    cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-    cardGlow: isDark
-      ? "shadow-2xl shadow-purple-500/30"
-      : "shadow-lg shadow-gray-200/30",
+      ? "bg-purple-600 text-white hover:bg-purple-700"
+      : "bg-purple-500 text-white hover:bg-purple-600",
+    // Add any other theme styles you need here
   };
 
   return (
-    <div className="relative min-h-screen">
-      <div className="fixed inset-0 z-0">
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: themeStyles.background }}
-        />
-        <div
-          className={`fixed inset-0 z-0 ${
-            isMobile ? "opacity-10" : "opacity-20"
-          }`}
-        >
-          <HexaIcon />
-        </div>
+    <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
+      <div className="fixed inset-0 z-0 opacity-20">
+        <HexaIcon />
       </div>
 
-      <div className="relative z-10 min-h-screen">
-        <button
-          type="button"
-          onClick={toggleTheme}
-          className={`fixed bottom-4 right-4 p-3 rounded-full transition-colors 
-            shadow-lg hover:scale-110 transform duration-200 z-50
-            ${
-            isDark ? "bg-gray-800 text-gray-200" : "bg-gray-200 text-gray-800"
-          }`}
-          aria-label="Toggle theme"
-        >
-          {isDark ? "☀️" : "🌙"}
-        </button>
-
+      {/* Container of header and main content */}
+      <div className="relative z-10 min-h-screen flex flex-col">
         <Header
           isLogin={data.isLogin}
           avatar_url={data.avatar_url}
-          html_url={data.html_url}
-          isDark={isDark}
-          message={data.message}
+          html_url=""
+          message={`Hi ${data.author}`}
+          base_url={data.base_url}
         />
-        <div className="max-w-xl mx-auto">
-          {/* Main Container */}
-          <main
-            className={`max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6`}
-          >
-            <div
-              className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg ${themeStyles.cardGlow}`}
-            >
-              <form
-                onSubmit={handleSubmit}
-              >
-                {imageUrl && (
-                  <div className="mt-3 mb-3 relative">
-                    <img
-                      src={imageUrl}
-                      alt="Post attachment"
-                      className="w-full h-[330px] rounded-lg object-cover"
-                    />
-                    <button
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 hover:bg-gray-700 text-white w-6 h-6 flex items-center justify-center transition-colors"
-                      aria-label="Remove image"
-                    >
-                      <XIcon />
-                    </button>
-                  </div>
-                )}
 
-                <div className="relative flex flex-col gap-y-3">
-                  {isEditing && (
-                    <div className="flex justify-between items-center">
-                      <div className={`flex items-center ${themeStyles.text}`}>
-                        <button
-                          type="button"
-                          onClick={() => setShowPreviewMode(!showPreviewMode)}
-                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                            isDark
-                              ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
-                              : "text-gray-700 hover:bg-gray-200/30"
-                          }`}
-                        >
-                          {showPreviewMode
-                            ? (
-                              <>
-                                <EditIcon />
-                                <span className="text-sm">Edit</span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <ViewIcon />
-                                <span className="text-sm">Preview</span>
-                              </>
-                            )}
-                        </button>
-                      </div>
+        {/* Main Content Section */}
+        <div className="max-w-2xl mx-auto flex-1 w-full flex items-center justify-center">
+          <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
+            <Editor
+              posts={posts}
+              setPosts={setPosts}
+              setIsEditorActive={setIsEditorActive}
+            />
 
-                      <a
-                        href="https://www.markdownguide.org/cheat-sheet/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`text-xs ${themeStyles.link}`}
-                      >
-                        Markdown Help
-                      </a>
-                    </div>
-                  )}
-
-                  {showPreviewMode
-                    ? (
-                      <div
-                        className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
-                        ${
-                          isEditing
-                            ? isMobile
-                              ? "min-h-[150px] h-[200px]"
-                              : "min-h-[300px] h-[400px]"
-                            : isMobile
-                            ? "min-h-[60px] h-[100px]"
-                            : "min-h-[80px] h-[120px]"
-                        } max-h-[600px] overflow-y-auto p-3
-                        ${
-                          isDark
-                            ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                            : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                        } scrollbar-thin scrollbar-track-transparent transition-all duration-300`}
-                      >
-                        {postContent
-                          ? (
-                            <div
-                              className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
-                              dangerouslySetInnerHTML={renderMarkdown(
-                                postContent,
-                              )}
-                            />
-                          )
-                          : (
-                            <div className="opacity-70 text-sm">
-                              Nothing to preview yet.
-                            </div>
-                          )}
-                      </div>
-                    )
-                    : (
-                      <textarea
-                        placeholder="What's on your mind?"
-                        value={postContent}
-                        onInput={handleChange}
-                        onFocus={handleTextareaFocus}
-                        onBlur={handleTextareaBlur}
-                        required
-                        className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
-                        resize-none ${
-                          isEditing
-                            ? isMobile
-                              ? "min-h-[150px] h-[200px]"
-                              : "min-h-[300px] h-[400px]"
-                            : isMobile
-                            ? "min-h-[45px] h-[45px]"
-                            : "min-h-[55px] h-[55px]"
-                        } max-h-[600px] 
-                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                        scrollbar-thin scrollbar-track-transparent transition-all duration-300
-                        ${
-                          isDark
-                            ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                            : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                        }`}
-                      />
-                    )}
-
-                  {/* Fixed positioning with consistent margin */}
-                  {isEditing && (
-                    <div className="h-10 flex justify-between items-center">
-                      <div>
-                        <button
-                          type="button"
-                          onClick={handleAttachmentClick}
-                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                            isDark
-                              ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
-                              : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                          } transition-colors`}
-                          aria-label="Add attachment"
-                          disabled={uploadingImage || showPreviewMode}
-                        >
-                          {uploadingImage
-                            ? (
-                              <>
-                                <span className="animate-pulse">⏳</span>
-                                <span className="text-sm hidden sm:inline">
-                                  Uploading...
-                                </span>
-                              </>
-                            )
-                            : (
-                              <>
-                                <ClipIcon />
-                                <span className="text-sm hidden sm:inline">
-                                  Attachment
-                                </span>
-                              </>
-                            )}
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handleFileSelect}
-                          accept="image/jpeg,image/png,image/gif"
-                          className="hidden"
-                        />
-
-                        <button
-                          type="button"
-                          onClick={resetForm}
-                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                            isDark
-                              ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
-                              : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
-                          } border ${
-                            isDark ? "border-gray-700" : "border-gray-300"
-                          } transition-colors`}
-                          aria-label="Cancel post"
-                        >
-                          <CancelIcon />
-                          <span className="text-sm font-medium">
-                            Cancel
-                          </span>
-                        </button>
-
-                        <button
-                          type="submit"
-                          className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                            isDark
-                              ? "bg-purple-600 hover:bg-purple-500 text-white"
-                              : "bg-purple-500 hover:bg-purple-400 text-white"
-                          } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-                          disabled={isSubmitting || uploadingImage ||
-                            !postContent.trim()}
-                          aria-label="Submit post"
-                        >
-                          <SubmitIcon />
-                          <span className="text-sm font-medium">Create</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </form>
-            </div>
-
-            {/* Posts section */}
-            {!isEditing && (
-              <div className="space-y-4 mb-8">
-                {posts.length > 0
+            {!isEditorActive && (
+              <>
+                <PostList
+                  posts={posts}
+                  data={{
+                    isLogin: data.isLogin,
+                    author: data.author,
+                  }}
+                  isDark={isDark}
+                  isMobile={isMobile}
+                />
+                {isMobile && posts.length > 0
                   ? (
-                    posts.map((post) => (
-                      <div
-                        key={post.id}
-                        className={`${themeStyles.cardBg} rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
-                      >
-                        {/* Modified Header Section */}
-                        <div className="flex items-center justify-between mb-3">
-                          {/* Left side: Avatar and Author */}
-                          <div className="flex items-center">
-                            <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                              <img
-                                src={post.avatar}
-                                alt={post.author}
-                                className="w-full h-full rounded-full"
-                              />
-                            </div>
-                            <div className="ml-3">
-                              <p className={`font-medium ${themeStyles.text}`}>
-                                {post.author}
-                              </p>
-                              <p className="text-gray-500 text-xs">
-                                {new Date(post.timestamp).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Right side: Icon Button */}
-                          {data.isLogin && (
-                            <div className="relative">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  e.preventDefault();
-                                  setMenuOpenForPost(
-                                    menuOpenForPost === post.id
-                                      ? null
-                                      : post.id,
-                                  );
-                                }}
-                                className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
-                                  isDark
-                                    ? "text-gray-400 hover:text-gray-200"
-                                    : "text-gray-500 hover:text-gray-700"
-                                }`}
-                                aria-label="Post options"
-                              >
-                                <VDotsIcon />
-                              </button>
-
-                              {menuOpenForPost === post.id && (
-                                <div
-                                  className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
-                                    isDark
-                                      ? "bg-gray-800 border border-gray-700"
-                                      : "bg-white border border-gray-200"
-                                  }`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  {/* Share option for all users */}
-                                  <button
-                                    onClick={() => handleSharePost(post.id)}
-                                    className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                                      isDark
-                                        ? "text-gray-200 hover:bg-gray-700"
-                                        : "text-gray-700 hover:bg-gray-100"
-                                    } rounded-md`}
-                                  >
-                                    <ShareIcon />
-                                    <span className="font-medium">
-                                      Share post
-                                    </span>
-                                  </button>
-
-                                  {/* Edit option only for post author */}
-                                  {data.author === post.author && (
-                                    <button
-                                      onClick={() => handleEditPost(post.id)}
-                                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                                        isDark
-                                          ? "text-gray-200 hover:bg-gray-700"
-                                          : "text-gray-700 hover:bg-gray-100"
-                                      } rounded-md`}
-                                    >
-                                      <EditIcon />
-                                      <span className="font-medium">
-                                        Edit post
-                                      </span>
-                                    </button>
-                                  )}
-
-                                  {/* Delete option only for post author */}
-                                  {data.author === post.author && (
-                                    <button
-                                      onClick={() => handleDeletePost(post.id)}
-                                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                                        isDark
-                                          ? "text-gray-200 hover:bg-gray-700"
-                                          : "text-gray-700 hover:bg-gray-100"
-                                      } rounded-md`}
-                                    >
-                                      <DeleteIcon />
-                                      <span className="font-medium">
-                                        Delete post
-                                      </span>
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        {/* End Modified Header Section */}
-
-                        <a href={`/post/${post.id}`} className="block relative">
-                          {/* Modified image section */}
-                          <div className="mb-3">
-                            <img
-                              src={post.image || post.defaultImage}
-                              alt="Post attachment"
-                              className="w-full h-[300px] rounded-lg object-cover"
-                            />
-                          </div>
-
-                          <div
-                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none prose-a:no-underline prose-a:font-normal prose-p:my-2 ${themeStyles.text}`}
-                          >
-                            <h2 className="text-xl font-extrabold mb-2">
-                              {post.title ? post.title : post.content}
-                            </h2>
-
-                            {post.tags && post.tags.length > 0 && (
-                              <div className="flex flex-wrap gap-2 mb-1">
-                                {post.tags.map((tag, index) => (
-                                  <span
-                                    key={index}
-                                    className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                                      isDark
-                                        ? "bg-purple-800/40 text-purple-200"
-                                        : "bg-purple-100 text-purple-700"
-                                    }`}
-                                  >
-                                    #{tag}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </a>
-
-                        {/* the style breaked by the hash tag content. fix it */}
-                        <div className="pt-3 border-t border-gray-700/30 flex items-center justify-between">
-                          <a
-                            href={`/post/${post.id}`}
-                            className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
-                              themeStyles.link.split(" ")[0]
+                    // load more posts when scrolled to the bottom
+                    <>
+                      {hasMore && (
+                        <div className="mt-2 mb-4 flex justify-center">
+                          <button
+                            onClick={() => fetchPosts(false)}
+                            disabled={isLoading}
+                            className={`px-4 py-2 rounded-lg ${themeStyles.button} ${
+                              isLoading ? "opacity-50" : ""
                             }`}
                           >
-                            <CommentIcon />
-                            <span>
-                              {post.commentCount
-                                ? (
-                                  <>
-                                    {post.commentCount} {post.commentCount === 1
-                                      ? "comment"
-                                      : "comments"}
-                                  </>
-                                )
-                                : (
-                                  "Add comment"
-                                )}
-                            </span>
-                          </a>
-
-                          <div
-                            className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
-                          >
-                            <span className="flex items-center gap-x-2">
-                              <ViewIcon />
-                              {post.views || post.viewCount || 0} views
-                            </span>
-                          </div>
+                            {isLoading ? "Loading..." : "Load More Posts"}
+                          </button>
                         </div>
-                      </div>
-                    ))
+                      )}
+                    </>
                   )
                   : (
-                    <div
-                      className={`${themeStyles.cardBg} rounded-lg p-6 border ${themeStyles.cardBorder} text-center ${themeStyles.text} ${
-                        !isMobile ? "backdrop-blur-lg" : ""
-                      }`}
-                    >
-                      <p>No posts yet. Be the first to post something!</p>
-                    </div>
+                    <>
+                    </>
                   )}
-              </div>
+              </>
             )}
           </main>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
