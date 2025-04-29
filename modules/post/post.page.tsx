@@ -226,9 +226,7 @@ export default function Post({ data }: PageProps<{
           ...postData,
           content: updatedPost.content || editPostContent,
           image: updatedPost.image || postImage,
-          tags: updatedPost.data.tags || [],
           title: updatedPost.title || postData.title,
-          description: updatedPost.description || postData.description,
         });
 
         setIsEditing(false);
