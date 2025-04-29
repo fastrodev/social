@@ -124,7 +124,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
         posts.map((post) => (
           <div
             key={post.id}
-            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-6 py-4 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-6 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
           >
             {/* Modified Header Section */}
             <div className="flex items-center justify-between mb-3">

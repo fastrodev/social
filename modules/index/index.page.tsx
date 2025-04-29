@@ -139,7 +139,7 @@ export default function Index({ data }: PageProps<
         <div className="max-w-2xl mx-auto flex-1 w-full flex items-center justify-center">
           <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
             {(posts.length === 0 || isLoading) && (
-              <div className={`mb-4 text-center`}>
+              <div className={`mb-4 text-center mx-6`}>
                 <h2
                   className="text-3xl sm:text-4xl font-bold"
                   style={{

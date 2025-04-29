@@ -568,7 +568,7 @@ export default function Post({ data }: PageProps<{
           <main className="max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6">
             {/* Post Detail Card */}
             <div
-              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} px-6 py-4 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
+              className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} px-6 py-3 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
             >
               {/* Post author info and options */}
               <div className="flex items-center justify-between mb-6">
