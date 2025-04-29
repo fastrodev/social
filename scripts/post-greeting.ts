@@ -219,11 +219,36 @@ function getTimeBasedGreeting(): string {
   const hour = now.getHours();
 
   // Select the appropriate quote array based on the hour, or use default
-  const selectedQuotes = quotesByHour[hour] ?? defaultQuotes;
+  let quoteSource = "default"; // Log which source is used
+  let selectedQuotes = quotesByHour[hour];
+
+  if (selectedQuotes) {
+    // Find the key (hour) corresponding to the selectedQuotes array
+    const sourceHour = Object.keys(quotesByHour).find((key) =>
+      quotesByHour[parseInt(key)] === selectedQuotes
+    );
+    if (sourceHour) {
+      // Determine the time period based on the hour key
+      if (parseInt(sourceHour) === 6) quoteSource = "morning";
+      else if (parseInt(sourceHour) === 13) quoteSource = "afternoon";
+      else if (parseInt(sourceHour) === 16) quoteSource = "lateAfternoon";
+      else if (parseInt(sourceHour) === 20) quoteSource = "evening";
+      else quoteSource = `hour_${sourceHour}`; // Fallback if more hours are added
+    }
+  } else {
+    selectedQuotes = defaultQuotes;
+    quoteSource = "default";
+  }
 
   // Select a truly random quote from the chosen array
   const randomIndex = Math.floor(Math.random() * selectedQuotes.length);
-  return selectedQuotes[randomIndex];
+  const chosenQuote = selectedQuotes[randomIndex];
+
+  console.log(
+    `Selected quote from: ${quoteSource} array (Index: ${randomIndex})`,
+  ); // Add logging
+
+  return chosenQuote;
 }
 
 // Modify postToApi to accept the content and index
