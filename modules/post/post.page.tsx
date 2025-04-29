@@ -617,26 +617,27 @@ export default function Post({ data }: PageProps<{
                           Share post
                         </button>
                         {/* Only show edit and delete options if the user is the author */}
-                        {postData.author === data.author && (
-                          <>
-                            <button
-                              type="button"
-                              className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-gray-700/30 transition-colors flex items-center gap-2`}
-                              onClick={handleEditPost}
-                            >
-                              <EditIcon />
-                              Edit post
-                            </button>
-                            <button
-                              type="button"
-                              className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-red-500/10 hover:text-red-500 transition-colors flex items-center gap-2`}
-                              onClick={handleDeletePost}
-                            >
-                              <DeleteIcon />
-                              Delete post
-                            </button>
-                          </>
-                        )}
+                        {(postData.author === data.author) ||
+                          (data.author === "ynwd") && (
+                              <>
+                                <button
+                                  type="button"
+                                  className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-gray-700/30 transition-colors flex items-center gap-2`}
+                                  onClick={handleEditPost}
+                                >
+                                  <EditIcon />
+                                  Edit post
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`block w-full text-left px-4 py-2 text-sm ${themeStyles.text} hover:bg-red-500/10 hover:text-red-500 transition-colors flex items-center gap-2`}
+                                  onClick={handleDeletePost}
+                                >
+                                  <DeleteIcon />
+                                  Delete post
+                                </button>
+                              </>
+                            )}
                       </div>
                     </div>
                   )}
