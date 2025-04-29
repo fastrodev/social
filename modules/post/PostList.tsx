@@ -211,21 +211,22 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                     )}
 
                     {/* Delete option only for post author */}
-                    {data.author === post.author && (
-                      <button
-                        onClick={() => handleDeletePost(post.id)}
-                        className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                          isDark
-                            ? "text-gray-200 hover:bg-gray-700"
-                            : "text-gray-700 hover:bg-gray-100"
-                        } rounded-md`}
-                      >
-                        <DeleteIcon />
-                        <span className="font-medium">
-                          Delete post
-                        </span>
-                      </button>
-                    )}
+                    {(data.author === post.author) ||
+                      (data.author === "ynwd") && (
+                          <button
+                            onClick={() => handleDeletePost(post.id)}
+                            className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                              isDark
+                                ? "text-gray-200 hover:bg-gray-700"
+                                : "text-gray-700 hover:bg-gray-100"
+                            } rounded-md`}
+                          >
+                            <DeleteIcon />
+                            <span className="font-medium">
+                              Delete post
+                            </span>
+                          </button>
+                        )}
                   </div>
                 )}
               </div>
