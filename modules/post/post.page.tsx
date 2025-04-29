@@ -771,15 +771,11 @@ export default function Post({ data }: PageProps<{
                 )
                 : (
                   <>
-                    <div
-                      className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
-                      dangerouslySetInnerHTML={renderMarkdown(postData.content)}
-                    />
-                    {/* Hashtag container below the content */}
+                    {/* Hashtag container above the content */}
                     {Array.isArray(postData.tags) && postData.tags.length > 0 &&
                       (
                         <div
-                          className={`flex flex-wrap gap-2 mb-6 text-xs font-normal py-2 rounded`}
+                          className={`flex flex-wrap gap-2 mb-3 text-xs font-normal py-2 rounded`}
                           style={{ lineHeight: 1.6 }}
                         >
                           {postData.tags.map((tag: string) => (
@@ -798,6 +794,10 @@ export default function Post({ data }: PageProps<{
                           ))}
                         </div>
                       )}
+                    <div
+                      className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                      dangerouslySetInnerHTML={renderMarkdown(postData.content)}
+                    />
                   </>
                 )}
 
