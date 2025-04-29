@@ -408,43 +408,40 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                 </div>
               )
               : (
-                <div className="relative">
-                  <textarea
-                    placeholder={isEditing
-                      ? "# Replace with your title\n\n\nReplace this template content with yours\n\n\n#replace-with-your-tag"
-                      : "What's on your mind?"}
-                    value={postContent}
-                    onInput={handleChange}
-                    onFocus={handleTextareaFocus}
-                    onBlur={handleTextareaBlur}
-                    required
-                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
+                <textarea
+                  placeholder={isEditing
+                    ? "# Replace with your title\n\n\nReplace this template content with yours\n\n\n#replace-with-your-tag"
+                    : "What's on your mind?"}
+                  value={postContent}
+                  onInput={handleChange}
+                  onFocus={handleTextareaFocus}
+                  onBlur={handleTextareaBlur}
+                  required
+                  className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
                           resize-none ${
-                      isEditing
-                        ? isMobile
-                          ? "min-h-[150px] h-[200px]"
-                          : "min-h-[300px] h-[400px]"
-                        : isMobile
-                        ? "min-h-[55px] h-[45px]"
-                        : "min-h-[65px] h-[55px]"
-                    } max-h-[600px] 
+                    isEditing
+                      ? isMobile
+                        ? "min-h-[150px] h-[200px]"
+                        : "min-h-[300px] h-[400px]"
+                      : isMobile
+                      ? "min-h-[55px] h-[45px]"
+                      : "min-h-[65px] h-[55px]"
+                  } max-h-[600px] 
                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
                           scrollbar-thin scrollbar-track-transparent transition-all duration-300
                           ${
-                      isDark
-                        ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                        : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                    }`}
-                  />
-                </div>
+                    isDark
+                      ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                      : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                  }`}
+                />
               )}
 
             {!isEditing && (
               <div
-                className={`text-xs text-right italic ${themeStyles.footer} -mt-3`}
+                className={`text-xs text-right italic ${themeStyles.footer} -mt-2`}
               >
-                Your posts will automatically disappear after 7 days unless you
-                create an account.
+                Posts disappear after 7 days unless you sign up.
               </div>
             )}
 

@@ -2,7 +2,7 @@
 import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { useEffect, useState } from "preact/hooks";
-import Header from "@app/modules/home/header.tsx";
+import Header from "../../components/header.tsx";
 
 import { Editor } from "@app/modules/index/Editor.tsx";
 import { PostList, Skeleton } from "../post/PostList.tsx";
