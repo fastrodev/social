@@ -571,7 +571,7 @@ export default function Post({ data }: PageProps<{
               className={`${themeStyles.cardBg} rounded-lg ${themeStyles.cardGlow} px-6 py-3 border ${themeStyles.cardBorder} backdrop-blur-lg mb-0 sm:mb-4 relative`}
             >
               {/* Post author info and options */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
                   <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
                     <img
