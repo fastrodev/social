@@ -124,7 +124,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
         posts.map((post) => (
           <div
             key={post.id}
-            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-6 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
           >
             {/* Modified Header Section */}
             <div className="flex items-center justify-between mb-3">
@@ -235,7 +235,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
 
             <a href={`/post/${post.id}`} className="block relative">
               {/* Modified image section with title overlay */}
-              <div className="-mx-6 mb-4 relative">
+              <div className="-mx-4 mb-4 relative">
                 <div className="w-full h-[600px] sm:h-[450px]">
                   <img
                     src={post.image || post.defaultImage}
@@ -246,7 +246,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
                 </div>
 
                 {/* Title overlay container - Now uses Flexbox */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3 flex flex-col justify-end">
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
                   {/* Tags are placed first within the flex container */}
                   {post.tags && post.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">

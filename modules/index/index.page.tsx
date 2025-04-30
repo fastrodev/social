@@ -2,12 +2,12 @@
 import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { useEffect, useState } from "preact/hooks";
-import Header from "../../components/header.tsx";
+import Header from "../../components/Header.tsx";
 
-import { Editor } from "@app/modules/index/Editor.tsx";
-import { PostList, Skeleton } from "../post/PostList.tsx";
+import { Editor } from "../../components/Editor.tsx";
+import { PostList, Skeleton } from "../../components/PostList.tsx";
 import { Post } from "@app/modules/index/type.ts";
-import Welcome from "@app/modules/index/Welcome.tsx";
+import Welcome from "../../components/Welcome.tsx";
 
 export default function Index({ data }: PageProps<
   {

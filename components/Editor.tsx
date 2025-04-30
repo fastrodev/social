@@ -8,7 +8,7 @@ import { SubmitIcon } from "@app/components/icons/submit.tsx"; // Make sure this
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { XIcon } from "@app/components/icons/x.tsx";
 import { CancelIcon } from "@app/components/icons/cancel.tsx";
-import { renderMarkdownWithHashtags } from "../../utils/markdown.ts";
+import { renderMarkdownWithHashtags } from "../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
 import { getRandomImage } from "@app/utils/random.ts";
 import { Post } from "@app/modules/index/type.ts";
@@ -310,7 +310,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
   return (
     <>
       <div
-        className={`${themeStyles.cardBg} rounded-lg p-4 sm:p-6 border ${themeStyles.cardBorder} backdrop-blur-lg ${cardGlowClass}`}
+        className={`${themeStyles.cardBg} rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 border ${themeStyles.cardBorder} backdrop-blur-lg ${cardGlowClass}`}
       >
         <form
           onSubmit={handleSubmit}
@@ -417,8 +417,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                   onFocus={handleTextareaFocus}
                   onBlur={handleTextareaBlur}
                   required
-                  className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input}
-                          resize-none ${
+                  className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} resize-none ${
                     isEditing
                       ? isMobile
                         ? "min-h-[150px] h-[200px]"
@@ -426,10 +425,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
                       : isMobile
                       ? "min-h-[55px] h-[45px]"
                       : "min-h-[65px] h-[55px]"
-                  } max-h-[600px] 
-                          focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                          scrollbar-thin scrollbar-track-transparent transition-all duration-300
-                          ${
+                  } max-h-[600px] focus:ring-2 focus:ring-blue-500 focus:border-transparent scrollbar-thin scrollbar-track-transparent transition-all duration-300 ${
                     isDark
                       ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                       : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
@@ -439,7 +435,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
 
             {!isEditing && (
               <div
-                className={`text-xs text-right italic ${themeStyles.footer} -mt-2`}
+                className={`text-xs text-right italic ${themeStyles.footer} -mt-1`}
               >
                 Posts disappear after 7 days unless you sign up.
               </div>

@@ -1,6 +1,6 @@
 export default function Welcome() {
   return (
-    <div className={`mb-4 text-center mx-6`}>
+    <div className={`m-3 text-center space-y-3 `}>
       <h2
         className="text-3xl sm:text-4xl font-bold"
         style={{
@@ -8,12 +8,12 @@ export default function Welcome() {
           backgroundClip: "text",
           color: "transparent",
           textShadow: "0 0 15px rgba(192, 132, 252, 0.5)",
-          animation: "pulse 2s infinite ease-in-out",
+          animation: "pulse 1s infinite ease-in-out",
         }}
       >
         Welcome to Fastro Social
       </h2>
-      <p className="text-base sm:text-lg opacity-80">
+      <p className="text-base sm:text-2xl opacity-80">
         Join the conversation! Share your thoughts and ideas with the world.
       </p>
     </div>

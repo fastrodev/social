@@ -1,12 +1,12 @@
 import { PageProps } from "fastro/core/server/types.ts";
-import { Header } from "@app/components/header.tsx";
-import { Footer } from "@app/components/footer.tsx";
+import { Footer } from "../../components/Footer.tsx";
 import { GithubIcon } from "@app/components/icons/github.tsx";
 import { GoogleIcon } from "@app/components/icons/google.tsx";
 import { WhatsAppIcon } from "@app/components/icons/whatsapp.tsx";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { RibbonIcon } from "@app/components/icons/ribbon.tsx";
 import { useEffect, useState } from "preact/hooks";
+import Header from "@app/components/Header.tsx";
 
 export default function Signin({ data }: PageProps<
   {
