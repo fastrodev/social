@@ -82,9 +82,7 @@ export async function getCommentsHandler(req: HttpRequest, _ctx: Context) {
 
     return new Response(JSON.stringify(comments), {
       status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error fetching comments:", error);
