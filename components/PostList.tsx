@@ -1,11 +1,13 @@
 // deno-lint-ignore-file
 import { Post } from "@app/modules/index/type.ts";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
+import { Comment } from "@app/modules/index/type.ts";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
+import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useRef, useState } from "preact/hooks";
 
 interface Props {
@@ -20,7 +22,12 @@ interface Props {
 
 export function PostList({ posts, data, isDark, isMobile }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
-  // Add a ref for the scroll sentinel
+  const [showPosts, setShowPosts] = useState(true);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [showPostDetail, setShowPostDetail] = useState(false);
+  const [selectedPostComments, setSelectedPostComments] = useState<Comment[]>(
+    [],
+  );
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
@@ -56,6 +63,42 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
 
     return () => observer.disconnect();
   }, [isMobile, posts.length]); // Re-run when posts length changes
+
+  useEffect(() => {
+    const handleShowPostDetail = (event: CustomEvent) => {
+      const { post, action } = event.detail;
+      if (action === "hide-posts") {
+        // Hide post list container
+        setShowPosts(false);
+        // Show post detail with the fetched post data
+        setSelectedPost(post);
+        setShowPostDetail(true);
+      }
+    };
+
+    window.addEventListener(
+      "showPostDetail",
+      handleShowPostDetail as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "showPostDetail",
+        handleShowPostDetail as EventListener,
+      );
+    };
+  }, []);
+
+  const fetchComments = async (postId: string) => {
+    try {
+      const response = await fetch(`/api/post/${postId}/comments`);
+      if (!response.ok) throw new Error("Failed to fetch comments");
+      const comments = await response.json();
+      setSelectedPostComments(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      setSelectedPostComments([]);
+    }
+  };
 
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this post?")) {
@@ -103,6 +146,34 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
     window.location.href = `/post/${postId}?edit=true`;
   };
 
+  const handlePostClick = async (postId: string) => {
+    try {
+      // get post from /api/post/:id
+      const response = await fetch(`/api/post/${postId}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch post details");
+      }
+      const post = await response.json();
+
+      // Set the selected post and show detail view
+      setSelectedPost(post);
+      setShowPosts(false);
+      setShowPostDetail(true);
+
+      // Fetch comments for the post
+      await fetchComments(postId);
+    } catch (error) {
+      console.error("Error fetching post details:", error);
+    }
+  };
+
+  const handleCommentAdded = async () => {
+    if (selectedPost) {
+      await fetchComments(selectedPost.id);
+    }
+  };
+
   const themeStyles = {
     cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
     text: isDark ? "text-gray-100" : "text-gray-800",
@@ -120,206 +191,222 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
 
   return (
     <>
-      {posts.length > 0 && (
-        posts.map((post) => (
-          // Post Item Card Container
-          <div
-            key={post.id}
-            className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
-          >
-            {/* Modified Header Section */}
-            <div className="flex items-center justify-between mb-3">
-              {/* Left side: Avatar and Author */}
-              <div className="flex items-center">
-                <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                  <img
-                    src={post.avatar}
-                    alt={post.author}
-                    className="w-full h-full rounded-full"
-                  />
-                </div>
-                <div className="ml-3">
-                  <p className={`font-medium ${themeStyles.text}`}>
-                    {post.author}
-                  </p>
-                  <p className="text-gray-500 text-xs">
-                    {new Date(post.timestamp).toLocaleString()}
-                  </p>
-                </div>
-              </div>
+      {showPostDetail && selectedPost
+        ? (
+          <PostDetail
+            post={selectedPost}
+            comments={selectedPostComments}
+            data={data}
+            isDark={isDark}
+            isMobile={isMobile}
+            onCommentAdded={handleCommentAdded}
+          />
+        )
+        : (
+          showPosts && posts.length > 0 && (
+            posts.map((post) => (
+              // Post Item Card Container
+              <div
+                key={post.id}
+                className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+              >
+                {/* Modified Header Section */}
+                <div className="flex items-center justify-between mb-3">
+                  {/* Left side: Avatar and Author */}
+                  <div className="flex items-center">
+                    <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                      <img
+                        src={post.avatar}
+                        alt={post.author}
+                        className="w-full h-full rounded-full"
+                      />
+                    </div>
+                    <div className="ml-3">
+                      <p className={`font-medium ${themeStyles.text}`}>
+                        {post.author}
+                      </p>
+                      <p className="text-gray-500 text-xs">
+                        {new Date(post.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
 
-              {/* Right side: Icon Button */}
+                  {/* Right side: Icon Button */}
 
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setMenuOpenForPost(
-                      menuOpenForPost === post.id ? null : post.id,
-                    );
-                  }}
-                  className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
-                    isDark
-                      ? "text-gray-400 hover:text-gray-200"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                  aria-label="Post options"
-                >
-                  <VDotsIcon />
-                </button>
-
-                {menuOpenForPost === post.id && (
-                  <div
-                    className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
-                      isDark
-                        ? "bg-gray-800 border border-gray-700"
-                        : "bg-white border border-gray-200"
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {/* Share option for all users */}
+                  <div className="relative">
                     <button
-                      onClick={() => handleSharePost(post.id)}
-                      className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setMenuOpenForPost(
+                          menuOpenForPost === post.id ? null : post.id,
+                        );
+                      }}
+                      className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
                         isDark
-                          ? "text-gray-200 hover:bg-gray-700"
-                          : "text-gray-700 hover:bg-gray-100"
-                      } rounded-md`}
+                          ? "text-gray-400 hover:text-gray-200"
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                      aria-label="Post options"
                     >
-                      <ShareIcon />
-                      <span className="font-medium">
-                        Share post
-                      </span>
+                      <VDotsIcon />
                     </button>
 
-                    {/* Edit option only for post author */}
-                    {data.author === post.author && (
-                      <button
-                        onClick={() => handleEditPost(post.id)}
-                        className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                    {menuOpenForPost === post.id && (
+                      <div
+                        className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
                           isDark
-                            ? "text-gray-200 hover:bg-gray-700"
-                            : "text-gray-700 hover:bg-gray-100"
-                        } rounded-md`}
+                            ? "bg-gray-800 border border-gray-700"
+                            : "bg-white border border-gray-200"
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <EditIcon />
-                        <span className="font-medium">
-                          Edit post
-                        </span>
-                      </button>
-                    )}
+                        {/* Share option for all users */}
+                        <button
+                          onClick={() => handleSharePost(post.id)}
+                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                            isDark
+                              ? "text-gray-200 hover:bg-gray-700"
+                              : "text-gray-700 hover:bg-gray-100"
+                          } rounded-md`}
+                        >
+                          <ShareIcon />
+                          <span className="font-medium">
+                            Share post
+                          </span>
+                        </button>
 
-                    {/* Delete option only for post author */}
-                    {(data.author === post.author) ||
-                      (data.author === "ynwd") && (
+                        {/* Edit option only for post author */}
+                        {data.author === post.author && (
                           <button
-                            onClick={() => handleDeletePost(post.id)}
+                            onClick={() => handleEditPost(post.id)}
                             className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                               isDark
                                 ? "text-gray-200 hover:bg-gray-700"
                                 : "text-gray-700 hover:bg-gray-100"
                             } rounded-md`}
                           >
-                            <DeleteIcon />
+                            <EditIcon />
                             <span className="font-medium">
-                              Delete post
+                              Edit post
                             </span>
                           </button>
                         )}
+
+                        {/* Delete option only for post author */}
+                        {(data.author === post.author) ||
+                          (data.author === "ynwd") && (
+                              <button
+                                onClick={() => handleDeletePost(post.id)}
+                                className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
+                                  isDark
+                                    ? "text-gray-200 hover:bg-gray-700"
+                                    : "text-gray-700 hover:bg-gray-100"
+                                } rounded-md`}
+                              >
+                                <DeleteIcon />
+                                <span className="font-medium">
+                                  Delete post
+                                </span>
+                              </button>
+                            )}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </div>
-            {/* End Modified Header Section */}
-
-            <a href={`/post/${post.id}`} className="block relative">
-              {/* Modified image section with title overlay */}
-              <div className="-mx-4 mb-4 relative">
-                <div className="w-full h-[600px] sm:h-[450px]">
-                  <img
-                    src={post.image || post.defaultImage}
-                    alt="Post attachment"
-                    className="w-full h-full rounded-none object-cover"
-                    loading="lazy"
-                  />
                 </div>
+                {/* End Modified Header Section */}
 
-                {/* Title overlay container - Now uses Flexbox */}
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
-                  {/* Tags are placed first within the flex container */}
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
-                      {post.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                            isDark
-                              ? "bg-purple-800/80 text-purple-200 backdrop-blur-sm"
-                              : "bg-purple-100/90 text-purple-700 backdrop-blur-sm"
-                          }`}
-                        >
-                          #{tag}
-                        </span>
-                      ))}
+                <div
+                  onClick={() => handlePostClick(post.id)}
+                  className="block relative cursor-pointer"
+                >
+                  {/* Modified image section with title overlay */}
+                  <div className="-mx-4 mb-4 relative">
+                    <div className="w-full h-[600px] sm:h-[450px]">
+                      <img
+                        src={post.image || post.defaultImage}
+                        alt="Post attachment"
+                        className="w-full h-full rounded-none object-cover"
+                        loading="lazy"
+                      />
                     </div>
-                  )}
 
-                  {/* Title comes after tags */}
-                  <h2 className="text-xl font-extrabold text-white line-clamp-5">
-                    {post.title ? post.title : post.content}
-                  </h2>
+                    {/* Title overlay container - Now uses Flexbox */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
+                      {/* Tags are placed first within the flex container */}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {post.tags.map((tag, index) => (
+                            <span
+                              key={index}
+                              className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                                isDark
+                                  ? "bg-purple-800/80 text-purple-200 backdrop-blur-sm"
+                                  : "bg-purple-100/90 text-purple-700 backdrop-blur-sm"
+                              }`}
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Title comes after tags */}
+                      <h2 className="text-xl font-extrabold text-white line-clamp-5">
+                        {post.title ? post.title : post.content}
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <a
+                    href={`/post/${post.id}`}
+                    className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
+                      themeStyles.link.split(" ")[0]
+                    }`}
+                  >
+                    <CommentIcon />
+                    <span>
+                      {post.commentCount
+                        ? (
+                          <>
+                            {post.commentCount}{" "}
+                            {post.commentCount === 1 ? "comment" : "comments"}
+                          </>
+                        )
+                        : (
+                          "Add comment"
+                        )}
+                    </span>
+                  </a>
+
+                  <div
+                    className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
+                  >
+                    <span className="flex items-center gap-x-2">
+                      <ViewIcon />
+                      {(post.views || post.viewCount || 0) === 0
+                        ? "Be the first viewer"
+                        : (
+                          <>
+                            {post.views || post.viewCount || 0}{" "}
+                            {(post.views || post.viewCount || 0) === 1
+                              ? "view"
+                              : "views"}
+                          </>
+                        )}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </a>
-
-            <div className="flex items-center justify-between">
-              <a
-                href={`/post/${post.id}`}
-                className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
-                  themeStyles.link.split(" ")[0]
-                }`}
-              >
-                <CommentIcon />
-                <span>
-                  {post.commentCount
-                    ? (
-                      <>
-                        {post.commentCount}{" "}
-                        {post.commentCount === 1 ? "comment" : "comments"}
-                      </>
-                    )
-                    : (
-                      "Add comment"
-                    )}
-                </span>
-              </a>
-
-              <div
-                className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
-              >
-                <span className="flex items-center gap-x-2">
-                  <ViewIcon />
-                  {(post.views || post.viewCount || 0) === 0
-                    ? "Be the first viewer"
-                    : (
-                      <>
-                        {post.views || post.viewCount || 0}{" "}
-                        {(post.views || post.viewCount || 0) === 1
-                          ? "view"
-                          : "views"}
-                      </>
-                    )}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))
-      )}
+            ))
+          )
+        )}
 
       {/* Add sentinel at the end of the list for infinite scrolling */}
-      {!isMobile && posts.length > 0 && (
+      {!isMobile && posts.length > 0 && !showPostDetail && (
         <div
           ref={sentinelRef}
           className="h-10 w-full opacity-0"

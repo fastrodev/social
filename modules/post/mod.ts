@@ -3,6 +3,7 @@ import postDetailComponent from "./post.page.tsx";
 import postDetailHandler, {
   deletePostHandler,
   editPostHandler,
+  getPostDetailHandler, // Add this import
   getPostsHandler,
   postHandler,
 } from "./post.handler.ts";
@@ -30,6 +31,7 @@ export default function (s: Fastro) {
   s.options("/api/post", optionsHandler);
   s.put("/api/post/:id", editPostHandler);
   s.delete("/api/post/:id", deletePostHandler);
+  s.get("/api/post/:id", getPostDetailHandler); // Add this line
   s.get("/api/posts", getPostsHandler);
   return s;
 }

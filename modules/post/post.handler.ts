@@ -293,3 +293,37 @@ export async function deletePostHandler(req: HttpRequest, ctx: Context) {
     });
   }
 }
+
+export async function getPostDetailHandler(req: HttpRequest) {
+  const corsHeaders = getCorsHeaders(req);
+  try {
+    const id = req.params?.id;
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: "Post ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const post = await getPostById(id);
+
+    if (!post) {
+      return new Response(JSON.stringify({ error: "Post not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    return new Response(JSON.stringify(post), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  } catch (error) {
+    console.error("Error fetching post details:", error);
+    return new Response(JSON.stringify({ error: "Failed to fetch post" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  }
+}
