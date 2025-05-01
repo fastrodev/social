@@ -6,8 +6,10 @@ import {
   deleteCommentById,
   getCommentsByPostId,
 } from "./comment.service.ts";
+import { getCorsHeaders } from "../../utils/headers.ts";
 
 export async function commentHandler(req: HttpRequest, ctx: Context) {
+  const corsHeaders = getCorsHeaders(req);
   try {
     const body = await req.json();
     const { content, postId } = body;
@@ -50,21 +52,20 @@ export async function commentHandler(req: HttpRequest, ctx: Context) {
 
     return new Response(JSON.stringify(comment), {
       status: 201,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error processing comment request:", error);
     return new Response(JSON.stringify({ error: "Invalid request" }), {
       status: 400,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }
 
 // Get comments for a post
 export async function getCommentsHandler(req: HttpRequest, _ctx: Context) {
+  const corsHeaders = getCorsHeaders(req);
   try {
     const url = new URL(req.url);
     const pathParts = url.pathname.split("/");
@@ -73,7 +74,7 @@ export async function getCommentsHandler(req: HttpRequest, _ctx: Context) {
     if (!postId) {
       return new Response(JSON.stringify({ error: "Post ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -89,13 +90,14 @@ export async function getCommentsHandler(req: HttpRequest, _ctx: Context) {
     console.error("Error fetching comments:", error);
     return new Response(JSON.stringify({ error: "Server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }
 
 // Handle comment deletion
 export async function deleteCommentHandler(req: HttpRequest, ctx: Context) {
+  const corsHeaders = getCorsHeaders(req);
   try {
     // Extract comment ID from the URL path
     const url = new URL(req.url);
@@ -105,7 +107,7 @@ export async function deleteCommentHandler(req: HttpRequest, ctx: Context) {
     if (!commentId) {
       return new Response(JSON.stringify({ error: "Comment ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -114,7 +116,7 @@ export async function deleteCommentHandler(req: HttpRequest, ctx: Context) {
     if (!ses?.isLogin) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
@@ -128,20 +130,20 @@ export async function deleteCommentHandler(req: HttpRequest, ctx: Context) {
         }),
         {
           status: 404,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...corsHeaders },
         },
       );
     }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   } catch (error) {
     console.error("Error processing delete comment request:", error);
     return new Response(JSON.stringify({ error: "Server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 }

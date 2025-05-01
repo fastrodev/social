@@ -91,7 +91,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
 
   const fetchComments = async (postId: string) => {
     try {
-      const response = await fetch(`${base_url}/api/post/${postId}/comments`);
+      const response = await fetch(`${base_url}/api/comments/${postId}`);
       if (!response.ok) throw new Error("Failed to fetch comments");
       const comments = await response.json();
       setSelectedPostComments(comments);
