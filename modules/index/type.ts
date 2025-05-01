@@ -13,3 +13,12 @@ export interface Post {
   title?: string;
   tags?: string[];
 }
+
+export interface Comment {
+  id: string;
+  content: string;
+  postId: string;
+  timestamp: string;
+  author: string;
+  avatar: string;
+}

@@ -58,8 +58,11 @@ export default function Index({ data }: PageProps<
   const fetchPosts = async (isInitial: boolean = false) => {
     try {
       setIsLoading(true);
-      // const url = new URL("/api/posts", window.location.origin);
-      const url = new URL("https://web.fastro.dev/api/posts");
+      const base = data && data.base_url
+        ? data.base_url
+        : "https://web.fastro.dev/api/posts";
+      const url = new URL("/api/posts", base);
+      // const url = new URL("https://web.fastro.dev/api/posts");
       url.searchParams.set("limit", "10");
       if (!isInitial && cursor) {
         url.searchParams.set("cursor", cursor);
@@ -72,36 +75,36 @@ export default function Index({ data }: PageProps<
         throw new Error(`API error: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const post = await response.json();
 
       // Validate that data is an array
-      if (!Array.isArray(data)) {
+      if (!Array.isArray(post)) {
         throw new Error("Invalid response format: expected an array");
       }
 
       // Check if we received any posts
-      if (data.length === 0) {
+      if (post.length === 0) {
         setHasMore(false);
         return;
       }
 
       // Set the cursor to the last post's ID for pagination
-      setCursor(data[data.length - 1].id);
+      setCursor(post[post.length - 1].id);
 
       // Check if we have fewer posts than requested (indicates end of data)
-      if (data.length < 4) {
+      if (post.length < 4) {
         setHasMore(false);
       }
 
       // Ensure we don't duplicate posts by checking IDs
       if (isInitial) {
-        setPosts(data);
+        setPosts(post);
       } else {
         setPosts((prev) => {
           // Get existing post IDs
           const existingIds = new Set(prev.map((post) => post.id));
           // Filter out any duplicates
-          const newPosts = data.filter((post) => !existingIds.has(post.id));
+          const newPosts = post.filter((post) => !existingIds.has(post.id));
           return [...prev, ...newPosts];
         });
       }

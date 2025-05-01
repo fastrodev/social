@@ -122,6 +122,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
     <>
       {posts.length > 0 && (
         posts.map((post) => (
+          // Post Item Card Container
           <div
             key={post.id}
             className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}

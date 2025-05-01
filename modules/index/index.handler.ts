@@ -23,10 +23,13 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
     });
   }
 
+  const base_url = Deno.env.get("BASE_URL") || "https://web.fastro.dev";
+  console.log("BASE_URL", base_url);
   return await ctx.render({
     title: "Fastro Social",
     description: "A social network built with Fastro",
     image: "https://social.fastro.dev/img/social.jpeg",
     isLogin,
+    base_url,
   });
 }

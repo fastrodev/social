@@ -652,7 +652,7 @@ export default function Post({ data }: PageProps<{
                 //   />
                 // </div>
                 //  {/* Modified image section: no horizontal gap/padding */}
-                <div className="-mx-6 mb-4">
+                <div className="-mx-4 mb-4">
                   <img
                     src={postData.image}
                     alt="Post image"
