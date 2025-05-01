@@ -18,9 +18,10 @@ interface Props {
   };
   isDark: boolean;
   isMobile: boolean;
+  base_url: string; // Remove optional flag
 }
 
-export function PostList({ posts, data, isDark, isMobile }: Props) {
+export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [showPosts, setShowPosts] = useState(true);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -90,7 +91,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
 
   const fetchComments = async (postId: string) => {
     try {
-      const response = await fetch(`/api/post/${postId}/comments`);
+      const response = await fetch(`${base_url}/api/post/${postId}/comments`);
       if (!response.ok) throw new Error("Failed to fetch comments");
       const comments = await response.json();
       setSelectedPostComments(comments);
@@ -106,7 +107,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
     }
 
     try {
-      const response = await fetch(`/api/post/${postId}`, {
+      const response = await fetch(`${base_url}/api/post/${postId}`, {
         method: "DELETE",
       });
 
@@ -119,7 +120,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
   };
 
   const handleSharePost = async (postId: string) => {
-    const postUrl = `https://social.fastro.dev/post/${postId}`;
+    const postUrl = `${base_url}/post/${postId}`;
 
     if (navigator.share) {
       try {
@@ -143,13 +144,13 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
   };
 
   const handleEditPost = (postId: string) => {
-    window.location.href = `/post/${postId}?edit=true`;
+    window.location.href = `${base_url}/post/${postId}?edit=true`;
   };
 
   const handlePostClick = async (postId: string) => {
     try {
       // get post from /api/post/:id
-      const response = await fetch(`/api/post/${postId}`);
+      const response = await fetch(`${base_url}/api/post/${postId}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch post details");
@@ -362,7 +363,7 @@ export function PostList({ posts, data, isDark, isMobile }: Props) {
 
                 <div className="flex items-center justify-between">
                   <a
-                    href={`/post/${post.id}`}
+                    href={`${base_url}/post/${post.id}`}
                     className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
                       themeStyles.link.split(" ")[0]
                     }`}

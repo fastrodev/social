@@ -159,6 +159,9 @@ export default function Index({ data }: PageProps<
                   }}
                   isDark={isDark}
                   isMobile={isMobile}
+                  base_url={data.base_url
+                    ? data.base_url
+                    : "https://web.fastro.dev"}
                 />
                 {isMobile && posts.length > 0
                   ? (
