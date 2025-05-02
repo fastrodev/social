@@ -3,7 +3,7 @@ import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 
-export default function Header(
+export default function HeaderPost(
   props: {
     isLogin: boolean;
     avatar_url: string;
@@ -13,6 +13,7 @@ export default function Header(
     previous_url?: string;
     isDark?: boolean;
     message?: string;
+    showOptions?: boolean;
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -112,8 +113,8 @@ export default function Header(
           )}
         </a>
 
-        {props.isLogin && (
-          <div class="relative">
+        <div class="relative">
+          {props.showOptions && (
             <button
               type="button"
               onClick={toggleMenu}
@@ -122,21 +123,34 @@ export default function Header(
             >
               <VDotsIcon />
             </button>
+          )}
 
-            {menuOpen && (
-              <div
-                class={`absolute right-0 mt-2 w-36 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
-              >
-                <a
-                  href="/auth/signout"
-                  class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
-                >
-                  Sign out
-                </a>
-              </div>
-            )}
-          </div>
-        )}
+          {menuOpen && (
+            <div
+              class={`absolute right-0 mt-2 w-36 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
+            >
+              {props.isLogin
+                ? (
+                  <a
+                    href="/auth/signout"
+                    class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
+                  >
+                    Sign out
+                  </a>
+                )
+                : (
+                  <a
+                    href={props.base_url
+                      ? props.base_url + "/auth/github/signin"
+                      : `/auth/github/signin`}
+                    class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
+                  >
+                    Sign in
+                  </a>
+                )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

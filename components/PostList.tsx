@@ -11,6 +11,7 @@ import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { XIcon } from "./icons/x.tsx";
 import Header from "./Header.tsx";
+import HeaderPost from "./HeaderPost.tsx";
 
 interface Props {
   posts: Post[];
@@ -518,11 +519,10 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                   isDark ? "border-gray-700/50" : "border-gray-200/50"
                 }`}
               >
-                <Header
+                <HeaderPost
                   avatar_url={data.avatar_url}
                   isLogin={data.isLogin}
-                  message="Fastro Social"
-                  showOptions={false}
+                  message={`Hi ${data.author}`}
                 />
                 <button
                   onClick={() => setIsModalOpen(false)}
