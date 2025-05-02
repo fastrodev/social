@@ -10,6 +10,7 @@ import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { XIcon } from "./icons/x.tsx";
+import Header from "./Header.tsx";
 
 interface Props {
   posts: Post[];
@@ -517,9 +518,12 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                   isDark ? "border-gray-700/50" : "border-gray-200/50"
                 }`}
               >
-                <span className="text-sm">
-                  {selectedPost.title}
-                </span>
+                <Header
+                  avatar_url={data.avatar_url}
+                  isLogin={data.isLogin}
+                  message="Fastro Social"
+                  showOptions={false}
+                />
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className={`right-4 p-2 rounded-full ${

@@ -7,12 +7,13 @@ export default function Header(
   props: {
     isLogin: boolean;
     avatar_url: string;
-    html_url: string;
+    html_url?: string;
     base_url?: string;
     title?: string;
     previous_url?: string;
     isDark?: boolean;
     message?: string;
+    showOptions?: boolean;
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -112,7 +113,7 @@ export default function Header(
           )}
         </a>
 
-        {props.isLogin && (
+        {props.isLogin && props.showOptions && (
           <div class="relative">
             <button
               type="button"
