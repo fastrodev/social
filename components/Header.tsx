@@ -80,7 +80,7 @@ export default function Header(
           </div>
         </a>
         <span class={`${textColorClass}`}>
-          {headerTitle}
+          {headerTitle} (Unstable)
         </span>
       </div>
       <div class={`flex items-center space-x-3`}>
@@ -106,7 +106,7 @@ export default function Header(
             <img
               loading="lazy"
               src={props.avatar_url}
-              width={24}
+              width={18}
               class={`rounded-full`}
             />
           )}

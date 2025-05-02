@@ -126,6 +126,7 @@ export default async function postDetailHandler(
     post,
     brand: Deno.env.get("BRAND") || "Fastro Social",
     url: `${baseUrl}/post/${id}`,
+    baseUrl,
     publishDate: post.timestamp,
   });
 }

@@ -8,7 +8,7 @@ export default function Welcome() {
           backgroundClip: "text",
           color: "transparent",
           textShadow: "0 0 15px rgba(192, 132, 252, 0.5)",
-          animation: "pulse 1s infinite ease-in-out",
+          animation: "pulse 1.5s infinite ease-in-out",
         }}
       >
         Welcome to Fastro Social

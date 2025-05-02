@@ -15,12 +15,15 @@ import { Post } from "@app/modules/index/type.ts";
 
 // Update Props interface
 interface Props {
+  apiBaseUrl: string;
   posts: Post[];
   setPosts: (posts: Post[]) => void;
   setIsEditorActive: (active: boolean) => void;
 }
 
-export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
+export function Editor(
+  { apiBaseUrl, posts, setPosts, setIsEditorActive }: Props,
+) {
   const [postContent, setPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDark, _setIsDark] = useState(true);
@@ -62,7 +65,7 @@ export function Editor({ posts, setPosts, setIsEditorActive }: Props) {
 
     try {
       const response = await fetch(
-        "https://web.fastro.dev/api/post",
+        `${apiBaseUrl}/api/post`,
         {
           method: "POST",
           headers: {

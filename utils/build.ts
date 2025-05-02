@@ -88,6 +88,11 @@ const htmlPlugin = {
           base_url: Deno.env.get("ENV") === "DEV"
             ? ""
             : "https://web.fastro.dev",
+          apiBaseUrl: Deno.env.get("API_BASE_URL") || "https://web.fastro.dev",
+          avatar_url: "",
+          isLogin: false,
+          author: "",
+          message: "",
         };
 
         const metaData = {

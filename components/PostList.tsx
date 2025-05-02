@@ -15,6 +15,7 @@ interface Props {
   data: {
     isLogin: boolean;
     author: string;
+    avatar_url: string;
   };
   isDark: boolean;
   isMobile: boolean;
@@ -30,6 +31,14 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
     [],
   );
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const [localPosts, setLocalPosts] = useState<Post[]>(posts);
+
+  console.log(data.author)
+  console.log(posts)
+
+  useEffect(() => {
+    setLocalPosts(posts);
+  }, [posts]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -111,7 +120,19 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
         method: "DELETE",
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        // Remove the deleted post from the local state
+        setLocalPosts((prevPosts) =>
+          prevPosts.filter((post) => post.id !== postId)
+        );
+
+        // Dispatch custom event to notify parent components
+        window.dispatchEvent(
+          new CustomEvent("postDeleted", {
+            detail: { postId },
+          }),
+        );
+      } else {
         console.error("Failed to delete post");
       }
     } catch (error) {
@@ -195,6 +216,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
       {showPostDetail && selectedPost
         ? (
           <PostDetail
+            base_url={base_url}
             post={selectedPost}
             comments={selectedPostComments}
             data={data}
@@ -204,8 +226,8 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
           />
         )
         : (
-          showPosts && posts.length > 0 && (
-            posts.map((post) => (
+          showPosts && localPosts.length > 0 && (
+            localPosts.map((post) => (
               // Post Item Card Container
               <div
                 key={post.id}
@@ -296,8 +318,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                         )}
 
                         {/* Delete option only for post author */}
-                        {(data.author === post.author) ||
-                          (data.author === "ynwd") && (
+                        { (data.author === "ynwd" || data.author === post.author) && (
                               <button
                                 onClick={() => handleDeletePost(post.id)}
                                 className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
@@ -407,7 +428,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
         )}
 
       {/* Add sentinel at the end of the list for infinite scrolling */}
-      {!isMobile && posts.length > 0 && !showPostDetail && (
+      {!isMobile && localPosts.length > 0 && !showPostDetail && (
         <div
           ref={sentinelRef}
           className="h-10 w-full opacity-0"

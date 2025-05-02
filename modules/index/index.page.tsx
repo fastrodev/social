@@ -15,7 +15,12 @@ export default function Index({ data }: PageProps<
     title: string;
     description: string;
     github_auth: string;
-    base_url?: string;
+    base_url: string;
+    apiBaseUrl: string;
+    avatar_url?: string;
+    isLogin: boolean;
+    author: string;
+    message: string;
   }
 >) {
   const [_isHealthy, setIsHealthy] = useState(false);
@@ -27,8 +32,6 @@ export default function Index({ data }: PageProps<
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isEditorActive, setIsEditorActive] = useState(false);
-
-  console.log("Rendering Index with data:", data);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -61,6 +64,8 @@ export default function Index({ data }: PageProps<
       const base = data && data.base_url
         ? data.base_url
         : "https://web.fastro.dev/api/posts";
+
+      console.log("base url", base);
       const url = new URL("/api/posts", base);
       // const url = new URL("https://web.fastro.dev/api/posts");
       url.searchParams.set("limit", "10");
@@ -132,10 +137,10 @@ export default function Index({ data }: PageProps<
       {/* Container of header and main content */}
       <div className="relative z-10 min-h-screen flex flex-col">
         <Header
-          isLogin={false}
-          avatar_url=""
+          isLogin={data.isLogin}
+          avatar_url={data.avatar_url || ""}
           html_url=""
-          message=""
+          message={`Hi ${data.author}`}
           base_url={data.base_url}
         />
 
@@ -144,6 +149,7 @@ export default function Index({ data }: PageProps<
           <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
             {(posts.length === 0 || isLoading) && <Welcome key="welcome" />}
             <Editor
+              apiBaseUrl={data.apiBaseUrl}
               posts={posts}
               setPosts={setPosts}
               setIsEditorActive={setIsEditorActive}
@@ -154,14 +160,13 @@ export default function Index({ data }: PageProps<
                 <PostList
                   posts={posts}
                   data={{
-                    isLogin: false,
-                    author: "anonymous",
+                    isLogin: data.isLogin,
+                    author: data.author,
+                    avatar_url: data.avatar_url || "",
                   }}
                   isDark={isDark}
                   isMobile={isMobile}
-                  base_url={data.base_url
-                    ? data.base_url
-                    : "https://web.fastro.dev"}
+                  base_url={data.base_url || "https://web.fastro.dev"}
                 />
                 {isMobile && posts.length > 0
                   ? (
