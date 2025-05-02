@@ -61,13 +61,8 @@ export default function Index({ data }: PageProps<
   const fetchPosts = async (isInitial: boolean = false) => {
     try {
       setIsLoading(true);
-      const base = data && data.base_url
-        ? data.base_url
-        : "https://web.fastro.dev/api/posts";
-
-      console.log("base url", base);
-      const url = new URL("/api/posts", base);
-      // const url = new URL("https://web.fastro.dev/api/posts");
+      const url = new URL("/api/posts", data.apiBaseUrl);
+      console.log("Fetching posts from:", url.toString());
       url.searchParams.set("limit", "10");
       if (!isInitial && cursor) {
         url.searchParams.set("cursor", cursor);
