@@ -520,9 +520,8 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                 }`}
               >
                 <HeaderPost
-                  avatar_url={data.avatar_url}
-                  isLogin={data.isLogin}
-                  message={`Hi ${data.author}`}
+                  message={`${selectedPost.title} by ${selectedPost.author}`}
+                  // isLogin={data.isLogin}
                 />
                 <button
                   onClick={() => setIsModalOpen(false)}

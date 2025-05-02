@@ -4,8 +4,8 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 
 export default function HeaderPost(
   props: {
-    isLogin: boolean;
-    avatar_url: string;
+    // isLogin: boolean;
+    // avatar_url: string;
     html_url?: string;
     base_url?: string;
     title?: string;
@@ -38,11 +38,8 @@ export default function HeaderPost(
 
   const textColorClass = isDark ? "text-gray-100" : "text-gray-700";
   const linkTextColorClass = isDark ? "text-gray-100" : "text-gray-700";
-  const bgClass = isDark ? "bg-gray-800" : "bg-white";
-  const borderClass = isDark ? "border-gray-700" : "border-gray-200";
 
-  const defaultTitle = "Fastro Social";
-  const headerTitle = props.isLogin ? props.message : defaultTitle;
+  const headerTitle = props.message;
 
   // Close dropdown when clicking outside
   const handleClickOutside = () => {
@@ -72,29 +69,19 @@ export default function HeaderPost(
       class={`container flex justify-between max-w-6xl mx-auto text-center text-sm py-4 px-2 ${textColorClass}`}
     >
       <div class={`flex space-x-2 items-center`}>
-        <a href="/" class={`text-gray-100`}>
-          <div
-            class={`border-[1px] border-gray-600 bg-gray-900 rounded-full p-[1px]`}
-          >
-            <BoltSvg />
-          </div>
-        </a>
-        <span class={`${textColorClass}`}>
-          {headerTitle} (Unstable)
+        <div
+          class={`text-gray-100 border-[1px] border-gray-600 bg-gray-900 rounded-full p-[1px]`}
+        >
+          <BoltSvg />
+        </div>
+        <span
+          class={`${textColorClass} truncate max-w-[200px] sm:max-w-[300px]`}
+          title={headerTitle}
+        >
+          {headerTitle}
         </span>
       </div>
       <div class={`flex items-center space-x-3`}>
-        {!props.isLogin && (
-          <a
-            class={`${linkTextColorClass}`}
-            href={props.base_url
-              ? props.base_url + "/auth/github/signin"
-              : `/auth/github/signin`}
-          >
-            Sign in
-          </a>
-        )}
-
         <div class="relative">
           {props.showOptions && (
             <button
@@ -105,32 +92,6 @@ export default function HeaderPost(
             >
               <VDotsIcon />
             </button>
-          )}
-
-          {menuOpen && (
-            <div
-              class={`absolute right-0 mt-2 w-36 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
-            >
-              {props.isLogin
-                ? (
-                  <a
-                    href="/auth/signout"
-                    class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
-                  >
-                    Sign out
-                  </a>
-                )
-                : (
-                  <a
-                    href={props.base_url
-                      ? props.base_url + "/auth/github/signin"
-                      : `/auth/github/signin`}
-                    class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
-                  >
-                    Sign in
-                  </a>
-                )}
-            </div>
           )}
         </div>
       </div>
