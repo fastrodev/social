@@ -1,6 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
-import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 
 export default function HeaderPost(
@@ -95,23 +94,6 @@ export default function HeaderPost(
             Sign in
           </a>
         )}
-
-        <a
-          aria-label="user profile"
-          class={`${linkTextColorClass}`}
-          href={props.isLogin
-            ? props.html_url
-            : "https://github.com/fastrodev/social"}
-        >
-          {!props.avatar_url ? <GithubSvg /> : (
-            <img
-              loading="lazy"
-              src={props.avatar_url}
-              width={18}
-              class={`rounded-full`}
-            />
-          )}
-        </a>
 
         <div class="relative">
           {props.showOptions && (
