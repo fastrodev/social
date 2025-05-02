@@ -108,6 +108,11 @@ jobs:
                   "source": "/post/:postId*",
                   "destination": "https://web.fastro.dev/post/:postId",
                   "type": 301
+                },
+                {
+                  "source": "/auth/callback",
+                  "destination": "https://web.fastro.dev/auth/callback",
+                  "type": 301
                 }
               ],
               "rewrites": [
