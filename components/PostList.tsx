@@ -511,12 +511,15 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
             >
               {/* Fixed Header */}
               <div
-                className={`flex justify-end px-3 py-0 ${
+                className={`flex justify-between items-center px-3 py-0 ${
                   isDark ? "bg-gray-800/80" : "bg-white/80"
                 } rounded-t-lg border-b backdrop-blur-sm ${
                   isDark ? "border-gray-700/50" : "border-gray-200/50"
                 }`}
               >
+                <span className="text-sm">
+                  {selectedPost.title}
+                </span>
                 <button
                   onClick={() => setIsModalOpen(false)}
                   className={`right-4 p-2 rounded-full ${
