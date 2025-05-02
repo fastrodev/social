@@ -9,6 +9,7 @@ import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { memo } from "preact/compat";
 import { XIcon } from "./icons/x.tsx";
 import Header from "./Header.tsx";
 import HeaderPost from "./HeaderPost.tsx";
@@ -161,6 +162,17 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
       );
     };
   }, []);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+    return () => {
+      document.body.classList.remove("modal-open");
+    };
+  }, [isModalOpen]);
 
   const fetchComments = async (postId: string) => {
     try {
@@ -497,63 +509,89 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
       )}
       {/* Modal */}
       {isModalOpen && selectedPost && (
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setIsModalOpen(false)}
+        <PostModal
+          selectedPost={selectedPost}
+          isDark={isDark}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <PostDetail
+            base_url={base_url}
+            post={selectedPost}
+            comments={selectedPostComments}
+            data={data}
+            isDark={isDark}
+            isMobile={isMobile}
           />
-
-          {/* Modal container - full height */}
-          <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
-            <div
-              className={`relative w-full h-full max-w-2xl mx-auto ${
-                isDark ? "bg-gray-800" : "bg-white"
-              } shadow-xl rounded-lg flex flex-col`}
-            >
-              {/* Fixed Header */}
-              <div
-                className={`flex justify-between items-center px-3 py-0 ${
-                  isDark ? "bg-gray-800/80" : "bg-white/80"
-                } rounded-t-lg border-b backdrop-blur-sm ${
-                  isDark ? "border-gray-700/50" : "border-gray-200/50"
-                }`}
-              >
-                <HeaderPost
-                  message={`${selectedPost.title} by ${selectedPost.author}`}
-                  // isLogin={data.isLogin}
-                />
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className={`right-4 p-2 rounded-full ${
-                    isDark
-                      ? "hover:bg-gray-700/70 text-gray-400"
-                      : "hover:bg-gray-100/70 text-gray-600"
-                  }`}
-                >
-                  <span className="sr-only">Close</span>
-                  <XIcon />
-                </button>
-              </div>
-
-              {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
-                <PostDetail
-                  base_url={base_url}
-                  post={selectedPost}
-                  comments={selectedPostComments}
-                  data={data}
-                  isDark={isDark}
-                  isMobile={isMobile}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        </PostModal>
       )}
     </>
   );
 }
+
+// Add this new memoized modal component
+const PostModal = memo(({ selectedPost, isDark, onClose, children }: {
+  selectedPost: Post;
+  isDark: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) => (
+  <div className="fixed inset-0 z-50">
+    <div
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+      style={{ willChange: "opacity" }}
+    />
+
+    <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6 overscroll-none">
+      <div
+        className={`relative w-full h-full max-w-2xl mx-auto ${
+          isDark ? "bg-gray-800" : "bg-white"
+        } shadow-xl rounded-lg flex flex-col transform-gpu`}
+        style={{
+          contain: "content",
+          willChange: "transform",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
+        {/* Fixed Header */}
+        <div
+          className={`flex justify-between items-center px-3 py-0 ${
+            isDark ? "bg-gray-800/80" : "bg-white/80"
+          } rounded-t-lg border-b backdrop-blur-sm ${
+            isDark ? "border-gray-700/50" : "border-gray-200/50"
+          }`}
+          style={{ contain: "layout style" }}
+        >
+          <HeaderPost
+            message={`${selectedPost.title} by ${selectedPost.author}`}
+          />
+          <button
+            onClick={onClose}
+            className={`right-4 p-2 rounded-full ${
+              isDark
+                ? "hover:bg-gray-700/70 text-gray-400"
+                : "hover:bg-gray-100/70 text-gray-600"
+            }`}
+          >
+            <span className="sr-only">Close</span>
+            <XIcon />
+          </button>
+        </div>
+
+        {/* Scrollable Content */}
+        <div
+          className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 scrollbar-track-rounded-full scrollbar-thumb-rounded-full"
+          style={{
+            contain: "content",
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  </div>
+));
 
 export function Skeleton() {
   return (
