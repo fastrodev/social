@@ -9,6 +9,7 @@ import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import { XIcon } from "./icons/x.tsx";
 
 interface Props {
   posts: Post[];
@@ -33,6 +34,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [localPosts, setLocalPosts] = useState<Post[]>(posts);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const memoizedPosts = useMemo(() => {
     return localPosts.map((post) => ({
@@ -230,23 +232,28 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
 
   const handlePostClick = async (postId: string) => {
     try {
-      // get post from /api/post/:id
-      const response = await fetch(`${base_url}/api/post/${postId}`);
+      // Set loading state while fetching
+      setIsLoading(true);
 
+      // Fetch post details
+      const response = await fetch(`${base_url}/api/post/${postId}`);
       if (!response.ok) {
         throw new Error("Failed to fetch post details");
       }
       const post = await response.json();
 
-      // Set the selected post and show detail view
+      // Set the selected post
       setSelectedPost(post);
-      setShowPosts(false);
-      setShowPostDetail(true);
 
       // Fetch comments for the post
       await fetchComments(postId);
+
+      // Open the modal
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching post details:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -484,6 +491,58 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
           {isLoading && (
             <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
           )}
+        </div>
+      )}
+      {/* Modal */}
+      {isModalOpen && selectedPost && (
+        <div className="fixed inset-0 z-50">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setIsModalOpen(false)}
+          />
+
+          {/* Modal container - full height */}
+          <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
+            <div
+              className={`relative w-full h-full max-w-2xl mx-auto ${
+                isDark ? "bg-gray-800" : "bg-white"
+              } shadow-xl rounded-lg flex flex-col`}
+            >
+              {/* Fixed Header */}
+              <div
+                className={`flex justify-end px-3 py-0 ${
+                  isDark ? "bg-gray-800/80" : "bg-white/80"
+                } rounded-t-lg border-b backdrop-blur-sm ${
+                  isDark ? "border-gray-700/50" : "border-gray-200/50"
+                }`}
+              >
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className={`right-4 p-2 rounded-full ${
+                    isDark
+                      ? "hover:bg-gray-700/70 text-gray-400"
+                      : "hover:bg-gray-100/70 text-gray-600"
+                  }`}
+                >
+                  <span className="sr-only">Close</span>
+                  <XIcon />
+                </button>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
+                <PostDetail
+                  base_url={base_url}
+                  post={selectedPost}
+                  comments={selectedPostComments}
+                  data={data}
+                  isDark={isDark}
+                  isMobile={isMobile}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </>

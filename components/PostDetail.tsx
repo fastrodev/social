@@ -190,7 +190,7 @@ export function PostDetail(
     <main className="max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6">
       {/* Card container */}
       <div
-        className={`${fadeInClass} bg-gray-800/90 rounded-lg shadow-[0_0_35px_rgba(147,51,234,0.3)] px-4 py-3 border border-gray-700 backdrop-blur-lg mb-0 sm:mb-4 relative`}
+        className={`${fadeInClass} bg-gray-800/90 rounded-lg shadow-[0_0_35px_rgba(147,51,234,0.3)] px-4 py-3 border border-gray-700 backdrop-blur-lg relative`}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
