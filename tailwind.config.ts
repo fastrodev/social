@@ -6,9 +6,6 @@ export default {
     "./components/**/*.tsx",
   ],
   darkMode: "class",
-  theme: {
-    extend: {},
-  },
   plugins: [
     ts,
   ],

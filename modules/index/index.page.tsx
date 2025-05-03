@@ -5,10 +5,11 @@ import { useEffect, useState } from "preact/hooks";
 import Header from "../../components/Header.tsx";
 
 import { Editor } from "../../components/Editor.tsx";
-import { PostList, PostModal, Skeleton } from "../../components/PostList.tsx";
+import { PostList } from "../../components/PostList.tsx";
 import { Comment, Post } from "@app/modules/index/type.ts";
 import Welcome from "../../components/Welcome.tsx";
 import { PostDetail } from "../../components/PostDetail.tsx";
+import { PostModal } from "../../components/PostModal.tsx";
 
 // Add this function to read specific cookie
 const getCookie = (name: string): string | null => {
@@ -184,7 +185,7 @@ export default function Index({ data }: PageProps<
                   }}
                   isDark={isDark}
                   isMobile={isMobile}
-                  api_base_url={data.apiBaseUrl || "https://web.fastro.dev"}
+                  api_base_url={data.apiBaseUrl}
                   onOpenModal={handleOpenModal}
                 />
                 {modalState.open && modalState.post && (
@@ -197,10 +198,9 @@ export default function Index({ data }: PageProps<
                       post={modalState.post}
                       comments={modalState.comments as any}
                       isDark={isDark}
-                      isMobile={isMobile}
                       isLoading={isLoading}
                       apiBaseUrl={data.apiBaseUrl}
-                      base_url={data.base_url || "https://web.fastro.dev"}
+                      base_url={data.base_url}
                       data={{
                         isLogin: data.isLogin,
                         author: data.author,

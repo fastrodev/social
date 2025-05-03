@@ -6,12 +6,8 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
-import { PostDetail } from "@app/components/PostDetail.tsx";
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { memo } from "preact/compat";
-import { XIcon } from "./icons/x.tsx";
-import Header from "./Header.tsx";
-import HeaderPost from "./HeaderPost.tsx";
 
 interface Props {
   posts: Post[];
@@ -448,104 +444,3 @@ export const PostList = memo(function PostList({
     </>
   );
 });
-
-export function Skeleton() {
-  return (
-    <div className="space-y-4">
-      {[...Array(1)].map((_, i) => (
-        <div
-          key={i}
-          className="bg-gray-800/90 flex flex-col rounded-lg px-6 py-4 border border-gray-700 relative"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center">
-              <div className="mt-1 w-8 h-8 bg-gray-700/50 rounded-full animate-pulse flex-shrink-0" />
-              <div className="ml-3">
-                <div className="h-5 bg-gray-700/50 rounded w-28 animate-pulse" />
-                <div className="h-3 bg-gray-700/50 rounded w-24 animate-pulse mt-1.5" />
-              </div>
-            </div>
-            <div className="relative">
-              <div className="w-8 h-8 bg-gray-700/50 rounded-full animate-pulse" />
-            </div>
-          </div>
-
-          {/* Image Container */}
-          <div className="-mx-6 mb-4 relative">
-            <div className="w-full h-[200px] sm:h-[300px] bg-gray-700/50 animate-pulse" />
-
-            {/* Tag overlay */}
-            <div className="absolute top-2 right-2 flex flex-wrap gap-1 max-w-[70%] justify-end">
-              <div className="h-5 bg-purple-800/50 rounded-full w-16 animate-pulse" />
-            </div>
-
-            {/* Title overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
-              <div className="h-7 bg-gray-700/50 rounded w-full animate-pulse" />
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-x-1">
-              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse" />
-              <div className="h-4 bg-gray-700/50 rounded w-24 animate-pulse ml-2" />
-            </div>
-            <div className="flex items-center gap-x-2">
-              <div className="w-5 h-5 bg-gray-700/50 rounded animate-pulse" />
-              <div className="h-4 bg-gray-700/50 rounded w-16 animate-pulse" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export function PostModal({
-  selectedPost,
-  isDark,
-  onClose,
-  children,
-}: {
-  selectedPost: Post;
-  isDark: boolean;
-  onClose: () => void;
-  children?: preact.ComponentChildren;
-}) {
-  // Prevent background scroll when modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div
-        className={`relative w-full h-full max-w-2xl mx-auto ${
-          isDark ? "bg-gray-800" : "bg-white"
-        } shadow-xl rounded-lg flex flex-col`}
-      >
-        <div className="flex justify-between items-center px-2">
-          <HeaderPost
-            message={`${selectedPost.title} by ${selectedPost.author}`}
-          >
-          </HeaderPost>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-700/30"
-            aria-label="Close"
-          >
-            <XIcon />
-          </button>
-        </div>
-        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 h-full">
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}

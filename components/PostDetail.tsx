@@ -5,7 +5,7 @@ import { ViewIcon } from "@app/components/icons/view.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { useEffect, useRef, useState } from "preact/hooks";
-import { renderMarkdownWithHashtags as renderMarkdown } from "../utils/markdown.ts";
+import { renderMarkdownWithHashtags as renderMarkdown } from "@app/utils/markdown.ts";
 import { JSX } from "preact/jsx-runtime";
 
 interface Props {
@@ -19,7 +19,6 @@ interface Props {
     avatar_url: string;
   };
   isDark: boolean;
-  isMobile: boolean;
   isLoading?: boolean;
 }
 
@@ -28,7 +27,6 @@ export function PostDetail(
     post,
     data,
     isDark,
-    isMobile,
     isLoading,
     comments: initialComments,
     base_url,
@@ -38,10 +36,8 @@ export function PostDetail(
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [newComment, setNewComment] = useState<string>("");
   const [comments, setComments] = useState<Comment[]>(initialComments); // Initialize with prop
   const [_isSubmitting, setIsSubmitting] = useState(false);
-  const [postData, setPostData] = useState<Post>(post);
   const imageRef = useRef<HTMLImageElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -100,7 +96,7 @@ export function PostDetail(
   };
 
   const handleSharePost = async () => {
-    const postUrl = `https://social.fastro.dev/post/${post.id}`;
+    const postUrl = `${base_url}/post/${post.id}`;
 
     if (navigator.share) {
       try {
@@ -182,7 +178,7 @@ export function PostDetail(
   // Handle comment deletion
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`${base_url}/api/comments/${commentId}`, {
+      const response = await fetch(`${apiBaseUrl}/api/comments/${commentId}`, {
         method: "DELETE",
       });
 
