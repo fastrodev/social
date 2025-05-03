@@ -413,7 +413,7 @@ export function Editor(
               : (
                 <textarea
                   placeholder={isEditing
-                    ? "# [Enter Your Post Title Here]\n\n\n[Your post content goes here. Replace this text with your own writing.]\n\n\n##[your-tag-here]"
+                    ? "# [Enter Your Post Title Here]\n\n\n[Your post content goes here. Replace this text with your own writing.]\n\n\n#[your-tag-here]"
                     : "What's on your mind?"}
                   value={postContent}
                   onInput={handleChange}
