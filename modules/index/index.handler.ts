@@ -6,14 +6,14 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
   const isLogin = ses?.isLogin;
   console.log("isLogin", isLogin);
 
-  // if (isLogin) {
-  //   return new Response(null, {
-  //     status: 302,
-  //     headers: {
-  //       Location: "/",
-  //     },
-  //   });
-  // }
+  if (isLogin) {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "/",
+      },
+    });
+  }
 
   if (Deno.env.get("ENV") !== "DEVELOPMENT") {
     return new Response(null, {
