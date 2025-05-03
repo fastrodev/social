@@ -1,7 +1,6 @@
 // deno-lint-ignore-file
-import { Post } from "@app/modules/index/type.ts";
+import { Comment, Post } from "@app/modules/index/type.ts";
 import { CommentIcon } from "@app/components/icons/comment.tsx";
-import { Comment } from "@app/modules/index/type.ts";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
@@ -23,23 +22,87 @@ interface Props {
   };
   isDark: boolean;
   isMobile: boolean;
-  base_url: string; // Remove optional flag
+  base_url: string;
+  onOpenModal: (post: Post, comments: Comment[]) => void;
 }
 
-export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
+export const PostList = memo(function PostList({
+  posts,
+  data,
+  isDark,
+  isMobile,
+  base_url,
+  onOpenModal,
+}: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [showPosts, setShowPosts] = useState(true);
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [showPostDetail, setShowPostDetail] = useState(false);
-  const [selectedPostComments, setSelectedPostComments] = useState<Comment[]>(
-    [],
-  );
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const [localPosts, setLocalPosts] = useState<Post[]>(posts);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const PREFETCH_DELAY = 300; // Delay in milliseconds
+  const handlePostClick = async (postId: string) => {
+    try {
+      const [postResponse, commentsResponse] = await Promise.all([
+        fetch(`${base_url}/api/post/${postId}`),
+        fetch(`${base_url}/api/comments/${postId}`),
+      ]);
+
+      if (!postResponse.ok || !commentsResponse.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const [post, comments] = await Promise.all([
+        postResponse.json(),
+        commentsResponse.json(),
+      ]);
+
+      onOpenModal(post, comments);
+    } catch (error) {
+      console.error("Error fetching post details:", error);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    try {
+      const response = await fetch(`${base_url}/api/post/${postId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setLocalPosts((prevPosts) =>
+          prevPosts.filter((post) => post.id !== postId)
+        );
+        window.dispatchEvent(
+          new CustomEvent("postDeleted", { detail: { postId } }),
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+  const handleSharePost = async (postId: string) => {
+    const postUrl = `${base_url}/post/${postId}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out this post",
+          url: postUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      navigator.clipboard.writeText(postUrl)
+        .then(() => alert("Link copied to clipboard!"))
+        .catch((err) => console.error("Failed to copy link:", err));
+    }
+  };
+
+  const handleEditPost = (postId: string) => {
+    window.location.href = `${base_url}/post/${postId}?edit=true`;
+  };
+
+  const PREFETCH_DELAY = 300;
 
   const memoizedPosts = useMemo(() => {
     return localPosts.map((post) => ({
@@ -50,28 +113,15 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
     }));
   }, [localPosts, data.author]);
 
-  // Memoize the post detail component
-  const postDetailComponent = useMemo(() => {
-    if (!showPostDetail || !selectedPost) return null;
-    return (
-      <PostDetail
-        base_url={base_url}
-        post={selectedPost}
-        comments={selectedPostComments}
-        data={data}
-        isDark={isDark}
-        isMobile={isMobile}
-      />
-    );
-  }, [
-    showPostDetail,
-    selectedPost,
-    selectedPostComments,
-    data,
-    isDark,
-    isMobile,
-    base_url,
-  ]);
+  const memoizedHandlers = useMemo(
+    () => ({
+      handlePostClick,
+      handleDeletePost,
+      handleSharePost,
+      handleEditPost,
+    }),
+    [base_url], // Add other dependencies if needed
+  );
 
   useEffect(() => {
     setLocalPosts(posts);
@@ -94,10 +144,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
     if (isMobile) return; // Skip for mobile
 
     const loadMorePosts = async () => {
-      if (isLoading) return;
-
       try {
-        setIsLoading(true);
         const lastPost = localPosts[localPosts.length - 1];
         const response = await fetch(
           `${base_url}/api/posts?cursor=${lastPost.id}`,
@@ -110,15 +157,13 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
         }
       } catch (error) {
         console.error("Error loading more posts:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
-        if (entry.isIntersecting && !isLoading) {
+        if (entry.isIntersecting) {
           loadMorePosts();
         }
       },
@@ -139,141 +184,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
         observer.disconnect();
       }
     };
-  }, [isMobile, isLoading, localPosts, base_url]);
-
-  useEffect(() => {
-    const handleShowPostDetail = (event: CustomEvent) => {
-      const { post, action } = event.detail;
-      if (action === "hide-posts") {
-        // Hide post list container
-        setShowPosts(false);
-        // Show post detail with the fetched post data
-        setSelectedPost(post);
-        setShowPostDetail(true);
-      }
-    };
-
-    window.addEventListener(
-      "showPostDetail",
-      handleShowPostDetail as EventListener,
-    );
-    return () => {
-      window.removeEventListener(
-        "showPostDetail",
-        handleShowPostDetail as EventListener,
-      );
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isModalOpen) {
-      document.body.classList.add("modal-open");
-    } else {
-      document.body.classList.remove("modal-open");
-    }
-    return () => {
-      document.body.classList.remove("modal-open");
-    };
-  }, [isModalOpen]);
-
-  const fetchComments = async (postId: string) => {
-    try {
-      const response = await fetch(`${base_url}/api/comments/${postId}`);
-      if (!response.ok) throw new Error("Failed to fetch comments");
-      const comments = await response.json();
-      setSelectedPostComments(comments);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-      setSelectedPostComments([]);
-    }
-  };
-
-  const handleDeletePost = async (postId: string) => {
-    if (!confirm("Are you sure you want to delete this post?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${base_url}/api/post/${postId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        // Remove the deleted post from the local state
-        setLocalPosts((prevPosts) =>
-          prevPosts.filter((post) => post.id !== postId)
-        );
-
-        // Dispatch custom event to notify parent components
-        window.dispatchEvent(
-          new CustomEvent("postDeleted", {
-            detail: { postId },
-          }),
-        );
-      } else {
-        console.error("Failed to delete post");
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-    }
-  };
-
-  const handleSharePost = async (postId: string) => {
-    const postUrl = `${base_url}/post/${postId}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Check out this post",
-          url: postUrl,
-        });
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    } else {
-      // Fallback to copying to clipboard
-      navigator.clipboard.writeText(postUrl)
-        .then(() => {
-          alert("Link copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy link:", err);
-        });
-    }
-  };
-
-  const handleEditPost = (postId: string) => {
-    window.location.href = `${base_url}/post/${postId}?edit=true`;
-  };
-
-  const handlePostClick = async (postId: string) => {
-    try {
-      setIsLoading(true);
-      setIsModalOpen(true); // Open modal immediately for better UX
-
-      // Fetch data in parallel
-      const [postResponse, commentsResponse] = await Promise.all([
-        fetch(`${base_url}/api/post/${postId}`),
-        fetch(`${base_url}/api/comments/${postId}`),
-      ]);
-
-      if (!postResponse.ok || !commentsResponse.ok) {
-        throw new Error("Failed to fetch data");
-      }
-
-      const [post, comments] = await Promise.all([
-        postResponse.json(),
-        commentsResponse.json(),
-      ]);
-
-      setSelectedPost(post);
-      setSelectedPostComments(comments);
-    } catch (error) {
-      console.error("Error fetching post details:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isMobile, localPosts, base_url]);
 
   const prefetchPostData = async (postId: string) => {
     try {
@@ -299,32 +210,29 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
     }
   };
 
-  const handleCommentAdded = async () => {
-    if (selectedPost) {
-      await fetchComments(selectedPost.id);
-    }
-  };
-
-  const themeStyles = useMemo(() => ({
-    cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
-    text: isDark ? "text-gray-100" : "text-gray-800",
-    footer: isDark ? "text-gray-400" : "text-gray-600",
-    link: isDark
-      ? "text-purple-400 hover:text-purple-300"
-      : "text-purple-600 hover:text-purple-500",
-    cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-    cardGlow: isMobile
-      ? "" // No shadow on mobile
-      : isDark
-      ? "shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
-      : "shadow-[0_0_10px_2px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
-  }), [isDark, isMobile]);
+  const themeStyles = useMemo(
+    () => ({
+      cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
+      text: isDark ? "text-gray-100" : "text-gray-800",
+      footer: isDark ? "text-gray-400" : "text-gray-600",
+      link: isDark
+        ? "text-purple-400 hover:text-purple-300"
+        : "text-purple-600 hover:text-purple-500",
+      cardBorder: isDark ? "border-gray-700" : "border-gray-200",
+      cardGlow: isMobile
+        ? "" // No shadow on mobile
+        : isDark
+        ? "shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
+        : "shadow-[0_0_10px_2px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
+    }),
+    [isDark, isMobile],
+  );
 
   return (
     <>
-      {postDetailComponent || (
-        showPosts && memoizedPosts.length > 0 && (
-          memoizedPosts.map((post) => (
+      {showPosts && memoizedPosts.length > 0 && (
+        <div className="space-y-4">
+          {memoizedPosts.map((post) => (
             // Use memoized post data
             <div
               key={post.id}
@@ -391,7 +299,8 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                     >
                       {/* Share option for all users */}
                       <button
-                        onClick={() => handleSharePost(post.id)}
+                        onClick={() =>
+                          memoizedHandlers.handleSharePost(post.id)}
                         className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                           isDark
                             ? "text-gray-200 hover:bg-gray-700"
@@ -399,15 +308,14 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                         } rounded-md`}
                       >
                         <ShareIcon />
-                        <span className="font-medium">
-                          Share post
-                        </span>
+                        <span className="font-medium">Share post</span>
                       </button>
 
                       {/* Edit option only for post author */}
                       {post.isAuthor && (
                         <button
-                          onClick={() => handleEditPost(post.id)}
+                          onClick={() =>
+                            memoizedHandlers.handleEditPost(post.id)}
                           className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                             isDark
                               ? "text-gray-200 hover:bg-gray-700"
@@ -415,16 +323,15 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                           } rounded-md`}
                         >
                           <EditIcon />
-                          <span className="font-medium">
-                            Edit post
-                          </span>
+                          <span className="font-medium">Edit post</span>
                         </button>
                       )}
 
                       {/* Delete option only for post author */}
                       {(post.isAdmin || post.isAuthor) && (
                         <button
-                          onClick={() => handleDeletePost(post.id)}
+                          onClick={() =>
+                            memoizedHandlers.handleDeletePost(post.id)}
                           className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
                             isDark
                               ? "text-gray-200 hover:bg-gray-700"
@@ -432,9 +339,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                           } rounded-md`}
                         >
                           <DeleteIcon />
-                          <span className="font-medium">
-                            Delete post
-                          </span>
+                          <span className="font-medium">Delete post</span>
                         </button>
                       )}
                     </div>
@@ -444,7 +349,7 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
               {/* End Modified Header Section */}
 
               <div
-                onClick={() => handlePostClick(post.id)}
+                onClick={() => memoizedHandlers.handlePostClick(post.id)}
                 className="block relative cursor-pointer"
               >
                 {/* Modified image section with title overlay */}
@@ -527,141 +432,20 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
                 </div>
               </div>
             </div>
-          ))
-        )
-      )}
-      {/* Add sentinel at the end of the list for infinite scrolling */}
-      {!isMobile && localPosts.length > 0 && !showPostDetail && (
-        <div
-          ref={sentinelRef}
-          className="h-10 w-full flex items-center justify-center"
-          aria-hidden="true"
-        >
-          {isLoading && (
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
+          ))}
+          {/* Sentinel for infinite scrolling */}
+          {!isMobile && localPosts.length > 0 && (
+            <div
+              ref={sentinelRef}
+              className="h-10 w-full flex items-center justify-center"
+              aria-hidden="true"
+            >
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
+            </div>
           )}
         </div>
       )}
-      {/* Modal */}
-      {isModalOpen && selectedPost && (
-        <PostModal
-          selectedPost={selectedPost}
-          isDark={isDark}
-          onClose={() => setIsModalOpen(false)}
-        >
-          <PostDetail
-            base_url={base_url}
-            post={selectedPost}
-            comments={selectedPostComments}
-            data={data}
-            isDark={isDark}
-            isMobile={isMobile}
-          />
-        </PostModal>
-      )}
     </>
-  );
-}
-
-// Update the PostModal component
-const PostModal = memo(({ selectedPost, isDark, onClose, children }: {
-  selectedPost: Post;
-  isDark: boolean;
-  onClose: () => void;
-  children: preact.ComponentChildren;
-}) => {
-  const [isImageLoading, setIsImageLoading] = useState(true);
-  const prevImageRef = useRef<HTMLImageElement | null>(null);
-  const prevSelectedPostRef = useRef<Post | null>(null);
-
-  useEffect(() => {
-    // Preload the image
-    if (
-      selectedPost?.image &&
-      prevSelectedPostRef.current?.image !== selectedPost.image
-    ) {
-      setIsImageLoading(true);
-      const img = new Image();
-      img.onload = () => {
-        setIsImageLoading(false);
-      };
-      img.src = selectedPost.image;
-      prevSelectedPostRef.current = selectedPost;
-    }
-  }, [selectedPost]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 transition-opacity duration-300 ease-out"
-      style={{
-        opacity: 1,
-        animation: "fadeIn 150ms ease-out",
-      }}
-    >
-      <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
-        onClick={onClose}
-      />
-
-      <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
-        <div
-          className={`relative w-full h-full max-w-2xl mx-auto ${
-            isDark ? "bg-gray-800" : "bg-white"
-          } shadow-xl rounded-lg flex flex-col transform-gpu transition-transform duration-300 ease-out`}
-          style={{
-            animation: "slideUp 250ms ease-out",
-            willChange: "transform",
-            contain: "content",
-          }}
-        >
-          {/* Header section */}
-          <div
-            className={`flex justify-between items-center px-3 py-0 ${
-              isDark ? "bg-gray-800/80" : "bg-white/80"
-            } rounded-t-lg border-b backdrop-blur-sm ${
-              isDark ? "border-gray-700/50" : "border-gray-200/50"
-            } sticky top-0 z-10`}
-          >
-            <HeaderPost
-              message={`${selectedPost.title} by ${selectedPost.author}`}
-            />
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-full ${
-                isDark
-                  ? "hover:bg-gray-700/70 text-gray-400"
-                  : "hover:bg-gray-100/70 text-gray-600"
-              }`}
-            >
-              <XIcon />
-            </button>
-          </div>
-
-          {/* Content section with loading state */}
-          <div
-            className="flex-1 overflow-y-auto relative"
-            style={{
-              contain: "content",
-              WebkitOverflowScrolling: "touch",
-            }}
-          >
-            {isImageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/20 backdrop-blur-[2px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent" />
-              </div>
-            )}
-            <div
-              style={{
-                opacity: isImageLoading ? 0.3 : 1,
-                transition: "opacity 150ms ease-out",
-              }}
-            >
-              {children}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 });
 
@@ -715,6 +499,53 @@ export function Skeleton() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+export function PostModal({
+  selectedPost,
+  isDark,
+  onClose,
+  children,
+}: {
+  selectedPost: Post;
+  isDark: boolean;
+  onClose: () => void;
+  children?: preact.ComponentChildren;
+}) {
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div
+        className={`relative w-full max-w-2xl mx-auto ${
+          isDark ? "bg-gray-800" : "bg-white"
+        } shadow-xl rounded-lg flex flex-col`}
+      >
+        <div className="flex justify-between items-center px-2 border-b">
+          <HeaderPost
+            message={`${selectedPost.title} by ${selectedPost.author}`}
+          >
+          </HeaderPost>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full hover:bg-gray-700/30"
+            aria-label="Close"
+          >
+            <XIcon />
+          </button>
+        </div>
+        <div className="overflow-y-auto max-h-[80vh] scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 h-full">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

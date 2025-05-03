@@ -10,6 +10,7 @@ export default function Post({ data }: PageProps<{
   title: string;
   description: string;
   baseUrl: string;
+  apiBaseUrl: string;
   isLogin: boolean;
   avatar_url: string;
   html_url: string;
@@ -96,10 +97,15 @@ export default function Post({ data }: PageProps<{
         <div className="max-w-xl mx-auto">
           <main className="max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6">
             <PostDetail
+              apiBaseUrl={data.apiBaseUrl}
               base_url={data.baseUrl}
               post={data.post}
               comments={[]}
-              data={data}
+              data={{
+                author: data.author,
+                isLogin: data.isLogin,
+                avatar_url: data.avatar_url,
+              }}
               isDark={true}
               isMobile={false}
             >

@@ -17,8 +17,8 @@ export interface Post {
 export interface Comment {
   id: string;
   content: string;
+  author: string;
   postId: string;
   timestamp: string;
-  author: string;
-  avatar: string;
+  avatar_url?: string;
 }

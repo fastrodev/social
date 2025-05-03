@@ -5,9 +5,10 @@ import { useEffect, useState } from "preact/hooks";
 import Header from "../../components/Header.tsx";
 
 import { Editor } from "../../components/Editor.tsx";
-import { PostList, Skeleton } from "../../components/PostList.tsx";
-import { Post } from "@app/modules/index/type.ts";
+import { PostList, PostModal, Skeleton } from "../../components/PostList.tsx";
+import { Comment, Post } from "@app/modules/index/type.ts";
 import Welcome from "../../components/Welcome.tsx";
+import { PostDetail } from "../../components/PostDetail.tsx";
 
 export default function Index({ data }: PageProps<
   {
@@ -32,6 +33,11 @@ export default function Index({ data }: PageProps<
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [isEditorActive, setIsEditorActive] = useState(false);
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    post: Post | null;
+    comments: Comment[];
+  }>({ open: false, post: null, comments: [] });
 
   useEffect(() => {
     const checkMobile = () => {
@@ -116,6 +122,14 @@ export default function Index({ data }: PageProps<
     }
   };
 
+  const handleOpenModal = (post: Post, comments: Comment[]) => {
+    setModalState({ open: true, post, comments });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({ open: false, post: null, comments: [] });
+  };
+
   const themeStyles = {
     button: isDark
       ? "bg-purple-600 text-white hover:bg-purple-700"
@@ -162,7 +176,30 @@ export default function Index({ data }: PageProps<
                   isDark={isDark}
                   isMobile={isMobile}
                   base_url={data.base_url || "https://web.fastro.dev"}
+                  onOpenModal={handleOpenModal}
                 />
+                {modalState.open && modalState.post && (
+                  <PostModal
+                    selectedPost={modalState.post}
+                    isDark={isDark}
+                    onClose={handleCloseModal}
+                  >
+                    <PostDetail
+                      post={modalState.post}
+                      comments={modalState.comments as any}
+                      isDark={isDark}
+                      isMobile={isMobile}
+                      isLoading={isLoading}
+                      apiBaseUrl={data.apiBaseUrl}
+                      base_url={data.base_url || "https://web.fastro.dev"}
+                      data={{
+                        isLogin: data.isLogin,
+                        author: data.author,
+                        avatar_url: data.avatar_url || "",
+                      }}
+                    />
+                  </PostModal>
+                )}
                 {isMobile && posts.length > 0
                   ? (
                     // load more posts when scrolled to the bottom

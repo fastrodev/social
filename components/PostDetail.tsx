@@ -10,6 +10,7 @@ import { JSX } from "preact/jsx-runtime";
 
 interface Props {
   base_url: string;
+  apiBaseUrl: string;
   post: Post;
   comments: Comment[];
   data: {
@@ -41,11 +42,37 @@ export function PostDetail(
   const [_isSubmitting, setIsSubmitting] = useState(false);
   const [postData, setPostData] = useState<Post>(post);
   const imageRef = useRef<HTMLImageElement>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Add effect to update comments when prop changes
   useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
+
+  // Add effect to handle image preloading
+  useEffect(() => {
+    if (post.image) {
+      const img = new Image();
+      img.src = post.image;
+
+      img.onload = () => {
+        setImageLoaded(true);
+        setImageError(false);
+      };
+
+      img.onerror = () => {
+        setImageError(true);
+        setImageLoaded(false);
+        console.error("Failed to load image:", post.image);
+      };
+
+      return () => {
+        img.onload = null;
+        img.onerror = null;
+      };
+    }
+  }, [post.image]);
 
   // Theme styles
   const themeStyles = {
@@ -105,7 +132,7 @@ export function PostDetail(
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${base_url}/api/comment`, {
+      const response = await fetch(`${apiBaseUrl}/api/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -240,21 +267,30 @@ export function PostDetail(
 
         {/* Image Container */}
         {post.image && (
-          <div className="relative">
+          <div className="w-full mb-3 max-auto">
+            {!imageLoaded && !imageError && (
+              <div className="w-full h-64 bg-gray-800 animate-pulse rounded-none" />
+            )}
+            {imageError && (
+              <div className="w-full h-64 bg-gray-800 flex items-center justify-center text-gray-400">
+                Failed to load image
+              </div>
+            )}
             <img
               ref={imageRef}
               src={post.image}
               alt={post.title}
-              className="w-full h-auto opacity-0 transition-opacity duration-300"
-              onLoad={(e) => {
-                const img = e.currentTarget;
-                img.classList.remove("opacity-0");
-                img.classList.add("opacity-100");
-              }}
+              className={`w-full rounded-none object-cover transition-opacity duration-300 ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
               style={{
                 contain: "paint",
                 willChange: "transform",
+                minHeight: "256px",
+                maxHeight: "512px",
               }}
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
             />
           </div>
         )}
@@ -262,7 +298,7 @@ export function PostDetail(
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div
-            className="flex flex-wrap gap-2 mb-3 text-xs font-normal py-2 rounded"
+            className="flex flex-wrap gap-2 text-xs font-normal py-2 rounded"
             style={{ lineHeight: "1.6" }}
           >
             {post.tags.map((tag) => (
@@ -299,7 +335,6 @@ export function PostDetail(
           </div>
         </div>
 
-        {/* Comments Section */}
         {/* Comments section */}
         <div className={`mt-2 sm:mt-4 pt-0`}>
           {/* Display comments */}
