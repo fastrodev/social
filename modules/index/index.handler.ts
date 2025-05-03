@@ -15,14 +15,14 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
   //   });
   // }
 
-  // if (Deno.env.get("ENV") !== "DEVELOPMENT") {
-  //   return new Response(null, {
-  //     status: 302,
-  //     headers: {
-  //       Location: "https://social.fastro.dev",
-  //     },
-  //   });
-  // }
+  if (Deno.env.get("ENV") !== "DEVELOPMENT") {
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: "https://social.fastro.dev",
+      },
+    });
+  }
 
   const avatar_url = ses?.avatar_url;
   const html_url = ses?.html_url;
