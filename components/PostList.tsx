@@ -277,18 +277,24 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
 
   const prefetchPostData = async (postId: string) => {
     try {
+      // Fetch API data
       const [postResponse, commentsResponse] = await Promise.all([
         fetch(`${base_url}/api/post/${postId}`),
         fetch(`${base_url}/api/comments/${postId}`),
       ]);
 
-      // Cache the responses in browser cache
-      await Promise.all([
-        postResponse.json(),
-        commentsResponse.json(),
-      ]);
+      // Get post data to preload image
+      const post = await postResponse.json();
+
+      // Preload the image
+      if (post.image) {
+        const img = new Image();
+        img.src = post.image;
+      }
+
+      // Cache the comments
+      await commentsResponse.json();
     } catch (error) {
-      // Silently fail prefetch
       console.debug("Prefetch failed:", error);
     }
   };
@@ -562,70 +568,102 @@ const PostModal = memo(({ selectedPost, isDark, onClose, children }: {
   selectedPost: Post;
   isDark: boolean;
   onClose: () => void;
-  children: React.ReactNode;
-}) => (
-  <div
-    className="fixed inset-0 z-50 transition-opacity duration-300 ease-out"
-    style={{
-      opacity: 1,
-      animation: "fadeIn 150ms ease-out",
-    }}
-  >
+  children: preact.ComponentChildren;
+}) => {
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const prevImageRef = useRef<HTMLImageElement | null>(null);
+  const prevSelectedPostRef = useRef<Post | null>(null);
+
+  useEffect(() => {
+    // Preload the image
+    if (
+      selectedPost?.image &&
+      prevSelectedPostRef.current?.image !== selectedPost.image
+    ) {
+      setIsImageLoading(true);
+      const img = new Image();
+      img.onload = () => {
+        setIsImageLoading(false);
+      };
+      img.src = selectedPost.image;
+      prevSelectedPostRef.current = selectedPost;
+    }
+  }, [selectedPost]);
+
+  return (
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
-      onClick={onClose}
-    />
-
-    <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
+      className="fixed inset-0 z-50 transition-opacity duration-300 ease-out"
+      style={{
+        opacity: 1,
+        animation: "fadeIn 150ms ease-out",
+      }}
+    >
       <div
-        className={`relative w-full h-full max-w-2xl mx-auto ${
-          isDark ? "bg-gray-800" : "bg-white"
-        } shadow-xl rounded-lg flex flex-col transform-gpu transition-transform duration-300 ease-out`}
-        style={{
-          animation: "slideUp 250ms ease-out",
-          willChange: "transform",
-          contain: "content",
-        }}
-      >
-        {/* Fixed Header */}
-        <div
-          className={`flex justify-between items-center px-3 py-0 ${
-            isDark ? "bg-gray-800/80" : "bg-white/80"
-          } rounded-t-lg border-b backdrop-blur-sm ${
-            isDark ? "border-gray-700/50" : "border-gray-200/50"
-          }`}
-          style={{ contain: "layout style" }}
-        >
-          <HeaderPost
-            message={`${selectedPost.title} by ${selectedPost.author}`}
-          />
-          <button
-            onClick={onClose}
-            className={`right-4 p-2 rounded-full ${
-              isDark
-                ? "hover:bg-gray-700/70 text-gray-400"
-                : "hover:bg-gray-100/70 text-gray-600"
-            }`}
-          >
-            <span className="sr-only">Close</span>
-            <XIcon />
-          </button>
-        </div>
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        onClick={onClose}
+      />
 
-        {/* Scrollable Content */}
+      <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
         <div
-          className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 scrollbar-track-rounded-full scrollbar-thumb-rounded-full"
+          className={`relative w-full h-full max-w-2xl mx-auto ${
+            isDark ? "bg-gray-800" : "bg-white"
+          } shadow-xl rounded-lg flex flex-col transform-gpu transition-transform duration-300 ease-out`}
           style={{
+            animation: "slideUp 250ms ease-out",
+            willChange: "transform",
             contain: "content",
-            WebkitOverflowScrolling: "touch",
           }}
         >
-          {children}
+          {/* Header section */}
+          <div
+            className={`flex justify-between items-center px-3 py-0 ${
+              isDark ? "bg-gray-800/80" : "bg-white/80"
+            } rounded-t-lg border-b backdrop-blur-sm ${
+              isDark ? "border-gray-700/50" : "border-gray-200/50"
+            } sticky top-0 z-10`}
+          >
+            <HeaderPost
+              message={`${selectedPost.title} by ${selectedPost.author}`}
+            />
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-full ${
+                isDark
+                  ? "hover:bg-gray-700/70 text-gray-400"
+                  : "hover:bg-gray-100/70 text-gray-600"
+              }`}
+            >
+              <XIcon />
+            </button>
+          </div>
+
+          {/* Content section with loading state */}
+          <div
+            className="flex-1 overflow-y-auto relative"
+            style={{
+              contain: "content",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            {isImageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/20 backdrop-blur-[2px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent" />
+              </div>
+            )}
+            <div
+              style={{
+                opacity: isImageLoading ? 0.3 : 1,
+                transition: "opacity 150ms ease-out",
+              }}
+            >
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 
 export function Skeleton() {
   return (

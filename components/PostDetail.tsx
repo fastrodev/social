@@ -4,7 +4,7 @@ import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { renderMarkdownWithHashtags as renderMarkdown } from "../utils/markdown.ts";
 import { JSX } from "preact/jsx-runtime";
 
@@ -40,6 +40,7 @@ export function PostDetail(
   const [comments, setComments] = useState<Comment[]>(initialComments); // Initialize with prop
   const [_isSubmitting, setIsSubmitting] = useState(false);
   const [postData, setPostData] = useState<Post>(post);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   // Add effect to update comments when prop changes
   useEffect(() => {
@@ -239,12 +240,21 @@ export function PostDetail(
 
         {/* Image Container */}
         {post.image && (
-          <div className="-mx-4 mb-4 relative">
+          <div className="relative">
             <img
+              ref={imageRef}
               src={post.image}
-              alt="Post image"
-              className="w-full h-full rounded-none object-cover"
-              loading="lazy"
+              alt={post.title}
+              className="w-full h-auto opacity-0 transition-opacity duration-300"
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                img.classList.remove("opacity-0");
+                img.classList.add("opacity-100");
+              }}
+              style={{
+                contain: "paint",
+                willChange: "transform",
+              }}
             />
           </div>
         )}

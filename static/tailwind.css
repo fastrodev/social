@@ -292,3 +292,33 @@
         perspective: 1000;
     }
 }
+
+.modal-open {
+    overflow: hidden;
+}
+
+/* Image transitions */
+.image-fade-enter {
+    opacity: 0;
+}
+
+.image-fade-enter-active {
+    opacity: 1;
+    transition: opacity 300ms ease-out;
+}
+
+.image-fade-exit {
+    opacity: 1;
+}
+
+.image-fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+/* Add smooth image loading */
+img {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased;
+}
