@@ -71,18 +71,19 @@ export default function Header(
     <div
       class={`container flex justify-between max-w-6xl mx-auto text-center text-sm py-4 px-2 ${textColorClass}`}
     >
-      <div class={`flex space-x-2 items-center`}>
-        <a href="/" class={`text-gray-100`}>
+      <a href="/" class={`text-gray-100`}>
+        <div class={`flex space-x-2 items-center`}>
           <div
             class={`border-[1px] border-gray-600 bg-gray-900 rounded-full p-[1px]`}
           >
             <BoltSvg />
           </div>
-        </a>
-        <span class={`${textColorClass}`}>
-          {headerTitle} (Unstable)
-        </span>
-      </div>
+
+          <span class={`${textColorClass}`}>
+            {headerTitle} {`${props.isLogin ? "" : "(Unstable)"} `}
+          </span>
+        </div>
+      </a>
       <div class={`flex items-center space-x-3`}>
         {!props.isLogin && (
           <a
