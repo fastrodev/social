@@ -13,8 +13,8 @@ export default function Welcome() {
       >
         Welcome to Fastro Social
       </h2>
-      <p className="text-base sm:text-2xl opacity-80">
-        Join the conversation! Share your thoughts and ideas with the world.
+      <p className="text-base sm:text-xl opacity-80">
+        Join the conversation! Share your thoughts with the world.
       </p>
     </div>
   );
