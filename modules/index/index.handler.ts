@@ -7,11 +7,11 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
   console.log("isLogin", isLogin);
 
   if (Deno.env.get("ENV") !== "DEVELOPMENT") {
-    if (isLogin) {
+    if (!isLogin) {
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "https://web.fastro.dev",
+          Location: "https://social.fastro.dev",
         },
       });
     }
