@@ -525,11 +525,11 @@ export function PostModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div
-        className={`relative w-full max-w-2xl mx-auto ${
+        className={`relative w-full h-full max-w-2xl mx-auto ${
           isDark ? "bg-gray-800" : "bg-white"
         } shadow-xl rounded-lg flex flex-col`}
       >
-        <div className="flex justify-between items-center px-2 border-b">
+        <div className="flex justify-between items-center px-2">
           <HeaderPost
             message={`${selectedPost.title} by ${selectedPost.author}`}
           >
@@ -542,7 +542,7 @@ export function PostModal({
             <XIcon />
           </button>
         </div>
-        <div className="overflow-y-auto max-h-[80vh] scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 h-full">
+        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 h-full">
           {children}
         </div>
       </div>

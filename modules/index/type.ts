@@ -20,5 +20,5 @@ export interface Comment {
   author: string;
   postId: string;
   timestamp: string;
-  avatar_url?: string;
+  avatar?: string; // Add this field
 }

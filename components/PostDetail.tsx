@@ -32,6 +32,7 @@ export function PostDetail(
     isLoading,
     comments: initialComments,
     base_url,
+    apiBaseUrl,
   }: Props,
 ) {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
