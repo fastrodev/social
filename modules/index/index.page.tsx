@@ -30,8 +30,6 @@ export default function Index({ data }: PageProps<
     message: string;
   }
 >) {
-  const [_isHealthy, setIsHealthy] = useState(false);
-  const [_isChecking, setIsChecking] = useState(true);
   const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
