@@ -22,7 +22,7 @@ interface Props {
   };
   isDark: boolean;
   isMobile: boolean;
-  base_url: string;
+  api_base_url: string;
   onOpenModal: (post: Post, comments: Comment[]) => void;
 }
 
@@ -31,7 +31,7 @@ export const PostList = memo(function PostList({
   data,
   isDark,
   isMobile,
-  base_url,
+  api_base_url,
   onOpenModal,
 }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
@@ -42,8 +42,8 @@ export const PostList = memo(function PostList({
   const handlePostClick = async (postId: string) => {
     try {
       const [postResponse, commentsResponse] = await Promise.all([
-        fetch(`${base_url}/api/post/${postId}`),
-        fetch(`${base_url}/api/comments/${postId}`),
+        fetch(`${api_base_url}/api/post/${postId}`),
+        fetch(`${api_base_url}/api/comments/${postId}`),
       ]);
 
       if (!postResponse.ok || !commentsResponse.ok) {
@@ -64,7 +64,7 @@ export const PostList = memo(function PostList({
   const handleDeletePost = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
     try {
-      const response = await fetch(`${base_url}/api/post/${postId}`, {
+      const response = await fetch(`${api_base_url}/api/post/${postId}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -81,7 +81,7 @@ export const PostList = memo(function PostList({
   };
 
   const handleSharePost = async (postId: string) => {
-    const postUrl = `${base_url}/post/${postId}`;
+    const postUrl = `${api_base_url}/post/${postId}`;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -99,7 +99,7 @@ export const PostList = memo(function PostList({
   };
 
   const handleEditPost = (postId: string) => {
-    window.location.href = `${base_url}/post/${postId}?edit=true`;
+    window.location.href = `${api_base_url}/post/${postId}?edit=true`;
   };
 
   const PREFETCH_DELAY = 300;
@@ -120,7 +120,7 @@ export const PostList = memo(function PostList({
       handleSharePost,
       handleEditPost,
     }),
-    [base_url], // Add other dependencies if needed
+    [api_base_url], // Add other dependencies if needed
   );
 
   useEffect(() => {
@@ -147,7 +147,7 @@ export const PostList = memo(function PostList({
       try {
         const lastPost = localPosts[localPosts.length - 1];
         const response = await fetch(
-          `${base_url}/api/posts?cursor=${lastPost.id}`,
+          `${api_base_url}/api/posts?cursor=${lastPost.id}`,
         );
         if (!response.ok) throw new Error("Failed to fetch more posts");
 
@@ -184,14 +184,14 @@ export const PostList = memo(function PostList({
         observer.disconnect();
       }
     };
-  }, [isMobile, localPosts, base_url]);
+  }, [isMobile, localPosts, api_base_url]);
 
   const prefetchPostData = async (postId: string) => {
     try {
       // Fetch API data
       const [postResponse, commentsResponse] = await Promise.all([
-        fetch(`${base_url}/api/post/${postId}`),
-        fetch(`${base_url}/api/comments/${postId}`),
+        fetch(`${api_base_url}/api/post/${postId}`),
+        fetch(`${api_base_url}/api/comments/${postId}`),
       ]);
 
       // Get post data to preload image
@@ -393,7 +393,7 @@ export const PostList = memo(function PostList({
 
               <div className="flex items-center justify-between">
                 <a
-                  href={`${base_url}/post/${post.id}`}
+                  href={`${api_base_url}/post/${post.id}`}
                   className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
                     themeStyles.link.split(" ")[0]
                   }`}

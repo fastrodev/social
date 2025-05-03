@@ -184,7 +184,7 @@ export default function Index({ data }: PageProps<
                   }}
                   isDark={isDark}
                   isMobile={isMobile}
-                  base_url={data.base_url || "https://web.fastro.dev"}
+                  api_base_url={data.apiBaseUrl || "https://web.fastro.dev"}
                   onOpenModal={handleOpenModal}
                 />
                 {modalState.open && modalState.post && (
