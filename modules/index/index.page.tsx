@@ -10,6 +10,12 @@ import { Comment, Post } from "@app/modules/index/type.ts";
 import Welcome from "../../components/Welcome.tsx";
 import { PostDetail } from "../../components/PostDetail.tsx";
 
+// Add this function to read specific cookie
+const getCookie = (name: string): string | null => {
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : null;
+};
+
 export default function Index({ data }: PageProps<
   {
     user: string;
@@ -62,6 +68,11 @@ export default function Index({ data }: PageProps<
 
   useEffect(() => {
     fetchPosts(true);
+  }, []);
+
+  useEffect(() => {
+    const userCookie = getCookie("oauth-session");
+    console.log("oauth-session cookie:", userCookie);
   }, []);
 
   const fetchPosts = async (isInitial: boolean = false) => {
