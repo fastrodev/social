@@ -39,6 +39,8 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const PREFETCH_DELAY = 300; // Delay in milliseconds
+
   const memoizedPosts = useMemo(() => {
     return localPosts.map((post) => ({
       ...post,
@@ -246,28 +248,48 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
 
   const handlePostClick = async (postId: string) => {
     try {
-      // Set loading state while fetching
       setIsLoading(true);
+      setIsModalOpen(true); // Open modal immediately for better UX
 
-      // Fetch post details
-      const response = await fetch(`${base_url}/api/post/${postId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch post details");
+      // Fetch data in parallel
+      const [postResponse, commentsResponse] = await Promise.all([
+        fetch(`${base_url}/api/post/${postId}`),
+        fetch(`${base_url}/api/comments/${postId}`),
+      ]);
+
+      if (!postResponse.ok || !commentsResponse.ok) {
+        throw new Error("Failed to fetch data");
       }
-      const post = await response.json();
 
-      // Set the selected post
+      const [post, comments] = await Promise.all([
+        postResponse.json(),
+        commentsResponse.json(),
+      ]);
+
       setSelectedPost(post);
-
-      // Fetch comments for the post
-      await fetchComments(postId);
-
-      // Open the modal
-      setIsModalOpen(true);
+      setSelectedPostComments(comments);
     } catch (error) {
       console.error("Error fetching post details:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const prefetchPostData = async (postId: string) => {
+    try {
+      const [postResponse, commentsResponse] = await Promise.all([
+        fetch(`${base_url}/api/post/${postId}`),
+        fetch(`${base_url}/api/comments/${postId}`),
+      ]);
+
+      // Cache the responses in browser cache
+      await Promise.all([
+        postResponse.json(),
+        commentsResponse.json(),
+      ]);
+    } catch (error) {
+      // Silently fail prefetch
+      console.debug("Prefetch failed:", error);
     }
   };
 
@@ -300,6 +322,13 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
             // Use memoized post data
             <div
               key={post.id}
+              onMouseEnter={() => {
+                const timer = setTimeout(
+                  () => prefetchPostData(post.id),
+                  PREFETCH_DELAY,
+                );
+                return () => clearTimeout(timer);
+              }}
               className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
             >
               {/* Modified Header Section */}
@@ -528,29 +557,34 @@ export function PostList({ posts, data, isDark, isMobile, base_url }: Props) {
   );
 }
 
-// Add this new memoized modal component
+// Update the PostModal component
 const PostModal = memo(({ selectedPost, isDark, onClose, children }: {
   selectedPost: Post;
   isDark: boolean;
   onClose: () => void;
   children: React.ReactNode;
 }) => (
-  <div className="fixed inset-0 z-50">
+  <div
+    className="fixed inset-0 z-50 transition-opacity duration-300 ease-out"
+    style={{
+      opacity: 1,
+      animation: "fadeIn 150ms ease-out",
+    }}
+  >
     <div
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
       onClick={onClose}
-      style={{ willChange: "opacity" }}
     />
 
-    <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6 overscroll-none">
+    <div className="fixed inset-0 flex items-center justify-center p-0 sm:p-6">
       <div
         className={`relative w-full h-full max-w-2xl mx-auto ${
           isDark ? "bg-gray-800" : "bg-white"
-        } shadow-xl rounded-lg flex flex-col transform-gpu`}
+        } shadow-xl rounded-lg flex flex-col transform-gpu transition-transform duration-300 ease-out`}
         style={{
-          contain: "content",
+          animation: "slideUp 250ms ease-out",
           willChange: "transform",
-          WebkitOverflowScrolling: "touch",
+          contain: "content",
         }}
       >
         {/* Fixed Header */}
