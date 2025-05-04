@@ -200,12 +200,14 @@ async function checkApiHealth(
 }
 
 function getRandomQuote(): string {
-  // Select a truly random quote from the combined array
-  const randomIndex = Math.floor(Math.random() * allQuotes.length);
-  const chosenQuote = allQuotes[randomIndex];
+  const timestamp = Date.now();
+  const timeBasedIndex = Math.floor(
+    (timestamp / 1000) % allQuotes.length,
+  );
+  const chosenQuote = allQuotes[timeBasedIndex];
 
   console.log(
-    `Selected quote from all quotes (Index: ${randomIndex})`,
+    `Selected quote from all quotes (Index: ${timeBasedIndex})`,
   ); // Add logging
 
   return chosenQuote;
@@ -267,7 +269,7 @@ async function postToApi(postContent: string, postIndex: number) {
 
 function generateImageUrl(): string {
   const id = Math.floor(Math.random() * 1000) + 1;
-  return `https://picsum.photos/seed/${id}/800/600.jpg`;
+  return `https://picsum.photos/seed/${id}/600/600.jpg`;
 }
 
 function sleep(ms: number) {
