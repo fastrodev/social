@@ -1,8 +1,9 @@
 const API_URL = "https://web.fastro.dev/api/post";
 const DEFAULT_IMAGE = "https://example.com/default-image.jpg";
 
-// Define quote arrays
-const morningQuotes = [
+// Combine all quotes into a single array
+const allQuotes = [
+  // Morning Quotes
   "# Pagi penuh dengan sinar matahari dan harapan. (Kate Chopin)\nSetiap pagi membawa harapan baru dan semangat untuk memulai hari.\n#quote",
   "# Pagi adalah waktu penting dalam sehari, karena bagaimana Anda menghabiskan pagi Anda sering kali menentukan seperti apa hari yang akan Anda jalani. (Lemony Snicket)\nAwali pagi dengan kebiasaan baik agar harimu lebih bermakna.\n#quote",
   "# Setiap pagi membawa potensi baru, tetapi jika Anda terus memikirkan kegagalan hari sebelumnya, Anda cenderung mengabaikan peluang luar biasa. (Harvey Mackay)\nLupakan kegagalan kemarin, fokuslah pada peluang hari ini.\n#quote",
@@ -23,9 +24,7 @@ const morningQuotes = [
   "# Awali hari dengan senyuman. (Mother Teresa)\nSenyuman di pagi hari membawa energi positif sepanjang hari.\n#quote",
   "# Pagi adalah waktu terbaik untuk bermimpi besar. (Eleanor Roosevelt)\nGunakan pagi hari untuk merencanakan dan bermimpi besar.\n#quote",
   "# Setiap pagi adalah hadiah. (Alice Morse Earle)\nJangan lupa bersyukur atas hadiah pagi ini.\n#quote",
-];
-
-const afternoonQuotes = [
+  // Afternoon Quotes
   "# Hidup adalah apa yang terjadi ketika Anda sibuk membuat rencana lain. (John Lennon)\nNikmati momen sekarang, jangan terlalu sibuk merencanakan masa depan.\n#quote",
   "# Siang hari tahu apa yang tidak pernah diduga oleh pagi hari. (Robert Frost)\nSetiap waktu membawa pelajaran dan kejutan baru.\n#quote",
   "# Orang yang bekerja adalah orang yang bahagia. Orang yang menganggur adalah orang yang menderita. (Benjamin Franklin)\nAktivitas dan kerja keras membawa kebahagiaan sejati.\n#quote",
@@ -46,9 +45,7 @@ const afternoonQuotes = [
   "# Kesempatan tidak datang dua kali. (Pepatah Jepang)\nManfaatkan setiap kesempatan yang datang padamu.\n#quote",
   "# Jangan pernah menyerah pada mimpi Anda. (Barack Obama)\nTerus kejar mimpimu meski banyak rintangan.\n#quote",
   "# Kerja keras adalah kunci kesuksesan. (Vince Lombardi)\nTidak ada kesuksesan tanpa usaha dan kerja keras.\n#quote",
-];
-
-const lateAfternoonQuotes = [
+  // Late Afternoon Quotes
   "# Jangan menghitung hari-hari, buatlah hari-hari itu berarti. (Muhammad Ali)\nIsi setiap hari dengan hal yang bermakna dan bermanfaat.\n#quote",
   "# Suatu hari nanti bukanlah hari dalam seminggu. (Denise Brennan-Nelson)\nJangan menunda, lakukan sekarang juga.\n#quote",
   "# Rahasia untuk maju adalah memulai. (Mark Twain)\nLangkah pertama adalah kunci untuk mencapai tujuan.\n#quote",
@@ -69,9 +66,7 @@ const lateAfternoonQuotes = [
   "# Jangan biarkan kemarin mengambil terlalu banyak dari hari ini. (Will Rogers)\nFokus pada hari ini, bukan masa lalu.\n#quote",
   "# Setiap langkah kecil membawa perubahan besar. (Unknown)\nPerubahan besar dimulai dari langkah kecil.\n#quote",
   "# Sore adalah waktu untuk bersyukur atas pencapaian hari ini. (Unknown)\nLuangkan waktu untuk menghargai apa yang sudah dicapai.\n#quote",
-];
-
-const eveningQuotes = [
+  // Evening Quotes
   "# Semakin gelap malam, semakin terang bintang-bintang. (Fyodor Dostoevsky)\nMalam hari adalah waktu yang tepat untuk merenung dan menemukan harapan baru.\n#quote",
   "# Setiap malam, ketika saya tidur, saya mati. Dan keesokan paginya, ketika saya bangun, saya dilahirkan kembali. (Mahatma Gandhi)\nTidur malam memberi kesempatan untuk memulai hari baru esoknya.\n#quote",
   "# Malam lebih hidup dan lebih kaya warnanya daripada siang hari. (Vincent Van Gogh)\nKeindahan malam membawa ketenangan dan inspirasi.\n#quote",
@@ -92,9 +87,7 @@ const eveningQuotes = [
   "# Ketenangan malam membawa inspirasi baru. (Unknown)\nManfaatkan ketenangan malam untuk mencari ide-ide segar.\n#quote",
   "# Malam adalah waktu untuk beristirahat dan bersyukur. (Unknown)\nSyukuri segala pencapaian hari ini sebelum tidur.\n#quote",
   "# Bulan dan bintang menemani malam yang sunyi. (Unknown)\nBiarkan keindahan malam menenangkan hatimu.\n#quote",
-];
-
-const defaultQuotes = [
+  // Default Quotes
   "# Jika kau menungguku untuk menyerah, kau akan menungguku selamanya. (Naruto Uzumaki)\nKegigihan adalah kunci untuk mengatasi segala rintangan.\n#naruto #anime #quote",
   "# Jika kamu tidak mengambil risiko, kamu tidak dapat menciptakan masa depan! (Monkey D. Luffy, One Piece)\nKeberanian untuk bertindak membuka jalan menuju impianmu.\n#anime #quote",
   "# Jangan khawatirkan apa yang dipikirkan orang lain. Tegakkan kepalamu dan melangkahlah ke depan. (Izuku Midoriya, My Hero Academia)\nPercaya diri adalah langkah pertama menuju kesuksesan.\n#anime #quote",
@@ -160,14 +153,6 @@ const defaultQuotes = [
   "# Jangan pernah menyerah pada mimpi Anda. (Barack Obama)\nTerus kejar mimpi meski banyak rintangan.\n#quote",
 ];
 
-// Map hours to quote arrays
-const quotesByHour: { [key: number]: string[] } = {
-  6: morningQuotes,
-  13: afternoonQuotes,
-  16: lateAfternoonQuotes,
-  20: eveningQuotes,
-};
-
 interface PostData {
   content: string;
   isMarkdown: boolean;
@@ -214,38 +199,13 @@ async function checkApiHealth(
   return false;
 }
 
-function getTimeBasedGreeting(): string {
-  const now = new Date();
-  const hour = now.getHours();
-
-  // Select the appropriate quote array based on the hour, or use default
-  let quoteSource = "default"; // Log which source is used
-  let selectedQuotes = quotesByHour[hour];
-
-  if (selectedQuotes) {
-    // Find the key (hour) corresponding to the selectedQuotes array
-    const sourceHour = Object.keys(quotesByHour).find((key) =>
-      quotesByHour[parseInt(key)] === selectedQuotes
-    );
-    if (sourceHour) {
-      // Determine the time period based on the hour key
-      if (parseInt(sourceHour) === 6) quoteSource = "morning";
-      else if (parseInt(sourceHour) === 13) quoteSource = "afternoon";
-      else if (parseInt(sourceHour) === 16) quoteSource = "lateAfternoon";
-      else if (parseInt(sourceHour) === 20) quoteSource = "evening";
-      else quoteSource = `hour_${sourceHour}`; // Fallback if more hours are added
-    }
-  } else {
-    selectedQuotes = defaultQuotes;
-    quoteSource = "default";
-  }
-
-  // Select a truly random quote from the chosen array
-  const randomIndex = Math.floor(Math.random() * selectedQuotes.length);
-  const chosenQuote = selectedQuotes[randomIndex];
+function getRandomQuote(): string {
+  // Select a truly random quote from the combined array
+  const randomIndex = Math.floor(Math.random() * allQuotes.length);
+  const chosenQuote = allQuotes[randomIndex];
 
   console.log(
-    `Selected quote from: ${quoteSource} array (Index: ${randomIndex})`,
+    `Selected quote from all quotes (Index: ${randomIndex})`,
   ); // Add logging
 
   return chosenQuote;
@@ -317,8 +277,6 @@ function sleep(ms: number) {
 function getRandomDelay(minMs: number, maxMs: number): number {
   return Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
 }
-
-// Main execution block - wrapped in an async function
 async function runPosts() {
   try {
     const isHealthy = await checkApiHealth();
@@ -337,7 +295,7 @@ async function runPosts() {
 
       // Get a quote, ensuring it's different from the previous one
       do {
-        currentQuote = getTimeBasedGreeting();
+        currentQuote = getRandomQuote(); // Use the new function
         attempts++;
         // Keep trying if it's not the first post, the quote is the same as the last,
         // and we haven't exceeded the attempt limit.
