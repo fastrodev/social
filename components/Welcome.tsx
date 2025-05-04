@@ -8,19 +8,8 @@ export default function Welcome() {
           <BoltSvg width="64" height="64" />
         </div>
       </div>
-      <h2
-        className="text-3xl sm:text-4xl font-bold"
-        style={{
-          backgroundImage: "linear-gradient(to right, #c084fc, #ec4899)",
-          backgroundClip: "text",
-          color: "transparent",
-          textShadow: "0 0 15px rgba(192, 132, 252, 0.5)",
-        }}
-      >
-        Fastro Social
-      </h2>
       <p className="text-base sm:text-xl opacity-80">
-        Join the conversation
+        Getting Ready
       </p>
     </div>
   );
