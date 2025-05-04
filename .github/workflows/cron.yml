@@ -2,7 +2,7 @@ name: Scheduled and Push API Post
 
 on:
   schedule:
-    - cron: "0 6,13,16,20 * * *" # At 6 AM, 1 PM, 4 PM, and 8 PM UTC
+    - cron: "0 */2 * * *" # Run every 2 hours
   push:
     branches:
       - main
