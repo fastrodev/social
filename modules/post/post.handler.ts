@@ -128,6 +128,7 @@ export default async function postDetailHandler(
     url: `${baseUrl}/post/${id}`,
     baseUrl,
     publishDate: post.timestamp,
+    share_base_url: Deno.env.get("SHARE_BASE_URL") || baseUrl,
   });
 }
 

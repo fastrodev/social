@@ -9,7 +9,7 @@ import { renderMarkdownWithHashtags as renderMarkdown } from "@app/utils/markdow
 import { JSX } from "preact/jsx-runtime";
 
 interface Props {
-  base_url: string;
+  share_base_url: string;
   apiBaseUrl: string;
   post: Post;
   comments: Comment[];
@@ -29,7 +29,7 @@ export function PostDetail(
     isDark,
     isLoading,
     comments: initialComments,
-    base_url,
+    share_base_url,
     apiBaseUrl,
   }: Props,
 ) {
@@ -96,7 +96,7 @@ export function PostDetail(
   };
 
   const handleSharePost = async () => {
-    const postUrl = `${base_url}/post/${post.id}`;
+    const postUrl = `${share_base_url}/post/${post.id}`;
 
     if (navigator.share) {
       try {

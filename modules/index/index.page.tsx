@@ -201,7 +201,7 @@ export default function Index({ data }: PageProps<
                       isDark={isDark}
                       isLoading={isLoading}
                       apiBaseUrl={data.apiBaseUrl}
-                      base_url={data.base_url}
+                      share_base_url={data.share_base_url}
                       data={{
                         isLogin: data.isLogin,
                         author: data.author,
