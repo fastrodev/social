@@ -166,13 +166,15 @@ export default function Index({ data }: PageProps<
         {/* Main Content Section */}
         <div className="max-w-xl mx-auto flex-1 w-full flex items-center justify-center">
           <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
-            {(posts.length === 0 || isLoading) && <Welcome key="welcome" />}
-            <Editor
-              apiBaseUrl={data.apiBaseUrl}
-              posts={posts}
-              setPosts={setPosts}
-              setIsEditorActive={setIsEditorActive}
-            />
+            {isLoading && posts.length === 0 && <Welcome key="welcome" />}
+            {!isLoading && (
+              <Editor
+                apiBaseUrl={data.apiBaseUrl}
+                posts={posts}
+                setPosts={setPosts}
+                setIsEditorActive={setIsEditorActive}
+              />
+            )}
 
             {!isEditorActive && (
               <>

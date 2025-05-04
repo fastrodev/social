@@ -4,7 +4,7 @@ export default function Welcome() {
   return (
     <div className={`m-3 text-center space-y-3 `}>
       <div className="flex justify-center">
-        <div className="text-white-400 border border-gray-600/50 bg-gray-900 rounded-full p-3 animate-spin hover:animate-pulse transition-all duration-300">
+        <div className="text-white-400 border border-gray-600/50 bg-gray-900 rounded-full p-3 animate-spin hover:animate-pulse transition-all  duration-[5000ms]">
           <BoltSvg width="64" height="64" />
         </div>
       </div>
@@ -20,7 +20,7 @@ export default function Welcome() {
         Fastro Social
       </h2>
       <p className="text-base sm:text-xl opacity-80">
-        Join the conversation! Share your thoughts with the world.
+        Join the conversation & share your thoughts with the world!
       </p>
     </div>
   );
