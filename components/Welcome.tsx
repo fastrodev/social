@@ -5,7 +5,7 @@ export default function Welcome() {
     <div className={`m-3 text-center space-y-3 `}>
       <div className="flex justify-center">
         <div className="text-white-400 border border-gray-600/50 bg-gray-900 rounded-full p-3 animate-spin hover:animate-pulse transition-all  duration-[5000ms]">
-          <BoltSvg width="64" height="64" />
+          <BoltSvg width="40" height="40" />
         </div>
       </div>
       <p className="text-base sm:text-xl opacity-80">

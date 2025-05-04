@@ -155,13 +155,15 @@ export default function Index({ data }: PageProps<
 
       {/* Container of header and main content */}
       <div className="relative z-10 min-h-screen flex flex-col">
-        <Header
-          isLogin={data.isLogin}
-          avatar_url={data.avatar_url || ""}
-          html_url=""
-          message={`Hi ${data.author}`}
-          base_url={data.base_url}
-        />
+        {!isLoading && (
+          <Header
+            isLogin={data.isLogin}
+            avatar_url={data.avatar_url || ""}
+            html_url=""
+            message={`Hi ${data.author}`}
+            base_url={data.base_url}
+          />
+        )}
 
         {/* Main Content Section */}
         <div className="max-w-xl mx-auto flex-1 w-full flex items-center justify-center">
@@ -212,29 +214,6 @@ export default function Index({ data }: PageProps<
                     />
                   </PostModal>
                 )}
-                {isMobile && posts.length > 0
-                  ? (
-                    // load more posts when scrolled to the bottom
-                    <>
-                      {hasMore && (
-                        <div className="mt-2 mb-4 flex justify-center">
-                          <button
-                            onClick={() => fetchPosts(false)}
-                            disabled={isLoading}
-                            className={`px-4 py-2 rounded-lg ${themeStyles.button} ${
-                              isLoading ? "opacity-50" : ""
-                            }`}
-                          >
-                            {isLoading ? "Loading..." : "Load More Posts"}
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )
-                  : (
-                    <>
-                    </>
-                  )}
               </>
             )}
           </main>
