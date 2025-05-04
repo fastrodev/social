@@ -354,6 +354,9 @@ export const PostList = memo(function PostList({
                     <img
                       src={post.image || post.defaultImage}
                       alt="Post attachment"
+                      sizes="(max-width: 640px) 100vw, 600px"
+                      width="600"
+                      height="600"
                       className="w-full h-full rounded-none object-cover"
                       loading="lazy"
                     />
