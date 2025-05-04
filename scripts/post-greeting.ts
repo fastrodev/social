@@ -269,7 +269,7 @@ async function postToApi(postContent: string, postIndex: number) {
 
 function generateImageUrl(): string {
   const id = Math.floor(Math.random() * 1000) + 1;
-  return `https://picsum.photos/seed/${id}/600/600.jpg`;
+  return `https://picsum.photos/seed/${id}/600/600.webp`;
 }
 
 function sleep(ms: number) {
