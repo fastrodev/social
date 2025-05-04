@@ -36,9 +36,26 @@ export const PostList = memo(function PostList({
   const [showPosts, setShowPosts] = useState(true);
   const [localPosts, setLocalPosts] = useState<Post[]>(posts);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const fetchedPosts = useRef(new Set<string>()); // Track fetched posts
+  const dataCache = useRef(
+    new Map<string, { post: Post; comments: Comment[] }>(),
+  );
 
   const handlePostClick = async (postId: string) => {
+    if (dataCache.current.has(postId)) {
+      const { post, comments } = dataCache.current.get(postId)!;
+      onOpenModal(post, comments);
+      return;
+    }
+
+    if (fetchedPosts.current.has(postId)) {
+      console.log(`Post ${postId} was fetched but not cached, refetching...`);
+    }
+
+    fetchedPosts.current.add(postId);
+
     try {
+      console.log("Fetching post details...");
       const [postResponse, commentsResponse] = await Promise.all([
         fetch(`${api_base_url}/api/post/${postId}`),
         fetch(`${api_base_url}/api/comments/${postId}`),
@@ -52,6 +69,8 @@ export const PostList = memo(function PostList({
         postResponse.json(),
         commentsResponse.json(),
       ]);
+
+      dataCache.current.set(postId, { post, comments });
 
       onOpenModal(post, comments);
     } catch (error) {
@@ -185,6 +204,15 @@ export const PostList = memo(function PostList({
   }, [isMobile, localPosts, api_base_url]);
 
   const prefetchPostData = async (postId: string) => {
+    // Skip if already fetched
+    if (fetchedPosts.current.has(postId)) {
+      console.log(`Post ${postId} already prefetched.`);
+      return;
+    }
+
+    // Mark as fetched to prevent duplicate requests
+    fetchedPosts.current.add(postId);
+
     try {
       // Fetch API data
       const [postResponse, commentsResponse] = await Promise.all([
@@ -194,15 +222,16 @@ export const PostList = memo(function PostList({
 
       // Get post data to preload image
       const post = await postResponse.json();
+      const comments = await commentsResponse.json();
+
+      // Cache the data for when the user clicks
+      dataCache.current.set(postId, { post, comments });
 
       // Preload the image
       if (post.image) {
         const img = new Image();
         img.src = post.image;
       }
-
-      // Cache the comments
-      await commentsResponse.json();
     } catch (error) {
       console.debug("Prefetch failed:", error);
     }
