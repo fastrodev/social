@@ -1,6 +1,13 @@
+import BoltSvg from "@app/components/icons/bolt.tsx";
+
 export default function Welcome() {
   return (
     <div className={`m-3 text-center space-y-3 `}>
+      <div className="flex justify-center">
+        <div className="text-white-400 border border-gray-600/50 bg-gray-900 rounded-full p-3 animate-spin hover:animate-pulse transition-all duration-300">
+          <BoltSvg width="64" height="64" />
+        </div>
+      </div>
       <h2
         className="text-3xl sm:text-4xl font-bold"
         style={{
@@ -8,10 +15,9 @@ export default function Welcome() {
           backgroundClip: "text",
           color: "transparent",
           textShadow: "0 0 15px rgba(192, 132, 252, 0.5)",
-          animation: "pulse 1.5s infinite ease-in-out",
         }}
       >
-        Welcome to Fastro Social
+        Fastro Social
       </h2>
       <p className="text-base sm:text-xl opacity-80">
         Join the conversation! Share your thoughts with the world.
