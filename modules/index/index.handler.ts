@@ -38,5 +38,7 @@ export async function indexHandler(req: HttpRequest, ctx: Context) {
     message: `Hi ${author}`,
     base_url: baseUrl,
     apiBaseUrl: Deno.env.get("API_BASE_URL") || "https://web.fastro.dev",
+    share_base_url: Deno.env.get("SHARE_BASE_URL") ||
+      "https://social.fastro.dev",
   });
 }

@@ -2,14 +2,13 @@
 import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { useEffect, useState } from "preact/hooks";
-import Header from "../../components/Header.tsx";
-
-import { Editor } from "../../components/Editor.tsx";
-import { PostList } from "../../components/PostList.tsx";
+import Header from "@app/components/Header.tsx";
+import { Editor } from "@app/components/Editor.tsx";
+import { PostList } from "@app/components/PostList.tsx";
 import { Comment, Post } from "@app/modules/index/type.ts";
-import Welcome from "../../components/Welcome.tsx";
-import { PostDetail } from "../../components/PostDetail.tsx";
-import { PostModal } from "../../components/PostModal.tsx";
+import Welcome from "@app/components/Welcome.tsx";
+import { PostDetail } from "@app/components/PostDetail.tsx";
+import { PostModal } from "@app/components/PostModal.tsx";
 
 // Add this function to read specific cookie
 const getCookie = (name: string): string | null => {
@@ -25,6 +24,7 @@ export default function Index({ data }: PageProps<
     github_auth: string;
     base_url: string;
     apiBaseUrl: string;
+    share_base_url: string;
     avatar_url?: string;
     isLogin: boolean;
     author: string;
@@ -186,6 +186,7 @@ export default function Index({ data }: PageProps<
                   isDark={isDark}
                   isMobile={isMobile}
                   api_base_url={data.apiBaseUrl}
+                  share_base_url={data.share_base_url}
                   onOpenModal={handleOpenModal}
                 />
                 {modalState.open && modalState.post && (

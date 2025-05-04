@@ -19,6 +19,7 @@ interface Props {
   isDark: boolean;
   isMobile: boolean;
   api_base_url: string;
+  share_base_url: string;
   onOpenModal: (post: Post, comments: Comment[]) => void;
 }
 
@@ -28,6 +29,7 @@ export const PostList = memo(function PostList({
   isDark,
   isMobile,
   api_base_url,
+  share_base_url,
   onOpenModal,
 }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
@@ -77,7 +79,7 @@ export const PostList = memo(function PostList({
   };
 
   const handleSharePost = async (postId: string) => {
-    const postUrl = `${api_base_url}/post/${postId}`;
+    const postUrl = `${share_base_url}/post/${postId}`;
     if (navigator.share) {
       try {
         await navigator.share({

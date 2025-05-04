@@ -89,6 +89,8 @@ const htmlPlugin = {
             ? ""
             : "https://web.fastro.dev",
           apiBaseUrl: Deno.env.get("API_BASE_URL") || "https://web.fastro.dev",
+          share_base_url: Deno.env.get("SHARE_BASE_URL") ||
+            "https://social.fastro.dev",
           avatar_url: "",
           isLogin: false,
           author: "",
