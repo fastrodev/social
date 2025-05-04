@@ -6,7 +6,13 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
-import { useEffect, useMemo, useRef, useState } from "preact/hooks";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "preact/hooks";
 import { memo } from "preact/compat";
 
 interface Props {
@@ -121,6 +127,23 @@ export const PostList = memo(function PostList({
 
   const PREFETCH_DELAY = 300;
 
+  const handleLoadMore = useCallback(async () => {
+    try {
+      const lastPost = localPosts[localPosts.length - 1];
+      const response = await fetch(
+        `${api_base_url}/api/posts?cursor=${lastPost.id}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch more posts");
+
+      const newPosts = await response.json();
+      if (newPosts.length > 0) {
+        setLocalPosts((prev) => [...prev, ...newPosts]);
+      }
+    } catch (error) {
+      console.error("Error loading more posts:", error);
+    }
+  }, [localPosts, api_base_url]);
+
   const memoizedPosts = useMemo(() => {
     return localPosts.map((post) => ({
       ...post,
@@ -158,50 +181,33 @@ export const PostList = memo(function PostList({
 
   // Add effect for infinite scrolling on desktop
   useEffect(() => {
-    if (isMobile) return; // Skip for mobile
+    if (!isMobile) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (entry.isIntersecting) {
+            handleLoadMore();
+          }
+        },
+        {
+          root: null,
+          rootMargin: "100px",
+          threshold: 0.1,
+        },
+      );
 
-    const loadMorePosts = async () => {
-      try {
-        const lastPost = localPosts[localPosts.length - 1];
-        const response = await fetch(
-          `${api_base_url}/api/posts?cursor=${lastPost.id}`,
-        );
-        if (!response.ok) throw new Error("Failed to fetch more posts");
-
-        const newPosts = await response.json();
-        if (newPosts.length > 0) {
-          setLocalPosts((prev) => [...prev, ...newPosts]);
-        }
-      } catch (error) {
-        console.error("Error loading more posts:", error);
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          loadMorePosts();
-        }
-      },
-      {
-        root: null,
-        rootMargin: "100px", // Load before reaching the end
-        threshold: 0.1,
-      },
-    );
-
-    const sentinel = sentinelRef.current;
-    if (sentinel) {
-      observer.observe(sentinel);
-    }
-
-    return () => {
+      const sentinel = sentinelRef.current;
       if (sentinel) {
-        observer.disconnect();
+        observer.observe(sentinel);
       }
-    };
-  }, [isMobile, localPosts, api_base_url]);
+
+      return () => {
+        if (sentinel) {
+          observer.disconnect();
+        }
+      };
+    }
+  }, [isMobile, localPosts, api_base_url, handleLoadMore]);
 
   const prefetchPostData = async (postId: string) => {
     // Skip if already fetched
@@ -463,15 +469,34 @@ export const PostList = memo(function PostList({
               </div>
             </div>
           ))}
-          {/* Sentinel for infinite scrolling */}
-          {!isMobile && localPosts.length > 0 && (
-            <div
-              ref={sentinelRef}
-              className="h-10 w-full flex items-center justify-center"
-              aria-hidden="true"
-            >
-              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
-            </div>
+          {/* Load more button for mobile / Sentinel for desktop */}
+          {localPosts.length > 0 && (
+            <>
+              {isMobile
+                ? (
+                  <div className="flex justify-center mt-4 mb-8">
+                    <button
+                      onClick={handleLoadMore}
+                      className={`px-4 py-2 rounded-lg ${
+                        isDark
+                          ? "bg-purple-600 hover:bg-purple-700"
+                          : "bg-purple-500 hover:bg-purple-600"
+                      } text-white transition-colors`}
+                    >
+                      Load More Posts
+                    </button>
+                  </div>
+                )
+                : (
+                  <div
+                    ref={sentinelRef}
+                    className="h-10 w-full flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
+                  </div>
+                )}
+            </>
           )}
         </div>
       )}
