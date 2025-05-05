@@ -5,6 +5,7 @@ import postDetailHandler, {
   editPostHandler,
   getPostDetailHandler, // Add this import
   getPostsHandler,
+  getPostViewsHandler,
   postHandler,
 } from "./post.handler.ts";
 import { Context, Fastro } from "fastro/mod.ts";
@@ -33,5 +34,6 @@ export default function (s: Fastro) {
   s.delete("/api/post/:id", deletePostHandler);
   s.get("/api/post/:id", getPostDetailHandler);
   s.get("/api/posts", getPostsHandler);
+  s.get("/api/view/:id", getPostViewsHandler);
   return s;
 }

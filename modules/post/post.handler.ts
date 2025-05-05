@@ -132,6 +132,42 @@ export default async function postDetailHandler(
   });
 }
 
+export async function getPostViewsHandler(req: HttpRequest) {
+  const corsHeaders = getCorsHeaders(req);
+  console.log("Fetching post views");
+  try {
+    // const url = new URL(req.url);
+    const id = req.params?.id;
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: "Post ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const post = await getPostById(id);
+
+    if (!post) {
+      return new Response(JSON.stringify({ error: "Post not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    return new Response(JSON.stringify(post.views), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  } catch (error) {
+    console.error("Error fetching post views:", error);
+    return new Response(JSON.stringify({ error: "Failed to fetch views" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
+  }
+}
+
 export async function getPostsHandler(req: HttpRequest) {
   const corsHeaders = getCorsHeaders(req);
   try {

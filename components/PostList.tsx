@@ -41,17 +41,18 @@ export const PostList = memo(function PostList({
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [showPosts, setShowPosts] = useState(true);
   const [localPosts, setLocalPosts] = useState<Post[]>(posts);
+  const [postViews, setPostViews] = useState<Record<string, number>>({});
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const fetchedPosts = useRef(new Set<string>()); // Track fetched posts
+  const fetchedPosts = useRef(new Set<string>());
   const dataCache = useRef(
     new Map<string, { post: Post; comments: Comment[] }>(),
   );
 
   const handlePostClick = async (postId: string) => {
-    // First check cache
     if (dataCache.current.has(postId)) {
       const { post, comments } = dataCache.current.get(postId)!;
       onOpenModal(post, comments);
+      updateViewCount(postId);
       return;
     }
 
@@ -73,8 +74,26 @@ export const PostList = memo(function PostList({
       dataCache.current.set(postId, { post, comments });
 
       onOpenModal(post, comments);
+      updateViewCount(postId);
     } catch (error) {
       console.error("Error fetching comments:", error);
+    }
+  };
+
+  const updateViewCount = async (postId: string) => {
+    try {
+      const response = await fetch(`${api_base_url}/api/view/${postId}`, {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        setPostViews((prev) => ({
+          ...prev,
+          [postId]: (prev[postId] || 0) + 1,
+        }));
+      }
+    } catch (error) {
+      console.error("Error updating view count:", error);
     }
   };
 
@@ -455,12 +474,15 @@ export const PostList = memo(function PostList({
                 >
                   <span className="flex items-center gap-x-2">
                     <ViewIcon />
-                    {(post.views || post.viewCount || 0) === 0
+                    {((post.views || post.viewCount || 0) +
+                        (postViews[post.id] || 0)) === 0
                       ? "Be the first viewer"
                       : (
                         <>
-                          {post.views || post.viewCount || 0}{" "}
-                          {(post.views || post.viewCount || 0) === 1
+                          {(post.views || post.viewCount || 0) +
+                            (postViews[post.id] || 0)}{" "}
+                          {((post.views || post.viewCount || 0) +
+                              (postViews[post.id] || 0)) === 1
                             ? "view"
                             : "views"}
                         </>

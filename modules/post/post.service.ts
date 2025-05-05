@@ -316,3 +316,22 @@ export async function deletePostById(id: string): Promise<boolean> {
     return false;
   }
 }
+
+export async function getPostViews(postId: string): Promise<number> {
+  console.log("Fetching view count for post:", postId);
+
+  try {
+    const primaryKey = ["posts", postId];
+    const result = await kv.get<Post>(primaryKey);
+
+    if (!result.value) {
+      console.log("Post not found with ID:", postId);
+      return 0;
+    }
+
+    return result.value.views || 0;
+  } catch (error) {
+    console.error("Error fetching post views:", error);
+    return 0;
+  }
+}
