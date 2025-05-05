@@ -2,6 +2,7 @@ import { useEffect, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
+import { SignOutIcon } from "./icons/signout.tsx";
 
 export default function Header(
   props: {
@@ -126,13 +127,14 @@ export default function Header(
 
             {menuOpen && (
               <div
-                class={`absolute right-0 mt-2 w-36 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
+                class={`absolute right-0 mt-2 w-40 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
               >
                 <a
                   href="/auth/signout"
-                  class={`block px-4 py-2 text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
+                  class={`flex justify-between gap-3 px-4 py-2 items-center text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
                 >
-                  Sign out
+                  <SignOutIcon />
+                  <span>Sign out</span>
                 </a>
               </div>
             )}
