@@ -54,6 +54,14 @@ export function Editor(
       : "shadow-[0_0_20px_8px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
   };
 
+  function getPreviewBoxHeight(isEditing: boolean, isMobile: boolean) {
+    if (isEditing) {
+      return isMobile ? "min-h-[150px] h-[200px]" : "min-h-[200px] h-[400px]";
+    } else {
+      return isMobile ? "min-h-[60px] h-[100px]" : "min-h-[80px] h-[120px]";
+    }
+  }
+
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement, Event>) => {
     e.preventDefault();
 
@@ -380,13 +388,7 @@ export function Editor(
                 <div
                   className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
                         ${
-                    isEditing
-                      ? isMobile
-                        ? "min-h-[150px] h-[200px]"
-                        : "min-h-[300px] h-[400px]"
-                      : isMobile
-                      ? "min-h-[60px] h-[100px]"
-                      : "min-h-[80px] h-[120px]"
+                    getPreviewBoxHeight(isEditing, isMobile)
                   } max-h-[600px] overflow-y-auto p-3
                         ${
                     isDark
