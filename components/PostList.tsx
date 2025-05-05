@@ -48,21 +48,22 @@ export const PostList = memo(function PostList({
     new Map<string, { post: Post; comments: Comment[] }>(),
   );
 
-  const handlePostClick = async (postId: string) => {
-    if (dataCache.current.has(postId)) {
-      const { post, comments } = dataCache.current.get(postId)!;
-      onOpenModal(post, comments);
-      updateViewCount(postId);
-      return;
-    }
-
-    const post = localPosts.find((p) => p.id === postId);
-    if (!post) {
-      console.error("Post not found");
-      return;
+  const handlePostClick = async (postId: string, post: Post) => {
+    // Pass the post directly to avoid searching again
+    if (isMobile) {
+      setMenuOpenForPost(null);
     }
 
     try {
+      // Use cached data if available
+      if (dataCache.current.has(postId)) {
+        const { post, comments } = dataCache.current.get(postId)!;
+        onOpenModal(post, comments);
+        updateViewCount(postId);
+        return;
+      }
+
+      // We already have the post, no need to search
       const commentsResponse = await fetch(
         `${api_base_url}/api/comments/${postId}`,
       );
@@ -168,7 +169,8 @@ export const PostList = memo(function PostList({
 
   const memoizedHandlers = useMemo(
     () => ({
-      handlePostClick,
+      handlePostClick: (postId: string, post: Post) =>
+        handlePostClick(postId, post),
       handleDeletePost,
       handleSharePost,
       handleEditPost,
@@ -402,7 +404,11 @@ export const PostList = memo(function PostList({
               {/* End Modified Header Section */}
 
               <div
-                onClick={() => memoizedHandlers.handlePostClick(post.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  memoizedHandlers.handlePostClick(post.id, post);
+                }}
                 className="block relative cursor-pointer"
               >
                 {/* Modified image section with title overlay */}
