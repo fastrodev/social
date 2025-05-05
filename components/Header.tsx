@@ -3,6 +3,11 @@ import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { SignOutIcon } from "./icons/signout.tsx";
+import { ArrowRightIcon } from "./icons/arrow.tsx";
+import { SettingIcon } from "./icons/setting.tsx";
+import { PrefenceIcon } from "./icons/preference.tsx";
+import { AnalyticsIcon } from "./icons/analytics.tsx";
+import { DollarIcon } from "./icons/dollar.tsx";
 
 export default function Header(
   props: {
@@ -127,14 +132,63 @@ export default function Header(
 
             {menuOpen && (
               <div
-                class={`absolute right-0 mt-2 w-40 rounded-md shadow-lg py-1 ${bgClass} border ${borderClass} z-50`}
+                class={`absolute right-0 mt-3 w-64 rounded-lg shadow-lg py-2 ${bgClass} border ${borderClass} z-50`}
               >
+                <div
+                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
+                >
+                  <div
+                    class={`flex justify-start gap-x-3 items-center`}
+                  >
+                    <DollarIcon />
+                    <span>Billing</span>
+                  </div>
+                  <ArrowRightIcon />
+                </div>
+                <div
+                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
+                >
+                  <div
+                    class={`flex justify-start gap-x-3 items-center`}
+                  >
+                    <AnalyticsIcon />
+                    <span>Analytics</span>
+                  </div>
+                  <ArrowRightIcon />
+                </div>
+                <div
+                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
+                >
+                  <div
+                    class={`flex justify-start gap-x-3 items-center`}
+                  >
+                    <PrefenceIcon />
+                    <span>Preferences</span>
+                  </div>
+                  <ArrowRightIcon />
+                </div>
+                <div
+                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
+                >
+                  <div
+                    class={`flex justify-start gap-x-3 items-center`}
+                  >
+                    <SettingIcon />
+                    <span>Settings</span>
+                  </div>
+                  <ArrowRightIcon />
+                </div>
                 <a
                   href="/auth/signout"
-                  class={`flex justify-between gap-3 px-4 py-2 items-center text-sm ${linkTextColorClass} hover:bg-gray-700/30`}
+                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm ${linkTextColorClass} hover:bg-gray-700/30 transition-colors duration-200`}
                 >
-                  <SignOutIcon />
-                  <span>Sign out</span>
+                  <div
+                    class={`flex justify-start gap-x-3 items-center`}
+                  >
+                    <SignOutIcon />
+                    <span>Sign out</span>
+                  </div>
+                  <ArrowRightIcon />
                 </a>
               </div>
             )}
