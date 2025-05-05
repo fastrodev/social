@@ -288,7 +288,7 @@ export const PostList = memo(function PostList({
     <>
       {showPosts && memoizedPosts.length > 0 && (
         <div className="space-y-4">
-          {memoizedPosts.map((post) => (
+          {memoizedPosts.map((post, idx) => (
             // Use memoized post data
             <div
               key={post.id}
@@ -398,19 +398,16 @@ export const PostList = memo(function PostList({
                 className="block relative cursor-pointer"
               >
                 {/* Modified image section with title overlay */}
-                <div className="-mx-4 mb-4 relative">
-                  <div className="w-full h-[600px] sm:h-[450px]">
-                    <img
-                      src={post.image || post.defaultImage}
-                      alt="Post attachment"
-                      sizes="(max-width: 640px) 100vw, 600px"
-                      width="600"
-                      height="600"
-                      className="w-full h-full rounded-none object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-
+                <div className="w-full aspect-[1/1] mb-4 relative">
+                  {/* Ensures 1:1 aspect ratio */}
+                  <img
+                    src={post.image || post.defaultImage}
+                    alt="Post attachment"
+                    width={600}
+                    height={600}
+                    className="w-full h-full rounded-none object-cover"
+                    loading={idx === 0 ? "eager" : "lazy"}
+                  />
                   {/* Title overlay container - Now uses Flexbox */}
                   <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
                     {/* Tags are placed first within the flex container */}
