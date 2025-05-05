@@ -206,7 +206,14 @@ export const PostList = memo(function PostList({
   const prefetchPostData = async (postId: string) => {
     // Skip if already fetched
     if (fetchedPosts.current.has(postId)) {
-      console.log(`Post ${postId} already prefetched.`);
+      console.debug(`Post ${postId} already prefetched.`);
+      return;
+    }
+
+    // Find post from local state
+    const post = localPosts.find((p) => p.id === postId);
+    if (!post) {
+      console.debug("Post not found for prefetch");
       return;
     }
 
@@ -214,20 +221,20 @@ export const PostList = memo(function PostList({
     fetchedPosts.current.add(postId);
 
     try {
-      // Fetch API data
-      const [postResponse, commentsResponse] = await Promise.all([
-        fetch(`${api_base_url}/api/post/${postId}`),
-        fetch(`${api_base_url}/api/comments/${postId}`),
-      ]);
+      // Only fetch comments since we have the post
+      const commentsResponse = await fetch(
+        `${api_base_url}/api/comments/${postId}`,
+      );
+      if (!commentsResponse.ok) {
+        throw new Error("Failed to fetch comments");
+      }
 
-      // Get post data to preload image
-      const post = await postResponse.json();
       const comments = await commentsResponse.json();
 
       // Cache the data for when the user clicks
       dataCache.current.set(postId, { post, comments });
 
-      // Preload the image
+      // Preload the image if it exists
       if (post.image) {
         const img = new Image();
         img.src = post.image;
