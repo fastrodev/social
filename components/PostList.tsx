@@ -6,6 +6,7 @@ import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
+import { PostMenuButton } from "./PostMenuButton.tsx";
 import {
   useCallback,
   useEffect,
@@ -344,59 +345,44 @@ export const PostList = memo(function PostList({
                   </button>
 
                   {menuOpenForPost === post.id && (
+                    // menu container
                     <div
-                      className={`absolute right-0 top-full mt-1 w-36 rounded-md shadow-lg z-50 ${
+                      className={`absolute right-0 top-[120%] w-48 rounded-xl shadow-lg py-2 z-50 ${
                         isDark
-                          ? "bg-gray-800 border border-gray-700"
-                          : "bg-white border border-gray-200"
+                          ? "bg-gray-800/95 border border-gray-700 backdrop-blur-sm"
+                          : "bg-white/95 border border-gray-200 backdrop-blur-sm"
                       }`}
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {/* Share option for all users */}
-                      <button
-                        onClick={() =>
-                          memoizedHandlers.handleSharePost(post.id)}
-                        className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                          isDark
-                            ? "text-gray-200 hover:bg-gray-700"
-                            : "text-gray-700 hover:bg-gray-100"
-                        } rounded-md`}
-                      >
-                        <ShareIcon />
-                        <span className="font-medium">Share post</span>
-                      </button>
-
-                      {/* Edit option only for post author */}
-                      {post.isAuthor && (
-                        <button
+                      <div className="px-1">
+                        <PostMenuButton
+                          icon={<ShareIcon />}
+                          label="Share post"
                           onClick={() =>
-                            memoizedHandlers.handleEditPost(post.id)}
-                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                            isDark
-                              ? "text-gray-200 hover:bg-gray-700"
-                              : "text-gray-700 hover:bg-gray-100"
-                          } rounded-md`}
-                        >
-                          <EditIcon />
-                          <span className="font-medium">Edit post</span>
-                        </button>
-                      )}
+                            memoizedHandlers.handleSharePost(post.id)}
+                          isDark={isDark}
+                        />
 
-                      {/* Delete option only for post author */}
-                      {(post.isAdmin || post.isAuthor) && (
-                        <button
-                          onClick={() =>
-                            memoizedHandlers.handleDeletePost(post.id)}
-                          className={`flex items-center w-full gap-x-2 px-4 py-2 text-sm ${
-                            isDark
-                              ? "text-gray-200 hover:bg-gray-700"
-                              : "text-gray-700 hover:bg-gray-100"
-                          } rounded-md`}
-                        >
-                          <DeleteIcon />
-                          <span className="font-medium">Delete post</span>
-                        </button>
-                      )}
+                        {post.isAuthor && (
+                          <PostMenuButton
+                            icon={<EditIcon />}
+                            label="Edit post"
+                            onClick={() =>
+                              memoizedHandlers.handleEditPost(post.id)}
+                            isDark={isDark}
+                          />
+                        )}
+
+                        {(post.isAdmin || post.isAuthor) && (
+                          <PostMenuButton
+                            icon={<DeleteIcon />}
+                            label="Delete post"
+                            onClick={() =>
+                              memoizedHandlers.handleDeletePost(post.id)}
+                            isDark={isDark}
+                          />
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

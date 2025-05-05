@@ -1,15 +1,8 @@
-// deno-lint-ignore-file jsx-boolean-value
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
-import { SignOutIcon } from "./icons/signout.tsx";
-import { SettingIcon } from "./icons/setting.tsx";
-import { PrefenceIcon } from "./icons/preference.tsx";
-import { AnalyticsIcon } from "./icons/analytics.tsx";
-import { DollarIcon } from "./icons/dollar.tsx";
-import { AccountIcon } from "./icons/account.tsx";
-import MenuItem from "./MenuItem.tsx";
+import { HeaderMenu } from "./HeaderMenu.tsx";
 
 export default function Header(
   props: {
@@ -24,10 +17,12 @@ export default function Header(
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);
-  // Use the isDark prop with a fallback to true if not specified
   const [isDark, setIsDark] = useState(
     props.isDark !== undefined ? props.isDark : true,
   );
+
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // Check session storage for theme on component mount
   useEffect(() => {
@@ -46,38 +41,35 @@ export default function Header(
 
   const textColorClass = isDark ? "text-gray-100" : "text-gray-700";
   const linkTextColorClass = isDark ? "text-gray-100" : "text-gray-700";
-  const bgClass = isDark ? "bg-gray-800" : "bg-white";
-  const borderClass = isDark ? "border-gray-700" : "border-gray-200";
-
   const defaultTitle = "Fastro Social";
   const headerTitle = props.isLogin ? props.message : defaultTitle;
 
-  // Close dropdown when clicking outside
-  const handleClickOutside = () => {
-    if (menuOpen) {
-      setMenuOpen(false);
-      document.removeEventListener("click", handleClickOutside);
-    }
-  };
-
-  // Toggle dropdown and add/remove event listener
   const toggleMenu = (e: MouseEvent) => {
     e.stopPropagation();
-    if (!menuOpen) {
-      setMenuOpen(true);
-      // Add click outside listener with a delay to prevent immediate closing
-      setTimeout(() => {
-        document.addEventListener("click", handleClickOutside);
-      }, 0);
-    } else {
-      setMenuOpen(false);
-      document.removeEventListener("click", handleClickOutside);
-    }
+    setMenuOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        menuOpen &&
+        !buttonRef.current?.contains(target) &&
+        !menuRef.current?.contains(target)
+      ) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   return (
     <div
-      class={`container flex justify-between max-w-6xl mx-auto text-center text-sm py-4 px-2 ${textColorClass}`}
+      class={`container flex justify-between max-w-6xl mx-auto text-center text-sm p-3 ${textColorClass}`}
     >
       <a href="/" class={`text-gray-100`}>
         <div class={`flex space-x-2 items-center`}>
@@ -124,6 +116,7 @@ export default function Header(
         {props.isLogin && (
           <div class="relative">
             <button
+              ref={buttonRef}
               type="button"
               onClick={toggleMenu}
               class={`${linkTextColorClass} p-1 rounded-full hover:bg-gray-700/30`}
@@ -133,38 +126,11 @@ export default function Header(
             </button>
 
             {menuOpen && (
-              <div
-                class={`absolute right-0 mt-3 w-64 rounded-lg shadow-lg py-2 ${bgClass} border ${borderClass} z-50`}
-              >
-                <MenuItem
-                  icon={<AnalyticsIcon />}
-                  label="Analytics"
-                  disabled={true}
-                />
-                <MenuItem
-                  icon={<DollarIcon />}
-                  label="Billing"
-                  disabled={true}
-                />
-                <MenuItem
-                  icon={<PrefenceIcon />}
-                  label="Preferences"
-                  disabled={true}
-                />
-                <MenuItem
-                  icon={<SettingIcon />}
-                  label="Settings"
-                  disabled={true}
-                />
-                <MenuItem
-                  icon={<AccountIcon />}
-                  label="Account"
-                  disabled={true}
-                />
-                <MenuItem
-                  icon={<SignOutIcon />}
-                  label="Sign out"
-                  href="/auth/signout"
+              <div ref={menuRef}>
+                <HeaderMenu
+                  isDark={isDark}
+                  onClose={() => setMenuOpen(false)}
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
             )}
