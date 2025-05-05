@@ -1,13 +1,15 @@
+// deno-lint-ignore-file jsx-boolean-value
 import { useEffect, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
 import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { SignOutIcon } from "./icons/signout.tsx";
-import { ArrowRightIcon } from "./icons/arrow.tsx";
 import { SettingIcon } from "./icons/setting.tsx";
 import { PrefenceIcon } from "./icons/preference.tsx";
 import { AnalyticsIcon } from "./icons/analytics.tsx";
 import { DollarIcon } from "./icons/dollar.tsx";
+import { AccountIcon } from "./icons/account.tsx";
+import MenuItem from "./MenuItem.tsx";
 
 export default function Header(
   props: {
@@ -134,62 +136,36 @@ export default function Header(
               <div
                 class={`absolute right-0 mt-3 w-64 rounded-lg shadow-lg py-2 ${bgClass} border ${borderClass} z-50`}
               >
-                <div
-                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
-                >
-                  <div
-                    class={`flex justify-start gap-x-3 items-center`}
-                  >
-                    <DollarIcon />
-                    <span>Billing</span>
-                  </div>
-                  <ArrowRightIcon />
-                </div>
-                <div
-                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
-                >
-                  <div
-                    class={`flex justify-start gap-x-3 items-center`}
-                  >
-                    <AnalyticsIcon />
-                    <span>Analytics</span>
-                  </div>
-                  <ArrowRightIcon />
-                </div>
-                <div
-                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
-                >
-                  <div
-                    class={`flex justify-start gap-x-3 items-center`}
-                  >
-                    <PrefenceIcon />
-                    <span>Preferences</span>
-                  </div>
-                  <ArrowRightIcon />
-                </div>
-                <div
-                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm text-gray-500 cursor-not-allowed`}
-                >
-                  <div
-                    class={`flex justify-start gap-x-3 items-center`}
-                  >
-                    <SettingIcon />
-                    <span>Settings</span>
-                  </div>
-                  <ArrowRightIcon />
-                </div>
-                <a
+                <MenuItem
+                  icon={<AnalyticsIcon />}
+                  label="Analytics"
+                  disabled={true}
+                />
+                <MenuItem
+                  icon={<DollarIcon />}
+                  label="Billing"
+                  disabled={true}
+                />
+                <MenuItem
+                  icon={<PrefenceIcon />}
+                  label="Preferences"
+                  disabled={true}
+                />
+                <MenuItem
+                  icon={<SettingIcon />}
+                  label="Settings"
+                  disabled={true}
+                />
+                <MenuItem
+                  icon={<AccountIcon />}
+                  label="Account"
+                  disabled={true}
+                />
+                <MenuItem
+                  icon={<SignOutIcon />}
+                  label="Sign out"
                   href="/auth/signout"
-                  class={`flex justify-between gap-x-3 px-5 py-3 items-center text-sm ${linkTextColorClass} hover:bg-gray-700/30 transition-colors duration-200`}
-                >
-                  <div
-                    class={`flex justify-start gap-x-3 items-center`}
-                  >
-                    <SignOutIcon />
-                    <span>Sign out</span>
-                  </div>
-                  <ArrowRightIcon />
-                </a>
+                />
               </div>
             )}
           </div>
