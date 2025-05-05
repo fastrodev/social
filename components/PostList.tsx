@@ -48,39 +48,33 @@ export const PostList = memo(function PostList({
   );
 
   const handlePostClick = async (postId: string) => {
+    // First check cache
     if (dataCache.current.has(postId)) {
       const { post, comments } = dataCache.current.get(postId)!;
       onOpenModal(post, comments);
       return;
     }
 
-    if (fetchedPosts.current.has(postId)) {
-      console.log(`Post ${postId} was fetched but not cached, refetching...`);
+    const post = localPosts.find((p) => p.id === postId);
+    if (!post) {
+      console.error("Post not found");
+      return;
     }
 
-    fetchedPosts.current.add(postId);
-
     try {
-      console.log("Fetching post details...");
-      const [postResponse, commentsResponse] = await Promise.all([
-        fetch(`${api_base_url}/api/post/${postId}`),
-        fetch(`${api_base_url}/api/comments/${postId}`),
-      ]);
-
-      if (!postResponse.ok || !commentsResponse.ok) {
-        throw new Error("Failed to fetch data");
+      const commentsResponse = await fetch(
+        `${api_base_url}/api/comments/${postId}`,
+      );
+      if (!commentsResponse.ok) {
+        throw new Error("Failed to fetch comments");
       }
 
-      const [post, comments] = await Promise.all([
-        postResponse.json(),
-        commentsResponse.json(),
-      ]);
-
+      const comments = await commentsResponse.json();
       dataCache.current.set(postId, { post, comments });
 
       onOpenModal(post, comments);
     } catch (error) {
-      console.error("Error fetching post details:", error);
+      console.error("Error fetching comments:", error);
     }
   };
 
