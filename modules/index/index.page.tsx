@@ -167,7 +167,7 @@ export default function Index({ data }: PageProps<
 
         {/* Main Content Section */}
         <div className="max-w-xl mx-auto flex-1 w-full flex items-center justify-center">
-          <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6">
+          <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6 min-h-[400px] transition-all duration-300 ease-in-out">
             {isLoading && posts.length === 0 && <Welcome key="welcome" />}
             {!isLoading && (
               <Editor
@@ -178,8 +178,8 @@ export default function Index({ data }: PageProps<
               />
             )}
 
-            {!isEditorActive && (
-              <>
+            {!isEditorActive
+              ? (
                 <PostList
                   posts={posts}
                   data={{
@@ -193,28 +193,32 @@ export default function Index({ data }: PageProps<
                   share_base_url={data.share_base_url}
                   onOpenModal={handleOpenModal}
                 />
-                {modalState.open && modalState.post && (
-                  <PostModal
-                    selectedPost={modalState.post}
-                    isDark={isDark}
-                    onClose={handleCloseModal}
-                  >
-                    <PostDetail
-                      post={modalState.post}
-                      comments={modalState.comments as any}
-                      isDark={isDark}
-                      isLoading={isLoading}
-                      apiBaseUrl={data.apiBaseUrl}
-                      share_base_url={data.share_base_url}
-                      data={{
-                        isLogin: data.isLogin,
-                        author: data.author,
-                        avatar_url: data.avatar_url || "",
-                      }}
-                    />
-                  </PostModal>
-                )}
-              </>
+              )
+              : (
+                <div className="h-[200px] transition-all duration-300 ease-in-out opacity-0">
+                </div>
+              )}
+
+            {modalState.open && modalState.post && (
+              <PostModal
+                selectedPost={modalState.post}
+                isDark={isDark}
+                onClose={handleCloseModal}
+              >
+                <PostDetail
+                  post={modalState.post}
+                  comments={modalState.comments as any}
+                  isDark={isDark}
+                  isLoading={isLoading}
+                  apiBaseUrl={data.apiBaseUrl}
+                  share_base_url={data.share_base_url}
+                  data={{
+                    isLogin: data.isLogin,
+                    author: data.author,
+                    avatar_url: data.avatar_url || "",
+                  }}
+                />
+              </PostModal>
             )}
           </main>
         </div>
