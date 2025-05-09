@@ -268,12 +268,14 @@ export const PostList = memo(function PostList({
 
   const themeStyles = useMemo(
     () => ({
-      cardBg: isDark ? "bg-gray-800/90" : "bg-white/90",
-      text: isDark ? "text-gray-100" : "text-gray-800",
-      footer: isDark ? "text-gray-400" : "text-gray-600",
+      cardBg: isDark ? "bg-gray-800/95" : "bg-white/95",
+      text: isDark ? "text-gray-50" : "text-gray-900",
+      footer: isDark ? "text-gray-100" : "text-gray-800", // Increased contrast for footer text
+      metadata: isDark ? "text-gray-200" : "text-gray-700", // New style for metadata
+      timestamp: isDark ? "text-gray-200" : "text-gray-700", // New style for timestamps
       link: isDark
-        ? "text-purple-400 hover:text-purple-300"
-        : "text-purple-600 hover:text-purple-500",
+        ? "text-purple-300 hover:text-purple-200" // Improved contrast
+        : "text-purple-700 hover:text-purple-800",
       cardBorder: isDark ? "border-gray-700" : "border-gray-200",
       cardGlow: isMobile
         ? "" // No shadow on mobile
@@ -316,7 +318,7 @@ export const PostList = memo(function PostList({
                     <p className={`font-medium ${themeStyles.text}`}>
                       {post.author}
                     </p>
-                    <p className="text-gray-500 text-xs">
+                    <p className={`text-xs ${themeStyles.timestamp}`}>
                       {post.formattedDate}
                     </p>
                   </div>
@@ -334,10 +336,10 @@ export const PostList = memo(function PostList({
                         menuOpenForPost === post.id ? null : post.id,
                       );
                     }}
-                    className={`p-1.5 rounded-full hover:bg-gray-700/30 transition-colors ${
+                    className={`p-1.5 rounded-full hover:bg-gray-700/40 transition-colors ${
                       isDark
-                        ? "text-gray-400 hover:text-gray-200"
-                        : "text-gray-500 hover:text-gray-700"
+                        ? "text-gray-200 hover:text-gray-50" // Increased contrast
+                        : "text-gray-700 hover:text-gray-900" // Increased contrast
                     }`}
                     aria-label="Post options"
                   >
@@ -426,16 +428,13 @@ export const PostList = memo(function PostList({
                           </span>
                         ))}
                       </div>
-                    )}
-
-                    {/* Title comes after tags */}
+                    )} {/* Title comes after tags */}{" "}
                     <h2 className="text-xl font-extrabold text-white line-clamp-5">
                       {post.title ? post.title : post.content}
                     </h2>
                   </div>
                 </div>
-              </div>
-
+              </div>{" "}
               <div className="flex items-center justify-between">
                 <a
                   href={`${api_base_url}/post/${post.id}`}
@@ -443,45 +442,36 @@ export const PostList = memo(function PostList({
                     themeStyles.link.split(" ")[0]
                   }`}
                 >
-                  <CommentIcon />
+                  <CommentIcon />{" "}
                   <span>
                     {post.commentCount
-                      ? (
-                        <>
-                          {post.commentCount}{" "}
-                          {post.commentCount === 1 ? "comment" : "comments"}
-                        </>
-                      )
-                      : (
-                        "Add comment"
-                      )}
+                      ? `${post.commentCount} ${
+                        post.commentCount === 1 ? "comment" : "comments"
+                      }`
+                      : "Add comment"}
                   </span>
-                </a>
-
+                </a>{" "}
                 <div
-                  className={`flex items-center gap-x-2 ${themeStyles.footer} text-xs`}
+                  className={`flex items-center gap-x-2 ${themeStyles.metadata} text-xs`}
                 >
                   <span className="flex items-center gap-x-2">
-                    <ViewIcon />
-                    {((post.views || post.viewCount || 0) +
+                    <ViewIcon /> {((post.views || post.viewCount || 0) +
                         (postViews[post.id] || 0)) === 0
                       ? "Be the first viewer"
-                      : (
-                        <>
-                          {(post.views || post.viewCount || 0) +
-                            (postViews[post.id] || 0)}{" "}
-                          {((post.views || post.viewCount || 0) +
-                              (postViews[post.id] || 0)) === 1
-                            ? "view"
-                            : "views"}
-                        </>
-                      )}
+                      : `${
+                        (post.views || post.viewCount || 0) +
+                        (postViews[post.id] || 0)
+                      } ${
+                        ((post.views || post.viewCount || 0) +
+                            (postViews[post.id] || 0)) === 1
+                          ? "view"
+                          : "views"
+                      }`}
                   </span>
                 </div>
               </div>
             </div>
-          ))}
-          {/* Load more button for mobile / Sentinel for desktop */}
+          ))} {/* Load more button for mobile / Sentinel for desktop */}{" "}
           {localPosts.length > 0 && (
             <>
               {isMobile
