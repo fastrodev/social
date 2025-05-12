@@ -59,9 +59,6 @@ export function Editor(
          before:absolute
          before:inset-0
          before:rounded-lg
-         before:bg-gradient-to-r
-         before:from-purple-500/5
-         before:to-pink-500/5
          before:-z-10`
       : `shadow-lg
          hover:shadow-purple-400/10
@@ -72,9 +69,6 @@ export function Editor(
          before:absolute
          before:inset-0
          before:rounded-lg
-         before:bg-gradient-to-r
-         before:from-purple-400/5
-         before:to-pink-400/5
          before:-z-10`,
   };
 

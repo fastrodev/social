@@ -265,26 +265,27 @@ export const PostList = memo(function PostList({
       console.debug("Prefetch failed:", error);
     }
   };
-const themeStyles = useMemo(
-  () => ({
-    cardBg: isDark ? "bg-gray-800/95" : "bg-white/95",
-    text: isDark ? "text-gray-50" : "text-gray-900",
-    footer: isDark ? "text-gray-100" : "text-gray-800",
-    metadata: isDark ? "text-gray-200" : "text-gray-700",
-    timestamp: isDark ? "text-gray-200" : "text-gray-700",
-    link: isDark
-      ? "text-purple-300 hover:text-purple-200"
-      : "text-purple-700 hover:text-purple-800",
-    cardBorder: isDark ? "border-purple-500/20" : "border-purple-400/20",
-    cardGlow: isMobile
-      ? ""
-      : `backdrop-blur-sm transition-all duration-300
-         hover:shadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
-         befre:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r 
-         before:from-purple-500/5 before:to-pink-500/5 before:-z-10`,
-  }),
-  [isDark, isMobile],
-);
+
+  const themeStyles = useMemo(
+    () => ({
+      cardBg: isDark ? "bg-gray-800/90" : "bg-white/95",
+      text: isDark ? "text-gray-50" : "text-gray-900",
+      footer: isDark ? "text-gray-100" : "text-gray-800",
+      metadata: isDark ? "text-gray-200" : "text-gray-700",
+      timestamp: isDark ? "text-gray-200" : "text-gray-700",
+      link: isDark
+        ? "text-purple-300 hover:text-purple-200"
+        : "text-purple-700 hover:text-purple-800",
+      cardBorder: isDark? "border-purple-500/20" : "border-purple-400/20",
+      cardGlow: isMobile
+        ? ""
+        : `backdrop-blur-sm transition-all duration-300
+           hhadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
+           before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r 
+        om-purple-500/5 before:to-pink-500/5 before:-z-10`,
+    }),
+    [isDark, isMobile],
+  );
 
   return (
     <>
@@ -295,13 +296,13 @@ const themeStyles = useMemo(
             <div
               key={post.id}
               onMouseEnter={() => {
-                const timer = setTimeout(
-        () => prefetchPostData(post.id),
+    const timer = setTimeout(
+                  () => prefetchPostData(post.id),
                   PREFETCH_DELAY,
                 );
                 return () => clearTimeout(timer);
               }}
-              className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} ${themeStyles.cardGlow} relative`}
+              className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} backdrop-blur-sm ${themeStyles.cardGlow} relative`}
             >
               {/* Modified Header Section */}
               <div className="flex items-center justify-between mb-3">
@@ -351,8 +352,8 @@ const themeStyles = useMemo(
                     <div
                       className={`absolute right-0 top-[120%] w-48 rounded-xl shadow-lg py-2 z-50 ${
                         isDark
-                          ? "bg-gray-800/95 border border-gray-700 backdrop-blur-sm"
-                          : "bg-white/95 border border-gray-200 backdrop-blur-sm"
+                          ? "bg-gray-800/95 border border-purple-500/20 backdrop-blur-sm transition-all duration-300 hover:shadow-purple-500/10 hover:border-purple-500/30"
+                          : "bg-white/95 border border-purple-400/20 backdrop-blur-sm transition-all duration-300 hover:shadow-purple-400/10 hover:border-purple-400/30"
                       }`}
                       onClick={(e) => e.stopPropagation()}
                     >

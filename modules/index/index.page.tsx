@@ -81,7 +81,7 @@ export default function Index({ data }: PageProps<
       setIsLoading(true);
       const url = new URL("/api/posts", data.apiBaseUrl);
       console.log("Fetching posts from:", url.toString());
-      url.searchParams.set("limit", isMobile ? "5" : "10");
+      url.searchParams.set("limit", "4");
       if (!isInitial && cursor) {
         url.searchParams.set("cursor", cursor);
       }

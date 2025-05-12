@@ -7,12 +7,11 @@ export function Advertisement(
   return (
     <div className="lg:w-80 flex-shrink-0">
       <div className="sticky top-6">
-        <div className="w-full p-4 bg-gray-800/95 rounded-lg shadow-lg 
+        <div className="w-full p-4 mb-4 bg-gray-800/90 rounded-lg shadow-lg 
           border border-purple-500/20 backdrop-blur-sm
           transition-all duration-300 relative
           hover:shadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
-          before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r 
-          before:from-purple-500/5 before:to-pink-500/5 before:-z-10">
+          before:absolute before:inset-0 before:rounded-lg before:-z-10">
           <div className="flex flex-col items-center space-y-3">
             <p className="text-xs text-gray-500 uppercase tracking-wide">
               Advertisement
