@@ -48,10 +48,34 @@ export function Editor(
     link: isDark
       ? "text-purple-400 hover:text-purple-300"
       : "text-purple-600 hover:text-purple-500",
-    cardBorder: isDark ? "border-gray-700" : "border-gray-200",
+    cardBorder: isDark ? "border-purple-500/20" : "border-purple-400/20",
     cardGlow: isDark
-      ? "shadow-[0_0_20px_8px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
-      : "shadow-[0_0_20px_8px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
+      ? `shadow-lg
+         hover:shadow-purple-500/10
+         hover:border-purple-500/30
+         hover:shadow-2xl
+         transition-all
+         duration-300
+         before:absolute
+         before:inset-0
+         before:rounded-lg
+         before:bg-gradient-to-r
+         before:from-purple-500/5
+         before:to-pink-500/5
+         before:-z-10`
+      : `shadow-lg
+         hover:shadow-purple-400/10
+         hover:border-purple-400/30
+         hover:shadow-2xl
+         transition-all
+         duration-300
+         before:absolute
+         before:inset-0
+         before:rounded-lg
+         before:bg-gradient-to-r
+         before:from-purple-400/5
+         before:to-pink-400/5
+         before:-z-10`,
   };
 
   function getPreviewBoxHeight(isEditing: boolean, isMobile: boolean) {
@@ -320,7 +344,9 @@ export function Editor(
 
   const EditorSkeleton = () => (
     <div
-      className={`${themeStyles.cardBg} rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 border ${themeStyles.cardBorder} backdrop-blur-lg animate-pulse`}
+      className={`${themeStyles.cardBg} rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 
+        border ${themeStyles.cardBorder} backdrop-blur-lg animate-pulse relative
+        ${themeStyles.cardGlow}`}
     >
       <div className="h-[100px] bg-gray-700/30 rounded-lg"></div>
     </div>
@@ -328,218 +354,218 @@ export function Editor(
 
   return (
     <>
-      {isSubmitting
-        ? <EditorSkeleton />
-        : (
-          <div
-            className={`${themeStyles.cardBg} rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 border ${themeStyles.cardBorder} backdrop-blur-lg ${cardGlowClass}`}
+      {isSubmitting ? <EditorSkeleton /> : (
+        <div
+          className={`${themeStyles.cardBg} rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 
+              border ${themeStyles.cardBorder} backdrop-blur-lg relative
+              ${themeStyles.cardGlow}`}
+        >
+          <form
+            onSubmit={handleSubmit}
           >
-            <form
-              onSubmit={handleSubmit}
-            >
-              {imageUrl && (
-                <div className="mt-3 mb-3 relative">
-                  <img
-                    src={imageUrl}
-                    alt="Post attachment"
-                    className="w-full h-[330px] rounded-lg object-cover"
-                  />
-                  <button
-                    onClick={handleRemoveImage}
-                    className="absolute top-2 right-2 hover:bg-gray-700 text-white w-6 h-6 flex items-center justify-center transition-colors"
-                    aria-label="Remove image"
+            {imageUrl && (
+              <div className="mt-3 mb-3 relative">
+                <img
+                  src={imageUrl}
+                  alt="Post attachment"
+                  className="w-full h-[330px] rounded-lg object-cover"
+                />
+                <button
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 hover:bg-gray-700 text-white w-6 h-6 flex items-center justify-center transition-colors"
+                  aria-label="Remove image"
+                >
+                  <XIcon />
+                </button>
+              </div>
+            )}
+
+            <div className="relative flex flex-col gap-y-3">
+              {isEditing && (
+                <div className="flex justify-between items-center">
+                  <div className={`flex items-center ${themeStyles.text}`}>
+                    <button
+                      type="button"
+                      onClick={() => setShowPreviewMode(!showPreviewMode)}
+                      className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                        isDark
+                          ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
+                          : "text-gray-700 hover:bg-gray-200/30"
+                      }`}
+                    >
+                      {showPreviewMode
+                        ? (
+                          <>
+                            <EditIcon />
+                            <span className="text-sm">Edit</span>
+                          </>
+                        )
+                        : (
+                          <>
+                            <ViewIcon />
+                            <span className="text-sm">Preview</span>
+                          </>
+                        )}
+                    </button>
+                  </div>
+
+                  <a
+                    href="https://www.markdownguide.org/cheat-sheet/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`text-xs ${themeStyles.link}`}
                   >
-                    <XIcon />
-                  </button>
+                    Markdown Help
+                  </a>
                 </div>
               )}
 
-              <div className="relative flex flex-col gap-y-3">
-                {isEditing && (
-                  <div className="flex justify-between items-center">
-                    <div className={`flex items-center ${themeStyles.text}`}>
-                      <button
-                        type="button"
-                        onClick={() => setShowPreviewMode(!showPreviewMode)}
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
-                            : "text-gray-700 hover:bg-gray-200/30"
-                        }`}
-                      >
-                        {showPreviewMode
-                          ? (
-                            <>
-                              <EditIcon />
-                              <span className="text-sm">Edit</span>
-                            </>
-                          )
-                          : (
-                            <>
-                              <ViewIcon />
-                              <span className="text-sm">Preview</span>
-                            </>
+              {showPreviewMode
+                ? (
+                  <div
+                    className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
+                          ${
+                      getPreviewBoxHeight(isEditing, isMobile)
+                    } max-h-[600px] overflow-y-auto p-3
+                          ${
+                      isDark
+                        ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                        : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                    } scrollbar-thin scrollbar-track-transparent transition-all duration-300`}
+                  >
+                    {postContent
+                      ? (
+                        <div
+                          className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                          dangerouslySetInnerHTML={renderMarkdown(
+                            postContent,
                           )}
-                      </button>
-                    </div>
-
-                    <a
-                      href="https://www.markdownguide.org/cheat-sheet/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`text-xs ${themeStyles.link}`}
-                    >
-                      Markdown Help
-                    </a>
+                        />
+                      )
+                      : (
+                        <div className="opacity-70 text-sm">
+                          Nothing to preview yet.
+                        </div>
+                      )}
                   </div>
+                )
+                : (
+                  <textarea
+                    placeholder={isEditing
+                      ? "# [Enter Your Post Title Here]\n\n\n[Your post content goes here. Replace this text with your own writing.]\n\n\n#[your-tag-here]"
+                      : "What's on your mind?"}
+                    value={postContent}
+                    onInput={handleChange}
+                    onFocus={handleTextareaFocus}
+                    onBlur={handleTextareaBlur}
+                    required
+                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} resize-none ${
+                      isEditing
+                        ? isMobile
+                          ? "min-h-[150px] h-[200px]"
+                          : "min-h-[300px] h-[400px]"
+                        : isMobile
+                        ? "min-h-[55px] h-[45px]"
+                        : "min-h-[65px] h-[55px]"
+                    } max-h-[600px] focus:ring-2 focus:ring-blue-500 focus:border-transparent scrollbar-thin scrollbar-track-transparent transition-all duration-300 ${
+                      isDark
+                        ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                        : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                    }`}
+                  />
                 )}
 
-                {showPreviewMode
-                  ? (
-                    <div
-                      className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
-                          ${
-                        getPreviewBoxHeight(isEditing, isMobile)
-                      } max-h-[600px] overflow-y-auto p-3
-                          ${
+              {!isEditing && (
+                <div
+                  className={`text-xs text-right italic ${themeStyles.footer} -mt-1`}
+                >
+                  Posts disappear after 7 days unless you sign up.
+                </div>
+              )}
+
+              {/* Fixed positioning with consistent margin */}
+              {isEditing && (
+                <div className="h-10 flex justify-between items-center">
+                  <div>
+                    <button
+                      type="button"
+                      onClick={handleAttachmentClick}
+                      className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
                         isDark
-                          ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                          : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                      } scrollbar-thin scrollbar-track-transparent transition-all duration-300`}
+                          ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
+                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                      } transition-colors`}
+                      aria-label="Add attachment"
+                      disabled={uploadingImage || showPreviewMode}
                     >
-                      {postContent
+                      {uploadingImage
                         ? (
-                          <div
-                            className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
-                            dangerouslySetInnerHTML={renderMarkdown(
-                              postContent,
-                            )}
-                          />
+                          <>
+                            <span className="animate-pulse">⏳</span>
+                            <span className="text-sm hidden sm:inline">
+                              Uploading...
+                            </span>
+                          </>
                         )
                         : (
-                          <div className="opacity-70 text-sm">
-                            Nothing to preview yet.
-                          </div>
+                          <>
+                            <ClipIcon />
+                            <span className="text-sm hidden sm:inline">
+                              Attachment
+                            </span>
+                          </>
                         )}
-                    </div>
-                  )
-                  : (
-                    <textarea
-                      placeholder={isEditing
-                        ? "# [Enter Your Post Title Here]\n\n\n[Your post content goes here. Replace this text with your own writing.]\n\n\n#[your-tag-here]"
-                        : "What's on your mind?"}
-                      value={postContent}
-                      onInput={handleChange}
-                      onFocus={handleTextareaFocus}
-                      onBlur={handleTextareaBlur}
-                      required
-                      className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} resize-none ${
-                        isEditing
-                          ? isMobile
-                            ? "min-h-[150px] h-[200px]"
-                            : "min-h-[300px] h-[400px]"
-                          : isMobile
-                          ? "min-h-[55px] h-[45px]"
-                          : "min-h-[65px] h-[55px]"
-                      } max-h-[600px] focus:ring-2 focus:ring-blue-500 focus:border-transparent scrollbar-thin scrollbar-track-transparent transition-all duration-300 ${
-                        isDark
-                          ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                          : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                      }`}
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      accept="image/jpeg,image/png,image/gif"
+                      className="hidden"
                     />
-                  )}
 
-                {!isEditing && (
-                  <div
-                    className={`text-xs text-right italic ${themeStyles.footer} -mt-1`}
-                  >
-                    Posts disappear after 7 days unless you sign up.
+                    <button
+                      type="button"
+                      onClick={resetForm}
+                      className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                        isDark
+                          ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
+                          : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
+                      } border ${
+                        isDark ? "border-gray-700" : "border-gray-300"
+                      } transition-colors`}
+                      aria-label="Cancel post"
+                    >
+                      <CancelIcon />
+                      <span className="text-sm font-medium">
+                        Cancel
+                      </span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
+                        isDark
+                          ? "bg-purple-600 hover:bg-purple-500 text-white"
+                          : "bg-purple-500 hover:bg-purple-400 text-white"
+                      } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                      disabled={isSubmitting || uploadingImage ||
+                        !postContent.trim()}
+                      aria-label="Submit post"
+                    >
+                      <SubmitIcon />
+                      <span className="text-sm font-medium">Create</span>
+                    </button>
                   </div>
-                )}
-
-                {/* Fixed positioning with consistent margin */}
-                {isEditing && (
-                  <div className="h-10 flex justify-between items-center">
-                    <div>
-                      <button
-                        type="button"
-                        onClick={handleAttachmentClick}
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
-                            : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
-                        } transition-colors`}
-                        aria-label="Add attachment"
-                        disabled={uploadingImage || showPreviewMode}
-                      >
-                        {uploadingImage
-                          ? (
-                            <>
-                              <span className="animate-pulse">⏳</span>
-                              <span className="text-sm hidden sm:inline">
-                                Uploading...
-                              </span>
-                            </>
-                          )
-                          : (
-                            <>
-                              <ClipIcon />
-                              <span className="text-sm hidden sm:inline">
-                                Attachment
-                              </span>
-                            </>
-                          )}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileSelect}
-                        accept="image/jpeg,image/png,image/gif"
-                        className="hidden"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={resetForm}
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
-                            : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
-                        } border ${
-                          isDark ? "border-gray-700" : "border-gray-300"
-                        } transition-colors`}
-                        aria-label="Cancel post"
-                      >
-                        <CancelIcon />
-                        <span className="text-sm font-medium">
-                          Cancel
-                        </span>
-                      </button>
-
-                      <button
-                        type="submit"
-                        className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                          isDark
-                            ? "bg-purple-600 hover:bg-purple-500 text-white"
-                            : "bg-purple-500 hover:bg-purple-400 text-white"
-                        } disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
-                        disabled={isSubmitting || uploadingImage ||
-                          !postContent.trim()}
-                        aria-label="Submit post"
-                      >
-                        <SubmitIcon />
-                        <span className="text-sm font-medium">Create</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </form>
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+      )}
     </>
   );
 }

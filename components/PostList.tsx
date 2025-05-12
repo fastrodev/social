@@ -265,26 +265,26 @@ export const PostList = memo(function PostList({
       console.debug("Prefetch failed:", error);
     }
   };
-
-  const themeStyles = useMemo(
-    () => ({
-      cardBg: isDark ? "bg-gray-800/95" : "bg-white/95",
-      text: isDark ? "text-gray-50" : "text-gray-900",
-      footer: isDark ? "text-gray-100" : "text-gray-800", // Increased contrast for footer text
-      metadata: isDark ? "text-gray-200" : "text-gray-700", // New style for metadata
-      timestamp: isDark ? "text-gray-200" : "text-gray-700", // New style for timestamps
-      link: isDark
-        ? "text-purple-300 hover:text-purple-200" // Improved contrast
-        : "text-purple-700 hover:text-purple-800",
-      cardBorder: isDark ? "border-gray-700" : "border-gray-200",
-      cardGlow: isMobile
-        ? "" // No shadow on mobile
-        : isDark
-        ? "shadow-[0_0_12px_3px_rgba(168,85,247,0.45)] hover:shadow-[0_0_30px_12px_rgba(168,85,247,0.5)]" // Larger purple glow for dark mode
-        : "shadow-[0_0_10px_2px_rgba(156,163,175,0.45)] hover:shadow-[0_0_30px_12px_rgba(156,163,175,0.5)]", // Larger gray glow for light mode
-    }),
-    [isDark, isMobile],
-  );
+const themeStyles = useMemo(
+  () => ({
+    cardBg: isDark ? "bg-gray-800/95" : "bg-white/95",
+    text: isDark ? "text-gray-50" : "text-gray-900",
+    footer: isDark ? "text-gray-100" : "text-gray-800",
+    metadata: isDark ? "text-gray-200" : "text-gray-700",
+    timestamp: isDark ? "text-gray-200" : "text-gray-700",
+    link: isDark
+      ? "text-purple-300 hover:text-purple-200"
+      : "text-purple-700 hover:text-purple-800",
+    cardBorder: isDark ? "border-purple-500/20" : "border-purple-400/20",
+    cardGlow: isMobile
+      ? ""
+      : `backdrop-blur-sm transition-all duration-300
+         hover:shadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
+         befre:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r 
+         before:from-purple-500/5 before:to-pink-500/5 before:-z-10`,
+  }),
+  [isDark, isMobile],
+);
 
   return (
     <>
@@ -296,7 +296,7 @@ export const PostList = memo(function PostList({
               key={post.id}
               onMouseEnter={() => {
                 const timer = setTimeout(
-                  () => prefetchPostData(post.id),
+        () => prefetchPostData(post.id),
                   PREFETCH_DELAY,
                 );
                 return () => clearTimeout(timer);
