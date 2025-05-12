@@ -209,7 +209,7 @@ export default function Index({ data }: PageProps<
 
                   {/* Middle Column - Main Content (Largest) */}
                   <main className="lg:flex-1 min-w-0">
-                    <div className="w-full flex flex-col gap-y-4 sm:gap-y-6 min-h-[400px]">
+                    <div className="w-full flex flex-col gap-y-4 min-h-[400px]">
                       {!isLoading && (
                         <Editor
                           apiBaseUrl={data.apiBaseUrl}
