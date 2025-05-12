@@ -166,61 +166,101 @@ export default function Index({ data }: PageProps<
         )}
 
         {/* Main Content Section */}
-        <div className="max-w-xl mx-auto flex-1 w-full flex items-center justify-center">
-          <main className="w-full relative flex flex-col h-full gap-y-4 sm:gap-y-6 min-h-[400px] transition-all duration-300 ease-in-out">
-            {isLoading && posts.length === 0 && <Welcome key="welcome" />}
-            {!isLoading && (
-              <Editor
-                apiBaseUrl={data.apiBaseUrl}
-                posts={posts}
-                setPosts={setPosts}
-                setIsEditorActive={setIsEditorActive}
-              />
-            )}
+        <div className="max-w-6xl mx-auto w-full px-4">
+          {/* Three Column Layout */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left Column - Tag Selector */}
 
-            {!isEditorActive
-              ? (
-                <PostList
-                  posts={posts}
-                  data={{
-                    isLogin: data.isLogin,
-                    author: data.author,
-                    avatar_url: data.avatar_url || "",
-                  }}
-                  isDark={isDark}
-                  isMobile={isMobile}
-                  api_base_url={data.apiBaseUrl}
-                  share_base_url={data.share_base_url}
-                  onOpenModal={handleOpenModal}
-                />
-              )
-              : (
-                <div className="h-[200px] transition-all duration-300 ease-in-out opacity-0">
+            <div className="lg:w-64 flex-shrink-0">
+              <div className="">
+                <div className="w-full p-3 bg-gray-900/50 rounded-lg shadow-lg">
+                  <div className="flex lg:flex-col gap-2">
+                    {["All", "Discussion", "Question", "Show", "Job"].map((
+                      tag,
+                    ) => (
+                      <button
+                        key={tag}
+                        className={`px-3 py-1 rounded-full text-sm transition-all duration-200 w-full text-left
+                          ${
+                          isDark
+                            ? "hover:bg-purple-600 bg-gray-800 text-gray-300"
+                            : "hover:bg-purple-500 bg-gray-700 text-gray-200"
+                        }`}
+                        onClick={() => {
+                          console.log(`Selected tag: ${tag}`);
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
+              </div>
+            </div>
 
-            {modalState.open && modalState.post && (
-              <PostModal
-                selectedPost={modalState.post}
-                isDark={isDark}
-                onClose={handleCloseModal}
-              >
-                <PostDetail
-                  post={modalState.post}
-                  comments={modalState.comments as any}
-                  isDark={isDark}
-                  isLoading={isLoading}
-                  apiBaseUrl={data.apiBaseUrl}
-                  share_base_url={data.share_base_url}
-                  data={{
-                    isLogin: data.isLogin,
-                    author: data.author,
-                    avatar_url: data.avatar_url || "",
-                  }}
-                />
-              </PostModal>
-            )}
-          </main>
+            {/* Middle Column - Main Content (Largest) */}
+            <main className="lg:flex-1 min-w-0">
+              <div className="w-full flex flex-col gap-y-4 sm:gap-y-6 min-h-[400px]">
+                {isLoading && posts.length === 0 && <Welcome key="welcome" />}
+                {!isLoading && (
+                  <Editor
+                    apiBaseUrl={data.apiBaseUrl}
+                    posts={posts}
+                    setPosts={setPosts}
+                    setIsEditorActive={setIsEditorActive}
+                  />
+                )}
+
+                {!isEditorActive
+                  ? (
+                    <PostList
+                      posts={posts}
+                      data={{
+                        isLogin: data.isLogin,
+                        author: data.author,
+                        avatar_url: data.avatar_url || "",
+                      }}
+                      isDark={isDark}
+                      isMobile={isMobile}
+                      api_base_url={data.apiBaseUrl}
+                      share_base_url={data.share_base_url}
+                      onOpenModal={handleOpenModal}
+                    />
+                  )
+                  : (
+                    <div className="h-[200px] transition-all duration-300 ease-in-out opacity-0">
+                    </div>
+                  )}
+              </div>
+            </main>
+
+            {/* Right Column - Advertisement */}
+            <div className="lg:w-80 flex-shrink-0">
+              <div className="">
+                <div className="w-full p-4 bg-gray-900/50 rounded-lg shadow-lg">
+                  <div className="flex flex-col items-center space-y-3">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                      Advertisement
+                    </p>
+                    <div className="w-full h-[250px] bg-gray-800/50 rounded flex items-center justify-center">
+                      <p className="text-gray-400 text-sm">
+                        Your Ad Could Be Here
+                      </p>
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      Contact us at{" "}
+                      <a
+                        href="mailto:ads@yourdomain.com"
+                        className="text-purple-500 hover:text-purple-400 transition-colors"
+                      >
+                        ads@yourdomain.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
