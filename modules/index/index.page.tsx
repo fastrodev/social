@@ -81,7 +81,7 @@ export default function Index({ data }: PageProps<
       setIsLoading(true);
       const url = new URL("/api/posts", data.apiBaseUrl);
       console.log("Fetching posts from:", url.toString());
-      url.searchParams.set("limit", "4");
+      url.searchParams.set("limit", "3");
       if (!isInitial && cursor) {
         url.searchParams.set("cursor", cursor);
       }
@@ -204,7 +204,7 @@ export default function Index({ data }: PageProps<
               {/* Main Content Section */}
               <div className="max-w-6xl mx-auto w-full px-4">
                 {/* Three Column Layout */}
-                <div className="flex flex-col lg:flex-row gap-6">
+                <div className="flex flex-col lg:flex-row gap-4">
                   <TagSelector isDark={isDark} onSelectTag={handleTagSelect} />
 
                   {/* Middle Column - Main Content (Largest) */}

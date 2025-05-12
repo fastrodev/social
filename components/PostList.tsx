@@ -276,10 +276,8 @@ export const PostList = memo(function PostList({
       link: isDark
         ? "text-purple-300 hover:text-purple-200"
         : "text-purple-700 hover:text-purple-800",
-      cardBorder: isDark? "border-purple-500/20" : "border-purple-400/20",
-      cardGlow: isMobile
-        ? ""
-        : `backdrop-blur-sm transition-all duration-300
+      cardBorder: isDark ? "border-purple-500/20" : "border-purple-400/20",
+      cardGlow: isMobile ? "" : `backdrop-blur-sm transition-all duration-300
            hhadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
            before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-r 
         om-purple-500/5 before:to-pink-500/5 before:-z-10`,
@@ -296,7 +294,7 @@ export const PostList = memo(function PostList({
             <div
               key={post.id}
               onMouseEnter={() => {
-    const timer = setTimeout(
+                const timer = setTimeout(
                   () => prefetchPostData(post.id),
                   PREFETCH_DELAY,
                 );
