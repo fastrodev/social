@@ -26,12 +26,12 @@ export function TagSelector({ isDark, onSelectTag }: TagSelectorProps) {
             <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
               {[
                 "All",
+                "Advertising",
                 "Business",
                 "Course",
+                "Deck",
                 "Job",
                 "Marketplace",
-                "Paid advertising",
-                "Pitch Deck",
                 "Project",
                 "Question",
                 "Referral",
