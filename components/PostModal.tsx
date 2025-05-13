@@ -5,7 +5,6 @@ import { useEffect } from "preact/hooks";
 
 export function PostModal({
   selectedPost,
-  isDark,
   onClose,
   children,
 }: {
@@ -22,15 +21,15 @@ export function PostModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <div
-        className={`relative w-full h-full max-w-2xl mx-auto ${
-          isDark
-            ? "bg-gray-800 border border-gray-700"
-            : "bg-white border border-gray-200"
-        } shadow-xl rounded-lg flex flex-col`}
+        className="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center px-2">
+        <div className="flex justify-between items-center px-2 flex-shrink-0">
           <HeaderPost
             message={`${selectedPost.title} by ${selectedPost.author}`}
           >
@@ -44,7 +43,7 @@ export function PostModal({
             <XIcon />
           </button>
         </div>
-        <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 h-full">
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500 p-4">
           {children}
         </div>
       </div>

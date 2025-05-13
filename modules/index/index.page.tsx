@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
-import { useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useState } from "preact/hooks";
 import Header from "@app/components/Header.tsx";
 import { Editor } from "@app/components/Editor.tsx";
 import { PostList } from "@app/components/PostList.tsx";
@@ -16,6 +16,15 @@ import { Advertisement } from "@app/components/Advertisement.tsx";
 const getCookie = (name: string): string | null => {
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
   return match ? decodeURIComponent(match[2]) : null;
+};
+
+// Replace the existing debounce function with this typed version
+const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+  };
 };
 
 export default function Index({ data }: PageProps<
@@ -47,9 +56,11 @@ export default function Index({ data }: PageProps<
   }>({ open: false, post: null, comments: [] });
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = debounce(() => {
+      requestAnimationFrame(() => {
+        setIsMobile(window.innerWidth < 768);
+      });
+    }, 100);
 
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -155,13 +166,14 @@ export default function Index({ data }: PageProps<
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
+      {/* Background hexagon pattern */}
       <div className="fixed inset-0 z-0 opacity-20">
         <HexaIcon />
       </div>
 
-      {/* Container of header and main content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        {modalState.open && modalState.post && (
+      {/* Modal should be outside the transformed container */}
+      {modalState.open && modalState.post && (
+        <div className="fixed inset-0 z-50">
           <PostModal
             selectedPost={modalState.post}
             isDark={isDark}
@@ -181,17 +193,18 @@ export default function Index({ data }: PageProps<
               }}
             />
           </PostModal>
-        )}
+        </div>
+      )}
 
+      {/* Main content container */}
+      <div className="relative z-10 min-h-screen flex flex-col">
         {isLoading
           ? (
-            // Loading state - only show Welcome centered
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center transform translate-z-0">
               <Welcome key="welcome" />
             </div>
           )
           : (
-            // Normal content when not loading
             <>
               <Header
                 isLogin={data.isLogin}
@@ -219,8 +232,8 @@ export default function Index({ data }: PageProps<
                         />
                       )}
 
-                      {!isEditorActive
-                        ? (
+                      {!isEditorActive && (
+                        <div className="transform translate-z-0">
                           <PostList
                             posts={posts}
                             data={{
@@ -234,11 +247,8 @@ export default function Index({ data }: PageProps<
                             share_base_url={data.share_base_url}
                             onOpenModal={handleOpenModal}
                           />
-                        )
-                        : (
-                          <div className="h-[200px] transition-all duration-300 ease-in-out opacity-0">
-                          </div>
-                        )}
+                        </div>
+                      )}
                     </div>
                   </main>
 

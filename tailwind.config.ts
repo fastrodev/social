@@ -9,4 +9,7 @@ export default {
   plugins: [
     ts,
   ],
+  variants: {
+    scrollbar: ["rounded", "dark"],
+  },
 };
