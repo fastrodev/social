@@ -1,4 +1,4 @@
-import pageLayout from "@app/modules/home/home.layout.tsx";
+import pageLayout from "./post.layout.tsx";
 import postDetailComponent from "./post.page.tsx";
 import postDetailHandler, {
   deletePostHandler,
