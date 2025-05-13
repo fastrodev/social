@@ -43,9 +43,11 @@ export function TagSelector({ isDark, onSelectTag }: TagSelectorProps) {
                 <button
                   type="button"
                   key={tag}
-                  className={`px-3 py-1 rounded-full text-sm transition-all duration-200 
+                  className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-all duration-200 
                     whitespace-nowrap flex-shrink-0 lg:w-full text-left
                     border-[1px] border-purple-500/10 shadow-sm relative overflow-hidden
+                    touch-manipulation select-none
+                    active:scale-95 active:opacity-80
                     ${
                     selectedTag === tag
                       ? isDark
