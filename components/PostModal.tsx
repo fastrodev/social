@@ -22,11 +22,11 @@ export function PostModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center"
       onClick={onClose}
     >
       <div
-        className="bg-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col"
+        className="bg-gray-900 rounded-lg max-w-2xl w-full max-h-full sm:max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center px-2 flex-shrink-0">
