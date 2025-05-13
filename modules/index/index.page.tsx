@@ -218,7 +218,12 @@ export default function Index({ data }: PageProps<
               <div className="max-w-6xl mx-auto w-full px-4">
                 {/* Three Column Layout */}
                 <div className="flex flex-col lg:flex-row gap-4">
-                  <TagSelector isDark={isDark} onSelectTag={handleTagSelect} />
+                  {!isEditorActive && (
+                    <TagSelector
+                      isDark={isDark}
+                      onSelectTag={handleTagSelect}
+                    />
+                  )}
 
                   {/* Middle Column - Main Content (Largest) */}
                   <main className="lg:flex-1 min-w-0">
@@ -253,7 +258,7 @@ export default function Index({ data }: PageProps<
                   </main>
 
                   {/* Right Column - Advertisement */}
-                  <Advertisement />
+                  {!isEditorActive && <Advertisement />}
                 </div>
               </div>
             </>
