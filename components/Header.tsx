@@ -6,8 +6,6 @@ import { HeaderMenu } from "./HeaderMenu.tsx";
 import { PrismIcon } from "./icons/prism.tsx";
 import { CakeIcon } from "./icons/cake.tsx";
 import { TalentIcon } from "./icons/talent.tsx";
-import { JobIcon } from "./icons/job.tsx";
-import { BulbIcon } from "./icons/bulb.tsx";
 
 export default function Header(
   props: {
@@ -74,7 +72,7 @@ export default function Header(
 
   return (
     <div
-      class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-4 py-3 gap-x-4 ${textColorClass}`}
+      class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-4 py-3 gap-x-8 ${textColorClass}`}
     >
       <a href="/" class={`text-gray-100`}>
         <div class={`flex flex-col items-center`}>
@@ -89,14 +87,7 @@ export default function Header(
           </span>
         </div>
       </a>
-      <div class={`flex items-center gap-x-4 text-xs`}>
-        <a
-          href="#"
-          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
-        >
-          <JobIcon />
-          <span>Jobs</span>
-        </a>
+      <div class={`flex items-center gap-x-10 text-xs`}>
         <a
           href="#"
           class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
@@ -111,13 +102,7 @@ export default function Header(
           <PrismIcon />
           <span>Projects</span>
         </a>
-        <a
-          href="#"
-          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
-        >
-          <BulbIcon />
-          <span>Ideas</span>
-        </a>
+
         <a
           href="#"
           class={`${linkTextColorClass} flex flex-col items-center rounded-full`}
