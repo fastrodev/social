@@ -1,12 +1,8 @@
 // deno-lint-ignore-file
 import { Comment, Post } from "@app/modules/index/type.ts";
-import { CommentIcon } from "@app/components/icons/comment.tsx";
-import { ViewIcon } from "@app/components/icons/view.tsx";
-import { VDotsIcon } from "@app/components/icons/vdots.tsx";
-import { ShareIcon } from "@app/components/icons/share.tsx";
-import { EditIcon } from "@app/components/icons/edit.tsx";
-import { DeleteIcon } from "@app/components/icons/delete.tsx";
-import { PostMenuButton } from "./PostMenuButton.tsx";
+import { PostHeader } from "./PostHeader.tsx";
+import { PostContent } from "./PostContent.tsx";
+import { PostFooter } from "./PostFooter.tsx";
 import {
   useCallback,
   useEffect,
@@ -302,173 +298,35 @@ export const PostList = memo(function PostList({
               }}
               className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} backdrop-blur-sm ${themeStyles.cardGlow} relative`}
             >
-              {/* Modified Header Section */}
-              <div className="flex items-center justify-between mb-3">
-                {/* Left side: Avatar and Author */}
-                <div className="flex items-center">
-                  <div className="mt-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                    <img
-                      src={post.avatar}
-                      alt={post.author}
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <p className={`font-medium ${themeStyles.text}`}>
-                      {post.author}
-                    </p>
-                    <p className={`text-xs ${themeStyles.timestamp}`}>
-                      {post.formattedDate}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right side: Icon Button */}
-
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      setMenuOpenForPost(
-                        menuOpenForPost === post.id ? null : post.id,
-                      );
-                    }}
-                    className={`p-1.5 rounded-full hover:bg-gray-700/40 transition-colors ${
-                      isDark
-                        ? "text-gray-200 hover:text-gray-50" // Increased contrast
-                        : "text-gray-700 hover:text-gray-900" // Increased contrast
-                    }`}
-                    aria-label="Post options"
-                  >
-                    <VDotsIcon />
-                  </button>
-
-                  {menuOpenForPost === post.id && (
-                    // menu container
-                    <div
-                      className={`absolute right-0 top-[120%] w-48 rounded-xl shadow-lg py-2 z-50 ${
-                        isDark
-                          ? "bg-gray-800/95 border border-purple-500/20 backdrop-blur-sm transition-all duration-300 hover:shadow-purple-500/10 hover:border-purple-500/30"
-                          : "bg-white/95 border border-purple-400/20 backdrop-blur-sm transition-all duration-300 hover:shadow-purple-400/10 hover:border-purple-400/30"
-                      }`}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="px-1">
-                        <PostMenuButton
-                          icon={<ShareIcon />}
-                          label="Share post"
-                          onClick={() =>
-                            memoizedHandlers.handleSharePost(post.id)}
-                          isDark={isDark}
-                        />
-
-                        {post.isAuthor && (
-                          <PostMenuButton
-                            icon={<EditIcon />}
-                            label="Edit post"
-                            onClick={() =>
-                              memoizedHandlers.handleEditPost(post.id)}
-                            isDark={isDark}
-                          />
-                        )}
-
-                        {(post.isAdmin || post.isAuthor) && (
-                          <PostMenuButton
-                            icon={<DeleteIcon />}
-                            label="Delete post"
-                            onClick={() =>
-                              memoizedHandlers.handleDeletePost(post.id)}
-                            isDark={isDark}
-                          />
-                        )}
-                      </div>
-                    </div>
+              <PostHeader
+                post={post}
+                isDark={isDark}
+                menuOpenForPost={menuOpenForPost}
+                onMenuToggle={(postId) =>
+                  setMenuOpenForPost(
+                    menuOpenForPost === postId ? null : postId,
                   )}
-                </div>
-              </div>
-              {/* End Modified Header Section */}
+                onShare={memoizedHandlers.handleSharePost}
+                onEdit={memoizedHandlers.handleEditPost}
+                onDelete={memoizedHandlers.handleDeletePost}
+              />
 
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  memoizedHandlers.handlePostClick(post.id, post);
-                }}
-                className="block relative cursor-pointer"
-              >
-                {/* Modified image section with title overlay */}
-                <div className="w-full aspect-[1/1] mb-4 relative">
-                  {/* Ensures 1:1 aspect ratio */}
-                  <img
-                    src={post.image || post.defaultImage}
-                    alt="Post attachment"
-                    width={600}
-                    height={600}
-                    className="w-full h-full rounded-none object-cover"
-                    loading={idx === 0 ? "eager" : "lazy"}
-                  />
-                  {/* Title overlay container - Now uses Flexbox */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
-                    {/* Tags are placed first within the flex container */}
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {post.tags.map((tag, index) => (
-                          <span
-                            key={index}
-                            className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                              isDark
-                                ? "bg-purple-800/80 text-purple-200 backdrop-blur-sm"
-                                : "bg-purple-100/90 text-purple-700 backdrop-blur-sm"
-                            }`}
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )} {/* Title comes after tags */}{" "}
-                    <h2 className="text-xl font-extrabold text-white line-clamp-5">
-                      {post.title ? post.title : post.content}
-                    </h2>
-                  </div>
-                </div>
-              </div>{" "}
-              <div className="flex items-center justify-between">
-                <a
-                  href={`${api_base_url}/post/${post.id}`}
-                  className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
-                    themeStyles.link.split(" ")[0]
-                  }`}
-                >
-                  <CommentIcon />{" "}
-                  <span>
-                    {post.commentCount
-                      ? `${post.commentCount} ${
-                        post.commentCount === 1 ? "comment" : "comments"
-                      }`
-                      : "Add comment"}
-                  </span>
-                </a>{" "}
-                <div
-                  className={`flex items-center gap-x-2 ${themeStyles.metadata} text-xs`}
-                >
-                  <span className="flex items-center gap-x-2">
-                    <ViewIcon /> {((post.views || post.viewCount || 0) +
-                        (postViews[post.id] || 0)) === 0
-                      ? "Be the first viewer"
-                      : `${
-                        (post.views || post.viewCount || 0) +
-                        (postViews[post.id] || 0)
-                      } ${
-                        ((post.views || post.viewCount || 0) +
-                            (postViews[post.id] || 0)) === 1
-                          ? "view"
-                          : "views"
-                      }`}
-                  </span>
-                </div>
-              </div>
+              <PostContent
+                post={post}
+                isDark={isDark}
+                index={idx}
+                onPostClick={memoizedHandlers.handlePostClick}
+              />
+
+              <PostFooter
+                postId={post.id}
+                commentCount={post.commentCount}
+                views={post.views}
+                viewCount={post.viewCount}
+                postViews={postViews}
+                api_base_url={api_base_url}
+                themeStyles={themeStyles}
+              />
             </div>
           ))} {/* Load more button for mobile / Sentinel for desktop */}{" "}
           {localPosts.length > 0 && (

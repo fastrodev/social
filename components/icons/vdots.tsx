@@ -2,7 +2,7 @@ export function VDotsIcon(props: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      className={props.className ? props.className : "h-5 w-5"}
       viewBox="0 0 20 20"
       fill="currentColor"
     >
