@@ -74,7 +74,7 @@ export default function Header(
 
   return (
     <div
-      class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-4 py-3 gap-x-3 ${textColorClass}`}
+      class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-4 py-3 gap-x-4 ${textColorClass}`}
     >
       <a href="/" class={`text-gray-100`}>
         <div class={`flex flex-col items-center`}>
@@ -89,7 +89,7 @@ export default function Header(
           </span>
         </div>
       </a>
-      <div class={`flex items-center gap-x-6 text-xs`}>
+      <div class={`flex items-center gap-x-4 text-xs`}>
         <a
           href="#"
           class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
