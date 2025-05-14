@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import BoltSvg from "@app/components/icons/bolt.tsx";
 import GithubSvg from "@app/components/icons/github-svg.tsx";
-import { VDotsIcon } from "@app/components/icons/vdots.tsx";
+// import { VDotsIcon } from "@app/components/icons/vdots.tsx";
 import { HeaderMenu } from "./HeaderMenu.tsx";
+import { PrismIcon } from "./icons/prism.tsx";
+import { CakeIcon } from "./icons/cake.tsx";
+import { TalentIcon } from "./icons/talent.tsx";
+import { JobIcon } from "./icons/job.tsx";
+import { BulbIcon } from "./icons/bulb.tsx";
 
 export default function Header(
   props: {
@@ -41,8 +46,8 @@ export default function Header(
 
   const textColorClass = isDark ? "text-gray-100" : "text-gray-700";
   const linkTextColorClass = isDark ? "text-gray-100" : "text-gray-700";
-  const defaultTitle = "Fastro Social";
-  const headerTitle = props.isLogin ? props.message : defaultTitle;
+  // const defaultTitle = "Fastro Social";
+  // const headerTitle = props.isLogin ? props.message : defaultTitle;
 
   const toggleMenu = (e: MouseEvent) => {
     e.stopPropagation();
@@ -69,49 +74,76 @@ export default function Header(
 
   return (
     <div
-      class={`container flex justify-between max-w-6xl mx-auto text-center text-sm p-3 ${textColorClass}`}
+      class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-4 py-3 gap-x-3 ${textColorClass}`}
     >
       <a href="/" class={`text-gray-100`}>
-        <div class={`flex space-x-2 items-center`}>
+        <div class={`flex flex-col items-center`}>
           <div
-            class={`border-[1px] border-gray-600 bg-gray-900 rounded-full p-[1px]`}
+            class={`border-[2px] border-gray-100 bg-gray-900 rounded-full p-[1px]`}
           >
-            <BoltSvg />
+            <BoltSvg height="18" width="18" />
           </div>
 
-          <span class={`${textColorClass}`}>
-            {headerTitle} {`${props.isLogin ? "" : "(Unstable)"} `}
+          <span class={`${textColorClass} text-center`}>
+            Unstable
           </span>
         </div>
       </a>
-      <div class={`flex items-center space-x-3`}>
+      <div class={`flex items-center gap-x-6 text-xs`}>
+        <a
+          href="#"
+          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
+        >
+          <JobIcon />
+          <span>Jobs</span>
+        </a>
+        <a
+          href="#"
+          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
+        >
+          <TalentIcon />
+          <span>Talents</span>
+        </a>
+        <a
+          href="#"
+          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
+        >
+          <PrismIcon />
+          <span>Projects</span>
+        </a>
+        <a
+          href="#"
+          class={`${linkTextColorClass} flex flex-col items-center rounded-full `}
+        >
+          <BulbIcon />
+          <span>Ideas</span>
+        </a>
+        <a
+          href="#"
+          class={`${linkTextColorClass} flex flex-col items-center rounded-full`}
+        >
+          <CakeIcon />
+          <span>Stories</span>
+        </a>
+
         {!props.isLogin && (
           <a
-            class={`${linkTextColorClass}`}
+            class={`${linkTextColorClass} flex flex-col items-center rounded-full`}
             href={props.base_url
               ? props.base_url + "/auth/github/signin"
               : `/auth/github/signin`}
           >
-            Sign in
+            {!props.avatar_url ? <GithubSvg /> : (
+              <img
+                loading="lazy"
+                src={props.avatar_url}
+                width={18}
+                class={`rounded-full text-center`}
+              />
+            )}
+            <span>Login</span>
           </a>
         )}
-
-        <a
-          aria-label="user profile"
-          class={`${linkTextColorClass}`}
-          href={props.isLogin
-            ? props.html_url
-            : "https://github.com/fastrodev/social"}
-        >
-          {!props.avatar_url ? <GithubSvg /> : (
-            <img
-              loading="lazy"
-              src={props.avatar_url}
-              width={18}
-              class={`rounded-full`}
-            />
-          )}
-        </a>
 
         {props.isLogin && (
           <div class="relative">
@@ -122,7 +154,12 @@ export default function Header(
               class={`${linkTextColorClass} p-1 rounded-full hover:bg-gray-700/30`}
               aria-label="More options"
             >
-              <VDotsIcon />
+              <img
+                loading="lazy"
+                src={props.avatar_url}
+                width={36}
+                class={`rounded-full`}
+              />
             </button>
 
             {menuOpen && (
