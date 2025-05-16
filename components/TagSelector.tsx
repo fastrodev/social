@@ -1,3 +1,4 @@
+// deno-lint-ignore-file
 import { useEffect, useState } from "preact/hooks";
 import { AnimatedText } from "./AnimatedText.tsx";
 import { TransitionTitle } from "./TransitionTitle.tsx";
@@ -61,27 +62,46 @@ export function TagSelector({ isDark, onSelectTag }: TagSelectorProps) {
 
   return (
     <div className="lg:w-64 flex flex-col gap-y-4">
+      {/* // Make this CTA Container have static height */}
       <div className="sticky top-6 hidden sm:hidden lg:block">
         <div className="w-full p-3 bg-gray-800/90 rounded-lg shadow-lg 
           border border-purple-500/20 backdrop-blur-sm
           transition-all duration-300 relative
           hover:shadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
           before:absolute before:inset-0 before:rounded-lg before:-z-10
-          overflow-hidden">
-          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3">
-            <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
-              <h2 className="text-lg font-semibold text-purple-300 mb-2 px-1">
-                <TransitionTitle
-                  text={titles[titleIndex].title}
-                  className="transition-all duration-300"
-                />
-              </h2>
-              <p className="text-sm text-gray-300 mb-3 px-1">
-                <AnimatedText
-                  text={titles[titleIndex].description}
-                  className="transition-all duration-300"
-                />
-              </p>
+          overflow-hidden h-auto">
+          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3 h-full">
+            <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0 h-full">
+              <div className="flex flex-col flex-1 min-h-[165px]">
+                <h2 className="text-lg font-semibold text-purple-300 mb-2 px-1">
+                  <TransitionTitle
+                    text={titles[titleIndex].title}
+                    className="transition-all duration-300"
+                  />
+                </h2>
+                <p className="text-sm text-gray-300 mb-3 px-1">
+                  <AnimatedText
+                    text={titles[titleIndex].description}
+                    className="transition-all duration-300"
+                  />
+                </p>
+              </div>
+              <button
+                type="button"
+                className="px-4 py-2 rounded-lg text-sm font-medium w-full mt-auto
+                  bg-gradient-to-r from-purple-600 to-pink-600
+                  text-white shadow-lg
+                  border border-purple-500/20
+                  transition-all duration-300
+                  hover:from-purple-500 hover:to-pink-500
+                  hover:shadow-purple-500/20 hover:scale-[1.02]
+                  active:scale-[0.98] active:opacity-90"
+                onClick={() =>
+                  window.location.href =
+                    "https://web.fastro.dev/auth/github/signin"}
+              >
+                Start Creating
+              </button>
             </div>
           </div>
         </div>
