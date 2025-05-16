@@ -14,7 +14,28 @@ export function TagSelector({ isDark, onSelectTag }: TagSelectorProps) {
   };
 
   return (
-    <div className="lg:w-64 flex-shrink-0">
+    <div className="lg:w-64 flex flex-col gap-y-4">
+      <div className="sticky top-6 hidden sm:hidden lg:block">
+        <div className="w-full p-3 bg-gray-800/90 rounded-lg shadow-lg 
+          border border-purple-500/20 backdrop-blur-sm
+          transition-all duration-300 relative
+          hover:shadow-purple-500/10 hover:border-purple-500/30 hover:shadow-2xl
+          before:absolute before:inset-0 before:rounded-lg before:-z-10
+          overflow-hidden">
+          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3">
+            <div className="flex lg:flex-col gap-2 min-w-max lg:min-w-0">
+              <h2 className="text-lg font-semibold text-purple-300 mb-2 px-1">
+                Craft, Share, Earn: Unlock Profits with Sponsored Content
+              </h2>
+              <p className="text-sm text-gray-300 mb-3 px-1">
+                Create content, spread value, earn points, and unlock profit
+                sharing when your content lands a sponsor.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="sticky top-6">
         <div className="w-full p-3 bg-gray-800/90 rounded-lg shadow-lg 
           border border-purple-500/20 backdrop-blur-sm
@@ -30,9 +51,6 @@ export function TagSelector({ isDark, onSelectTag }: TagSelectorProps) {
                 "Business",
                 "Course",
                 "Deck",
-                "Job",
-                "Marketplace",
-                "Project",
                 "Question",
                 "Referral",
                 "Review",
