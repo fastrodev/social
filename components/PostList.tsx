@@ -221,6 +221,23 @@ export const PostList = memo(function PostList({
     }
   }, [isMobile, localPosts, api_base_url, handleLoadMore]);
 
+  useEffect(() => {
+    // Preload the image for the first post to improve LCP
+    if (localPosts.length > 0 && localPosts[0].image) {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = localPosts[0].image;
+      link.crossOrigin = "anonymous";
+      document.head.appendChild(link);
+
+      // Clean up on unmount
+      return () => {
+        document.head.removeChild(link);
+      };
+    }
+  }, [localPosts]);
+
   const prefetchPostData = async (postId: string) => {
     // Skip if already fetched
     if (fetchedPosts.current.has(postId)) {
