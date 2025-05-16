@@ -76,7 +76,7 @@ export default function Header(
       class={`container flex justify-between items-center max-w-6xl mx-auto text-center text-xs px-6 py-4 gap-x-8 ${textColorClass}`}
     >
       <div
-        class={`text-gray-100 hidden sm:flex lg:flex items-center space-x-6`}
+        class={`text-gray-100 hidden sm:flex lg:flex items-center space-x-3`}
       >
         <a href="/" class={`flex flex-col items-center`}>
           <div
