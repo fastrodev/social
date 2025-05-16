@@ -16,6 +16,8 @@ export function indexLayout(
         <link href="styles.css" rel="stylesheet" />
         <link rel="preconnect" href="https://picsum.photos" />
         <link rel="dns-prefetch" href="https://picsum.photos" />
+        <link rel="preconnect" href="https://web.fastro.dev" />
+        <link rel="dns-prefetch" href="https://web.fastro.dev" />
       </head>
       <body
         id="root"
