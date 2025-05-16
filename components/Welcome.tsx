@@ -30,7 +30,7 @@ export default function Welcome() {
           <BoltSvg width="24" height="24" className="sm:h-8 sm:w-8" />
         </div>
       </div>
-      <p className="text-base sm:text-xl opacity-80">
+      <p className="text-base mx-auto sm:text-xl opacity-80 max-w-[400px]">
         {loadingText}
       </p>
     </div>

@@ -27,21 +27,25 @@ const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
   };
 };
 
-export default function Index({ data }: PageProps<
-  {
-    user: string;
-    title: string;
-    description: string;
-    github_auth: string;
-    base_url: string;
-    apiBaseUrl: string;
-    share_base_url: string;
-    avatar_url?: string;
-    isLogin: boolean;
-    author: string;
-    message: string;
-  }
->) {
+type User = {
+  id: string;
+  name: string;
+  avatar: string;
+};
+
+export default function Index({ data }: PageProps<{
+  user: User; // Update this type
+  title: string;
+  description: string;
+  github_auth: string;
+  base_url: string;
+  apiBaseUrl: string;
+  share_base_url: string;
+  avatar_url?: string;
+  isLogin: boolean;
+  author: string;
+  message: string;
+}>) {
   const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -222,6 +226,13 @@ export default function Index({ data }: PageProps<
                     <TagSelector
                       isDark={isDark}
                       onSelectTag={handleTagSelect}
+                      user={data.isLogin
+                        ? {
+                          id: data.author,
+                          name: data.author,
+                          avatar: data.avatar_url || "",
+                        }
+                        : undefined}
                     />
                   )}
 
