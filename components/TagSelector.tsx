@@ -1,8 +1,9 @@
 // deno-lint-ignore-file
 import { useState } from "preact/hooks";
 import { CtaCard } from "./CtaCard.tsx";
+import { UserCard } from "./UserCard.tsx";
 
-type User = {
+export type User = {
   id: string;
   name: string;
   avatar: string;
@@ -42,26 +43,7 @@ export function TagSelector({ isDark, onSelectTag, user }: TagSelectorProps) {
   return (
     <div className="lg:w-64 flex flex-col gap-y-4">
       <div className="sticky top-6 hidden sm:hidden lg:block">
-        {user
-          ? (
-            <div className="w-full p-4 bg-gray-800/90 rounded-lg shadow-lg 
-            border border-purple-500/20 backdrop-blur-sm
-            transition-all duration-300">
-              <div className="flex items-center gap-3">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full border-2 border-purple-500/20"
-                />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-gray-200">
-                    {user.name}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )
-          : <CtaCard />}
+        {user ? <UserCard user={user} /> : <CtaCard />}
       </div>
 
       <div className="sticky top-6">
