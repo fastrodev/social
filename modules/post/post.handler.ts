@@ -232,9 +232,9 @@ export const editPostHandler = async (req: HttpRequest) => {
 };
 
 function generateAvatarUrl(): string {
-  // Generate a random 3-digit number between 100-999
-  const randomDigits = Math.floor(100 + Math.random() * 900);
-  return `https://avatars.githubusercontent.com/u/1868${randomDigits}?v=4`;
+  // Generate a random 3-digit number between 100-999999
+  const randomDigits = Math.floor(100 + Math.random() * 999900);
+  return `https://web.fastro.dev/api/avatar/${randomDigits}`;
 }
 
 export async function postHandler(req: HttpRequest, ctx: Context) {
