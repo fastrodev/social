@@ -10,7 +10,7 @@ export default function Welcome() {
 
       if (!hasLoaded) {
         setLoadingText(
-          "Create content, spread value, earn points, and unlock profit sharing when your content lands a sponsor.",
+          "Create, view, or comment on content to earn points and unlock profit sharing when content lands a sponsor.",
         );
 
         const date = new Date();

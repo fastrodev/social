@@ -27,6 +27,16 @@ export function CtaCard() {
       description:
         "Connect with sponsors, deliver valuable content, and earn from your creative contributions.",
     },
+    {
+      title: "Engage & Earn: Viewer Rewards Program",
+      description:
+        "Earn points and share profits by engaging with content and helping sponsors find valuable discussions.",
+    },
+    {
+      title: "Comment & Profit: Join The Discussion",
+      description:
+        "Add value through comments and earn a share when your insights help attract sponsors.",
+    },
   ];
 
   useEffect(() => {
