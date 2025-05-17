@@ -1,4 +1,4 @@
-export function CommentIcon(props: { className?: string }) {
+export function HeartIcon(props: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -13,9 +13,7 @@ export function CommentIcon(props: { className?: string }) {
       className={props.className}
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-      <path d="M8 9h8" />
-      <path d="M8 13h6" />
-      <path d="M9 18h-3a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-3l-3 3l-3 -3z" />
+      <path d="M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
     </svg>
   );
 }
