@@ -41,8 +41,9 @@ export function TagSelector({ isDark, onSelectTag, user }: TagSelectorProps) {
   );
 
   return (
-    <div className="lg:w-64 flex flex-col gap-y-4">
-      <div className="sticky top-6 hidden sm:hidden lg:block">
+    // hide this div on mobile
+    <div className="hidden lg:flex lg:w-64 flex-col gap-y-4">
+      <div className="sticky top-6">
         {user ? <UserCard user={user} /> : <CtaCard />}
       </div>
 
