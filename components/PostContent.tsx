@@ -1,15 +1,13 @@
 import { Post } from "@app/modules/index/type.ts";
 
-interface PostContentProps {
+interface Props {
   post: Post;
   isDark: boolean;
   index: number;
   onPostClick: (postId: string, post: Post) => void;
 }
 
-export const PostContent = (
-  { post, isDark, index, onPostClick }: PostContentProps,
-) => {
+export function PostContent({ post, isDark, index, onPostClick }: Props) {
   return (
     <div
       onClick={(e) => {
@@ -51,4 +49,4 @@ export const PostContent = (
       </div>
     </div>
   );
-};
+}

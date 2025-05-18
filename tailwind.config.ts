@@ -1,4 +1,5 @@
 import ts from "tailwind-scrollbar";
+import tsh from "tailwind-scrollbar-hide";
 
 export default {
   content: [
@@ -8,6 +9,7 @@ export default {
   darkMode: "class",
   plugins: [
     ts,
+    tsh,
   ],
   variants: {
     scrollbar: ["rounded", "dark"],

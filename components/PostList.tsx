@@ -27,6 +27,7 @@ interface Props {
   api_base_url: string;
   share_base_url: string;
   onOpenModal: (post: Post, comments: Comment[]) => void;
+  onLoadMore: () => Promise<void>;
 }
 
 export const PostList = memo(function PostList({
@@ -37,6 +38,7 @@ export const PostList = memo(function PostList({
   api_base_url,
   share_base_url,
   onOpenModal,
+  onLoadMore,
 }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [showPosts, setShowPosts] = useState(true);
@@ -141,23 +143,6 @@ export const PostList = memo(function PostList({
 
   const PREFETCH_DELAY = 300;
 
-  const handleLoadMore = useCallback(async () => {
-    try {
-      const lastPost = localPosts[localPosts.length - 1];
-      const response = await fetch(
-        `${api_base_url}/api/posts?cursor=${lastPost.id}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch more posts");
-
-      const newPosts = await response.json();
-      if (newPosts.length > 0) {
-        setLocalPosts((prev) => [...prev, ...newPosts]);
-      }
-    } catch (error) {
-      console.error("Error loading more posts:", error);
-    }
-  }, [localPosts, api_base_url]);
-
   const memoizedPosts = useMemo(() => {
     return localPosts.map((post) => ({
       ...post,
@@ -201,14 +186,14 @@ export const PostList = memo(function PostList({
         (entries) => {
           const [entry] = entries;
           if (entry.isIntersecting) {
-            handleLoadMore();
+            onLoadMore(); // Use the passed function
           }
         },
         {
           root: null,
           rootMargin: "100px",
           threshold: 0.1,
-        },
+        }
       );
 
       const sentinel = sentinelRef.current;
@@ -222,7 +207,7 @@ export const PostList = memo(function PostList({
         }
       };
     }
-  }, [isMobile, localPosts, api_base_url, handleLoadMore]);
+  }, [isMobile, onLoadMore]);
 
   useEffect(() => {
     // Preload the image for the first post to improve LCP
@@ -363,7 +348,7 @@ export const PostList = memo(function PostList({
                 ? (
                   <div className="flex justify-center mt-4 mb-8">
                     <button
-                      onClick={handleLoadMore}
+                      onClick={onLoadMore}
                       className={`px-4 py-2 rounded-lg ${
                         isDark
                           ? "bg-purple-600 hover:bg-purple-700"

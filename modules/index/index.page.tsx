@@ -161,6 +161,12 @@ export default function Index({ data }: PageProps<{
     console.log(`Selected tag: ${tag}`);
   };
 
+  const handleLoadMore = useCallback(async () => {
+    if (hasMore && !isLoading) {
+      fetchPosts(false);
+    }
+  }, [hasMore, isLoading, fetchPosts]);
+
   const themeStyles = {
     button: isDark
       ? "bg-purple-600 text-white hover:bg-purple-700"
@@ -262,6 +268,7 @@ export default function Index({ data }: PageProps<{
                             api_base_url={data.apiBaseUrl}
                             share_base_url={data.share_base_url}
                             onOpenModal={handleOpenModal}
+                            onLoadMore={handleLoadMore} // Add this prop
                           />
                         </div>
                       )}
