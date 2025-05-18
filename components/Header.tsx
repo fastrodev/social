@@ -18,6 +18,7 @@ export default function Header(
     previous_url?: string;
     isDark?: boolean;
     message?: string;
+    className?: string;
   },
 ) {
   const [menuOpen, setMenuOpen] = useState(false);

@@ -216,7 +216,9 @@ export default function Index({ data }: PageProps<{
           )
           : (
             <>
+              {/* Header is sticky to the viewport */}
               <Header
+                className="sticky top-0 z-30 bg-gray-950 shadow-md"
                 isLogin={data.isLogin}
                 avatar_url={data.avatar_url || ""}
                 html_url=""
@@ -228,23 +230,28 @@ export default function Index({ data }: PageProps<{
               <div className="max-w-6xl mx-auto w-full px-4">
                 {/* Three Column Layout */}
                 <div className="flex flex-col lg:flex-row gap-4">
+                  {/* Left Column - TagSelector */}
                   {!isEditorActive && (
-                    <TagSelector
-                      isDark={isDark}
-                      onSelectTag={handleTagSelect}
-                      user={data.isLogin
-                        ? {
-                          id: data.author,
-                          name: data.author,
-                          avatar: data.avatar_url || "",
-                        }
-                        : undefined}
-                    />
+                    <div className="hidden lg:block w-64 flex-shrink-0">
+                      <div className="">
+                        <TagSelector
+                          isDark={isDark}
+                          onSelectTag={handleTagSelect}
+                          user={data.isLogin
+                            ? {
+                              id: data.author,
+                              name: data.author,
+                              avatar: data.avatar_url || "",
+                            }
+                            : undefined}
+                        />
+                      </div>
+                    </div>
                   )}
 
-                  {/* Middle Column - Main Content (Largest) */}
+                  {/* Middle Column - Main Content */}
                   <main className="lg:flex-1 min-w-0">
-                    <div className="w-full flex flex-col gap-y-4 min-h-[400px]">
+                    <div className="w-full flex flex-col gap-y-4 h-[calc(100vh-78px)] overflow-y-auto scrollbar-hide">
                       {!isLoading && (
                         <Editor
                           apiBaseUrl={data.apiBaseUrl}
@@ -255,27 +262,30 @@ export default function Index({ data }: PageProps<{
                       )}
 
                       {!isEditorActive && (
-                        <div className="transform translate-z-0">
-                          <PostList
-                            // posts={posts}
-                            data={{
-                              isLogin: data.isLogin,
-                              author: data.author,
-                              avatar_url: data.avatar_url || "",
-                            }}
-                            isDark={isDark}
-                            isMobile={isMobile}
-                            api_base_url={data.apiBaseUrl}
-                            share_base_url={data.share_base_url}
-                            onOpenModal={handleOpenModal}
-                          />
-                        </div>
+                        <PostList
+                          data={{
+                            isLogin: data.isLogin,
+                            author: data.author,
+                            avatar_url: data.avatar_url || "",
+                          }}
+                          isDark={isDark}
+                          isMobile={isMobile}
+                          api_base_url={data.apiBaseUrl}
+                          share_base_url={data.share_base_url}
+                          onOpenModal={handleOpenModal}
+                        />
                       )}
                     </div>
                   </main>
 
                   {/* Right Column - Advertisement */}
-                  {!isEditorActive && <Advertisement />}
+                  {!isEditorActive && (
+                    <div className="hidden lg:block w-80 flex-shrink-0">
+                      <div className="sticky z-20">
+                        <Advertisement />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </>
