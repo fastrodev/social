@@ -11,6 +11,9 @@ import {
   useState,
 } from "preact/hooks";
 import { memo } from "preact/compat";
+import { AdvertisementCard } from "./AdvertisementCard.tsx";
+
+const DEFAULT_CONTACT_EMAIL = "hello@fastro.dev";
 
 interface Props {
   posts: Post[];
@@ -300,51 +303,59 @@ export const PostList = memo(function PostList({
 
   return (
     <>
+      {/* add advertisement-card in the last item in every API request. show it only on mobile device. */}
       {showPosts && memoizedPosts.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-4">
           {memoizedPosts.map((post, idx) => (
-            // Use memoized post data
-            <div
-              key={post.id}
-              onMouseEnter={() => {
-                const timer = setTimeout(
-                  () => prefetchPostData(post.id),
-                  PREFETCH_DELAY,
-                );
-                return () => clearTimeout(timer);
-              }}
-              className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} backdrop-blur-sm ${themeStyles.cardGlow} relative`}
-            >
-              <PostHeader
-                post={post}
-                isDark={isDark}
-                menuOpenForPost={menuOpenForPost}
-                onMenuToggle={(postId) =>
-                  setMenuOpenForPost(
-                    menuOpenForPost === postId ? null : postId,
-                  )}
-                onShare={memoizedHandlers.handleSharePost}
-                onEdit={memoizedHandlers.handleEditPost}
-                onDelete={memoizedHandlers.handleDeletePost}
-              />
+            <>
+              <div
+                key={post.id}
+                onMouseEnter={() => {
+                  const timer = setTimeout(
+                    () => prefetchPostData(post.id),
+                    PREFETCH_DELAY,
+                  );
+                  return () => clearTimeout(timer);
+                }}
+                className={`${themeStyles.cardBg} flex flex-col rounded-lg px-4 py-3 border ${themeStyles.cardBorder} backdrop-blur-sm ${themeStyles.cardGlow} relative`}
+              >
+                <PostHeader
+                  post={post}
+                  isDark={isDark}
+                  menuOpenForPost={menuOpenForPost}
+                  onMenuToggle={(postId) =>
+                    setMenuOpenForPost(
+                      menuOpenForPost === postId ? null : postId,
+                    )}
+                  onShare={memoizedHandlers.handleSharePost}
+                  onEdit={memoizedHandlers.handleEditPost}
+                  onDelete={memoizedHandlers.handleDeletePost}
+                />
 
-              <PostContent
-                post={post}
-                isDark={isDark}
-                index={idx}
-                onPostClick={memoizedHandlers.handlePostClick}
-              />
+                <PostContent
+                  post={post}
+                  isDark={isDark}
+                  index={idx}
+                  onPostClick={memoizedHandlers.handlePostClick}
+                />
 
-              <PostFooter
-                postId={post.id}
-                commentCount={post.commentCount}
-                views={post.views}
-                viewCount={post.viewCount}
-                postViews={postViews}
-                api_base_url={api_base_url}
-                themeStyles={themeStyles}
-              />
-            </div>
+                <PostFooter
+                  postId={post.id}
+                  commentCount={post.commentCount}
+                  views={post.views}
+                  viewCount={post.viewCount}
+                  postViews={postViews}
+                  api_base_url={api_base_url}
+                  themeStyles={themeStyles}
+                />
+              </div>
+              {/* Show advertisement after every 5th post on mobile */}
+              {isMobile && (idx + 1) % 5 === 0 && (
+                <div className="block sm:hidden lg:hidden">
+                  <AdvertisementCard contactEmail={DEFAULT_CONTACT_EMAIL} />
+                </div>
+              )}
+            </>
           ))} {/* Load more button for mobile / Sentinel for desktop */}{" "}
           {localPosts.length > 0 && (
             <>

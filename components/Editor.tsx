@@ -338,7 +338,7 @@ export function Editor(
 
   const EditorSkeleton = () => (
     <div
-      className={`${themeStyles.cardBg} mx-auto max-w-4xl rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 
+      className={`${themeStyles.cardBg} mx-auto max-w-4xl rounded-lg px-4 pt-4 pb-2
         border ${themeStyles.cardBorder} backdrop-blur-lg animate-pulse relative
         ${themeStyles.cardGlow}`}
     >
@@ -350,7 +350,7 @@ export function Editor(
     <>
       {isSubmitting ? <EditorSkeleton /> : (
         <div
-          className={`${themeStyles.cardBg} mx-auto w-full rounded-lg px-4 pt-4 pb-2 sm:px-6 sm:pt-6 sm:pb-3 
+          className={`${themeStyles.cardBg} mx-auto w-full rounded-lg px-4 pt-4 pb-2 
               border ${themeStyles.cardBorder} backdrop-blur-lg relative
               ${themeStyles.cardGlow}`}
         >

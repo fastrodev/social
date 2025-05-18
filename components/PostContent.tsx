@@ -19,16 +19,15 @@ export const PostContent = (
       }}
       className="block relative cursor-pointer"
     >
-      <div className="w-full aspect-[1/1] mb-4 relative">
+      <div className="w-full mb-4">
+        {/* static height for mobile and desktop (smaller) */}
         <img
           src={post.image || post.defaultImage}
           alt="Post attachment"
-          width={600}
-          height={600}
-          className="w-full h-full rounded-none object-cover"
+          className="w-full h-36 sm:h-48 md:h-60 rounded-t-md object-cover"
           loading={index === 0 ? "eager" : "lazy"}
         />
-        <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end">
+        <div className="bg-black/60 backdrop-blur-sm px-4 py-3 flex flex-col justify-end rounded-b-lg">
           {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {post.tags.map((tag, index) => (
@@ -46,7 +45,7 @@ export const PostContent = (
             </div>
           )}
           <h2 className="text-base font-semibold sm:font-extrabold sm:text-xl text-white line-clamp-5">
-            {post.title ? post.title : post.content}
+            {post.title || post.content}
           </h2>
         </div>
       </div>

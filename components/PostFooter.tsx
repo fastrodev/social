@@ -33,7 +33,7 @@ export const PostFooter = ({
       {/* comment */}
       <a
         href={`${api_base_url}/post/${postId}`}
-        className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
+        className={`flex flex-col items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
           themeStyles.link.split(" ")[0]
         }`}
       >
@@ -48,7 +48,7 @@ export const PostFooter = ({
       {/* sponsor button */}
       <button
         type="button"
-        className={`flex items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
+        className={`flex flex-col items-center gap-x-1 ${themeStyles.footer} text-xs hover:${
           themeStyles.link.split(" ")[0]
         }`}
         onClick={() =>
@@ -61,7 +61,7 @@ export const PostFooter = ({
       <div
         className={`flex items-center gap-x-2 ${themeStyles.metadata} text-xs`}
       >
-        <span className="flex items-center gap-x-1">
+        <span className="flex flex-col items-center gap-x-1">
           <ViewIcon className="w-5 h-5" /> {totalViews === 0
             ? "Be the first viewer"
             : `${totalViews} ${totalViews === 1 ? "view" : "views"}`}

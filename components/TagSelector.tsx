@@ -63,8 +63,8 @@ export function TagSelector({ isDark, onSelectTag, user }: TagSelectorProps) {
                   border-[1px] shadow-sm relative
                   ${
                   isDark
-                    ? "bg-gray-950/50 text-gray-300 border-purple-500/10 placeholder-gray-500"
-                    : "bg-gray-700/90 text-gray-200 border-purple-400/10 placeholder-gray-400"
+                    ? "bg-gray-950/50 text-gray-300 border-gray-700 placeholder-gray-500"
+                    : "bg-gray-700/90 text-gray-200 border-gray-700 placeholder-gray-400"
                 }
                   focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/20`}
                 value={searchTerm}
@@ -72,11 +72,12 @@ export function TagSelector({ isDark, onSelectTag, user }: TagSelectorProps) {
                   setSearchTerm((e.target as HTMLInputElement).value)}
               />
               {filteredTags.map((tag) => (
+                // generate dummy quantity for each tag, put it in a span with justify-between
                 <button
                   type="button"
                   key={tag}
                   className={`px-4 py-2 md:px-3 md:py-1 rounded-full text-sm transition-all duration-200 
-                    whitespace-nowrap flex-shrink-0 lg:w-full text-left
+                    whitespace-nowrap flex-shrink-0 lg:w-full
                     border-[1px] border-purple-500/10 shadow-sm relative overflow-hidden
                     touch-manipulation select-none
                     active:scale-95 active:opacity-80
@@ -96,7 +97,12 @@ export function TagSelector({ isDark, onSelectTag, user }: TagSelectorProps) {
                     transition-all duration-300`}
                   onClick={() => handleTagSelect(tag)}
                 >
-                  {tag}
+                  <div className="flex justify-between items-center w-full">
+                    <span>{tag}</span>
+                    <span className="text-xs opacity-60">
+                      {Math.floor(Math.random() * 100) + 1}
+                    </span>
+                  </div>
                 </button>
               ))}
             </div>
