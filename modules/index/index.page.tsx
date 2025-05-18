@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 import { PageProps } from "fastro/core/server/types.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import Header from "@app/components/Header.tsx";
 import { Editor } from "@app/components/Editor.tsx";
 import { PostList } from "@app/components/PostList.tsx";
@@ -50,8 +50,7 @@ export default function Index({ data }: PageProps<{
   const [isMobile, setIsMobile] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [cursor, setCursor] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+  // const [hasMore, setHasMore] = useState(true);
   const [isEditorActive, setIsEditorActive] = useState(false);
   const [modalState, setModalState] = useState<{
     open: boolean;
@@ -60,30 +59,25 @@ export default function Index({ data }: PageProps<{
   }>({ open: false, post: null, comments: [] });
 
   useEffect(() => {
-    const checkMobile = debounce(() => {
-      requestAnimationFrame(() => {
-        setIsMobile(window.innerWidth < 768);
-      });
-    }, 100);
+    // Initial check without animation frame or debounce
+    const initialWidth = window.innerWidth;
+    setIsMobile(initialWidth < 768);
 
-    checkMobile();
+    // Optimized resize handler with value check
+    const checkMobile = debounce(() => {
+      const isMobileWidth = window.innerWidth < 768;
+      // Only update state if the value changed
+      if (isMobileWidth !== isMobile) {
+        setIsMobile(isMobileWidth);
+      }
+    }, 250); // Increased debounce time for better performance
+
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
-    const handleLoadMore = () => {
-      if (hasMore && !isLoading) {
-        fetchPosts(false);
-      }
-    };
-
-    window.addEventListener("loadMorePosts", handleLoadMore);
-    return () => window.removeEventListener("loadMorePosts", handleLoadMore);
-  }, [hasMore, isLoading]);
-
-  useEffect(() => {
-    fetchPosts(true);
+    healthCheck(true);
   }, []);
 
   useEffect(() => {
@@ -91,59 +85,16 @@ export default function Index({ data }: PageProps<{
     console.log("oauth-session cookie:", userCookie);
   }, []);
 
-  const fetchPosts = async (isInitial: boolean = false) => {
+  const healthCheck = async (isInitial: boolean = false) => {
     try {
       setIsLoading(true);
-      const url = new URL("/api/posts", data.apiBaseUrl);
-      console.log("Fetching posts from:", url.toString());
-      url.searchParams.set("limit", "5");
-      if (!isInitial && cursor) {
-        url.searchParams.set("cursor", cursor);
-      }
-
-      const response = await fetch(url);
-      const contentType = response.headers.get("content-type");
-
-      if (!response.ok || !contentType?.includes("application/json")) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
-
-      const post = await response.json();
-
-      // Validate that data is an array
-      if (!Array.isArray(post)) {
-        throw new Error("Invalid response format: expected an array");
-      }
-
-      // Check if we received any posts
-      if (post.length === 0) {
-        setHasMore(false);
-        return;
-      }
-
-      // Set the cursor to the last post's ID for pagination
-      setCursor(post[post.length - 1].id);
-
-      // Check if we have fewer posts than requested (indicates end of data)
-      if (post.length < 4) {
-        setHasMore(false);
-      }
-
-      // Ensure we don't duplicate posts by checking IDs
-      if (isInitial) {
-        setPosts(post);
-      } else {
-        setPosts((prev) => {
-          // Get existing post IDs
-          const existingIds = new Set(prev.map((post) => post.id));
-          // Filter out any duplicates
-          const newPosts = post.filter((post) => !existingIds.has(post.id));
-          return [...prev, ...newPosts];
-        });
-      }
+      const url = new URL("/api/healthcheck", data.apiBaseUrl);
+      await fetch(url);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      setHasMore(false); // Stop trying to load more if we hit an error
+      console.error("Health check failed:", error);
+      if (isInitial) {
+        setIsLoading(false);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -159,19 +110,6 @@ export default function Index({ data }: PageProps<{
 
   const handleTagSelect = (tag: string) => {
     console.log(`Selected tag: ${tag}`);
-  };
-
-  const handleLoadMore = useCallback(async () => {
-    if (hasMore && !isLoading) {
-      fetchPosts(false);
-    }
-  }, [hasMore, isLoading, fetchPosts]);
-
-  const themeStyles = {
-    button: isDark
-      ? "bg-purple-600 text-white hover:bg-purple-700"
-      : "bg-purple-500 text-white hover:bg-purple-600",
-    // Add any other theme styles you need here
   };
 
   return (
