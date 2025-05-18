@@ -18,15 +18,6 @@ const getCookie = (name: string): string | null => {
   return match ? decodeURIComponent(match[2]) : null;
 };
 
-// Replace the existing debounce function with this typed version
-const debounce = <T extends (...args: any[]) => any>(fn: T, ms: number) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), ms);
-  };
-};
-
 type User = {
   id: string;
   name: string;
@@ -59,18 +50,18 @@ export default function Index({ data }: PageProps<{
   }>({ open: false, post: null, comments: [] });
 
   useEffect(() => {
-    // Initial check without animation frame or debounce
+    // Initial check
     const initialWidth = window.innerWidth;
     setIsMobile(initialWidth < 768);
 
-    // Optimized resize handler with value check
-    const checkMobile = debounce(() => {
+    // Direct resize handler without debounce
+    const checkMobile = () => {
       const isMobileWidth = window.innerWidth < 768;
-      // Only update state if the value changed
+      // Still keep the value check to avoid unnecessary rerenders
       if (isMobileWidth !== isMobile) {
         setIsMobile(isMobileWidth);
       }
-    }, 5000); // Increased debounce time for better performance
+    };
 
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
