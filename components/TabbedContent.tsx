@@ -59,14 +59,24 @@ export function TabbedContent(
         {data[activeTab]?.map((post) => (
           <div
             key={post.id}
-            className="p-3 border border-gray-800 rounded-md bg-gray-950/90 hover:bg-gray-900/90 hover:shadow-md transition-all duration-200 cursor-pointer hover:cursor-pointer"
+            className="flex items-center gap-3 p-2.5 border border-gray-800 rounded-md bg-gray-950/90 hover:bg-gray-900/90 hover:shadow-md transition-all duration-200 cursor-pointer"
           >
-            <h3 className="text-sm font-semibold text-gray-100">
-              {post.title}
-            </h3>
-            <p className="mt-1 text-xs text-gray-400">
-              This is a dummy description.
-            </p>
+            <div className="w-12 h-12 flex-shrink-0 overflow-hidden rounded">
+              <img
+                src={`https://picsum.photos/seed/${post.id}/100/100`}
+                alt="Post thumbnail"
+                className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+                loading="lazy"
+              />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-sm font-semibold text-gray-100">
+                {post.title}
+              </h3>
+              <p className="mt-0.5 text-xs text-gray-400">
+                This is a dummy description.
+              </p>
+            </div>
           </div>
         ))}
       </div>
