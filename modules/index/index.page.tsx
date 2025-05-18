@@ -257,7 +257,7 @@ export default function Index({ data }: PageProps<{
                       {!isEditorActive && (
                         <div className="transform translate-z-0">
                           <PostList
-                            posts={posts}
+                            // posts={posts}
                             data={{
                               isLogin: data.isLogin,
                               author: data.author,
@@ -268,7 +268,6 @@ export default function Index({ data }: PageProps<{
                             api_base_url={data.apiBaseUrl}
                             share_base_url={data.share_base_url}
                             onOpenModal={handleOpenModal}
-                            onLoadMore={handleLoadMore} // Add this prop
                           />
                         </div>
                       )}

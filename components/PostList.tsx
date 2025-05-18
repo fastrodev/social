@@ -16,7 +16,6 @@ import { AdvertisementCard } from "./AdvertisementCard.tsx";
 const DEFAULT_CONTACT_EMAIL = "hello@fastro.dev";
 
 interface Props {
-  posts: Post[];
   data: {
     isLogin: boolean;
     author: string;
@@ -27,28 +26,71 @@ interface Props {
   api_base_url: string;
   share_base_url: string;
   onOpenModal: (post: Post, comments: Comment[]) => void;
-  onLoadMore: () => Promise<void>;
 }
 
 export const PostList = memo(function PostList({
-  posts,
   data,
   isDark,
   isMobile,
   api_base_url,
   share_base_url,
   onOpenModal,
-  onLoadMore,
 }: Props) {
   const [menuOpenForPost, setMenuOpenForPost] = useState<string | null>(null);
   const [showPosts, setShowPosts] = useState(true);
-  const [localPosts, setLocalPosts] = useState<Post[]>(posts);
+  const [localPosts, setLocalPosts] = useState<Post[]>([]);
   const [postViews, setPostViews] = useState<Record<string, number>>({});
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
   const fetchedPosts = useRef(new Set<string>());
   const dataCache = useRef(
     new Map<string, { post: Post; comments: Comment[] }>(),
   );
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const LIMIT = 5; // Default limit
+
+  // Fetch posts with cursor
+  const fetchPosts = async (cursorId: string | null = null) => {
+    try {
+      let url = `${api_base_url}/api/posts?limit=${LIMIT}`;
+      if (cursorId) url += `&cursor=${cursorId}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch posts");
+      const posts = await response.json();
+
+      // If fewer posts are returned than the limit, we've reached the end
+      if (posts.length < LIMIT) setHasMore(false);
+
+      return posts;
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      setHasMore(false);
+      return [];
+    }
+  };
+
+  // Initial load
+  useEffect(() => {
+    let mounted = true;
+    const loadInitialPosts = async () => {
+      setIsLoading(true);
+      const initialPosts = await fetchPosts(null);
+      if (!mounted) return;
+
+      setLocalPosts(initialPosts);
+      setCursor(
+        initialPosts.length ? initialPosts[initialPosts.length - 1].id : null,
+      );
+      setHasMore(initialPosts.length === LIMIT);
+      setIsLoading(false);
+    };
+    loadInitialPosts();
+    return () => {
+      mounted = false;
+    };
+  }, []); // Only run once on mount
 
   const handlePostClick = async (postId: string, post: Post) => {
     // Pass the post directly to avoid searching again
@@ -141,6 +183,23 @@ export const PostList = memo(function PostList({
     window.location.href = `${api_base_url}/post/${postId}?edit=true`;
   };
 
+  // Load more posts
+  const handleLoadMore = async () => {
+    if (isLoading || !hasMore) return; // Prevent duplicate fetches
+    setIsLoading(true);
+
+    const newPosts = await fetchPosts(cursor);
+    setLocalPosts((prev) => {
+      const existingIds = new Set(prev.map((p: Post) => p.id));
+      const filtered = newPosts.filter((p: Post) => !existingIds.has(p.id));
+      return [...prev, ...filtered];
+    });
+
+    setCursor(newPosts.length ? newPosts[newPosts.length - 1].id : cursor);
+    setHasMore(newPosts.length === LIMIT);
+    setIsLoading(false);
+  };
+
   const PREFETCH_DELAY = 300;
 
   const memoizedPosts = useMemo(() => {
@@ -152,6 +211,7 @@ export const PostList = memo(function PostList({
     }));
   }, [localPosts, data.author]);
 
+  // Update memoizedHandlers dependencies
   const memoizedHandlers = useMemo(
     () => ({
       handlePostClick: (postId: string, post: Post) =>
@@ -159,13 +219,10 @@ export const PostList = memo(function PostList({
       handleDeletePost,
       handleSharePost,
       handleEditPost,
+      handleLoadMore,
     }),
-    [api_base_url], // Add other dependencies if needed
+    [api_base_url, cursor], // Add cursor as dependency
   );
-
-  useEffect(() => {
-    setLocalPosts(posts);
-  }, [posts]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -178,36 +235,6 @@ export const PostList = memo(function PostList({
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
-  // Add effect for infinite scrolling on desktop
-  useEffect(() => {
-    if (!isMobile) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          const [entry] = entries;
-          if (entry.isIntersecting) {
-            onLoadMore(); // Use the passed function
-          }
-        },
-        {
-          root: null,
-          rootMargin: "100px",
-          threshold: 0.1,
-        }
-      );
-
-      const sentinel = sentinelRef.current;
-      if (sentinel) {
-        observer.observe(sentinel);
-      }
-
-      return () => {
-        if (sentinel) {
-          observer.disconnect();
-        }
-      };
-    }
-  }, [isMobile, onLoadMore]);
 
   useEffect(() => {
     // Preload the image for the first post to improve LCP
@@ -286,6 +313,32 @@ export const PostList = memo(function PostList({
     [isDark, isMobile],
   );
 
+  // Add this effect for infinite scroll
+  useEffect(() => {
+    if (isMobile) return; // Only for desktop
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const firstEntry = entries[0];
+        if (firstEntry.isIntersecting && !isLoading && hasMore) {
+          handleLoadMore();
+        }
+      },
+      { threshold: 0.1 }, // Trigger when 10% of the element is visible
+    );
+
+    const currentRef = loadMoreRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, [isLoading, hasMore, isMobile]);
+
   return (
     <>
       {/* add advertisement-card in the last item in every API request. show it only on mobile device. */}
@@ -341,32 +394,39 @@ export const PostList = memo(function PostList({
                 </div>
               )}
             </>
-          ))} {/* Load more button for mobile / Sentinel for desktop */}{" "}
-          {localPosts.length > 0 && (
+          ))} {/* Load more button for mobile */} {localPosts.length > 0 && (
             <>
               {isMobile
                 ? (
                   <div className="flex justify-center mt-4 mb-8">
                     <button
-                      onClick={onLoadMore}
+                      onClick={handleLoadMore}
+                      disabled={isLoading || !hasMore}
                       className={`px-4 py-2 rounded-lg ${
                         isDark
                           ? "bg-purple-600 hover:bg-purple-700"
                           : "bg-purple-500 hover:bg-purple-600"
-                      } text-white transition-colors`}
+                      } text-white transition-colors ${
+                        (isLoading || !hasMore)
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
                     >
-                      Load More Posts
+                      {isLoading
+                        ? "Loading..."
+                        : !hasMore
+                        ? "No More Posts"
+                        : "Load More Posts"}
                     </button>
                   </div>
                 )
                 : (
+                  // Invisible loader for desktop infinite scroll
                   <div
-                    ref={sentinelRef}
-                    className="h-10 w-full flex items-center justify-center"
+                    ref={loadMoreRef}
+                    className="h-10 w-full"
                     aria-hidden="true"
-                  >
-                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-purple-500" />
-                  </div>
+                  />
                 )}
             </>
           )}
