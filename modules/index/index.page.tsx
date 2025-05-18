@@ -70,7 +70,7 @@ export default function Index({ data }: PageProps<{
       if (isMobileWidth !== isMobile) {
         setIsMobile(isMobileWidth);
       }
-    }, 250); // Increased debounce time for better performance
+    }, 5000); // Increased debounce time for better performance
 
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
