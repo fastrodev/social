@@ -63,7 +63,7 @@ export const PostFooter = ({
       >
         <span className="flex flex-col items-center gap-x-1">
           <ViewIcon className="w-5 h-5" /> {totalViews === 0
-            ? "Be the first viewer"
+            ? "First viewer"
             : `${totalViews} ${totalViews === 1 ? "view" : "views"}`}
         </span>
       </div>
