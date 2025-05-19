@@ -1,10 +1,10 @@
 // deno-lint-ignore-file
 import type { Post } from "@app/modules/index/type.ts";
 import { useState } from "preact/hooks";
-import Header from "@app/components/Header.tsx";
 import { PageProps } from "fastro/mod.ts";
 import { HexaIcon } from "@app/components/icons/hexa.tsx";
 import { PostDetail } from "@app/components/PostDetail.tsx";
+import PostDetailHeader from "../../components/PostDetailHeader.tsx";
 
 export default function Post({ data }: PageProps<{
   title: string;
@@ -88,12 +88,7 @@ export default function Post({ data }: PageProps<{
           {isDark ? "☀️" : "🌙"}
         </button>
 
-        <Header
-          isLogin={data.isLogin}
-          avatar_url={data.avatar_url}
-          html_url={data.html_url}
-          isDark={isDark}
-        />
+        <PostDetailHeader isDark={isDark} />
 
         <div className="max-w-xl mx-auto">
           <main className="max-w-2xl mx-auto relative flex flex-col gap-y-3 sm:gap-y-6">

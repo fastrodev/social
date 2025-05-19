@@ -319,7 +319,7 @@ export function PostDetail(
         {/* Stats */}
         <div className="flex items-center justify-between -mx-4 px-4 py-3 space-x-4 border-t border-b border-gray-700/50 mb-4">
           <div className="flex items-center gap-x-1 text-gray-400 text-xs">
-            <span className="flex items-center">
+            <span className="flex items-center gap-x-2">
               <CommentIcon />
               {comments.length} comments
             </span>
