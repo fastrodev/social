@@ -155,21 +155,26 @@
     margin-bottom: 16px;
     border-spacing: 0;
     border-collapse: collapse;
+    color: inherit;
+    /* Inherit text color from parent */
 }
 
 .markdown-body th,
 .markdown-body td {
     padding: 6px 13px;
-    border: 1px solid #dfe2e5;
+    border: 1px solid var(--color-border, #374151);
+    /* Use CSS variable with fallback */
 }
 
 .markdown-body tr {
-    background-color: #fff;
-    border-top: 1px solid #c6cbd1;
+    background-color: var(--color-bg-primary, transparent);
+    /* Use CSS variable with fallback */
+    border-top: 1px solid var(--color-border, #374151);
 }
 
 .markdown-body tr:nth-child(2n) {
-    background-color: #f6f8fa;
+    background-color: var(--color-bg-secondary, rgba(55, 65, 81, 0.1));
+    /* Subtle contrast for alternating rows */
 }
 
 .glow-purple {
