@@ -10,9 +10,9 @@ export function Advertisement(
 ) {
   // Define the tabs and dummy data
   const tabs = [
-    { key: "views", label: "Most Viewed" },
     { key: "comments", label: "Most Commented" },
-    { key: "sponsors", label: "Most Sponsored" },
+    { key: "stars", label: "Most Starred" },
+    { key: "views", label: "Most Viewed" },
   ] as const;
   type TabKey = typeof tabs[number]["key"];
 
@@ -27,10 +27,10 @@ export function Advertisement(
       { id: 5, title: "Hot Discussion #2" },
       { id: 6, title: "Hot Discussion #3" },
     ],
-    sponsors: [
-      { id: 7, title: "Sponsored Story #1" },
-      { id: 8, title: "Sponsored Story #2" },
-      { id: 9, title: "Sponsored Story #3" },
+    stars: [
+      { id: 7, title: "Starred Story #1" },
+      { id: 8, title: "Starred Story #2" },
+      { id: 9, title: "Starred Story #3" },
     ],
   };
 
