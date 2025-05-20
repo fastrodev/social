@@ -4,6 +4,7 @@ import { ShareIcon } from "@app/components/icons/share.tsx";
 import { EditIcon } from "@app/components/icons/edit.tsx";
 import { DeleteIcon } from "@app/components/icons/delete.tsx";
 import { Post } from "@app/modules/index/type.ts";
+import { HeartIcon } from "./icons/heart.tsx";
 
 interface PostHeaderProps {
   post: Post & {
@@ -88,6 +89,13 @@ export function PostHeader({
                 icon={<ShareIcon />}
                 label="Share post"
                 onClick={() => onShare(post.id)}
+                isDark={isDark}
+              />
+
+              <PostMenuButton
+                icon={<HeartIcon />}
+                label="Sponsor post"
+                onClick={() => void 0}
                 isDark={isDark}
               />
 

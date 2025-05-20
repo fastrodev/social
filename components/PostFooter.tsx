@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
 import { CommentIcon } from "@app/components/icons/comment.tsx";
 import { ViewIcon } from "@app/components/icons/view.tsx";
-import { HeartIcon } from "@app/components/icons/heart.tsx"; // Assuming you have a heart icon for sponsorship
+import { StarIcon } from "./icons/star.tsx";
 
 interface PostFooterProps {
   postId: string;
@@ -54,7 +54,7 @@ export const PostFooter = ({
         onClick={() =>
           window.open(`${api_base_url}/sponsor/${postId}`, "_blank")}
       >
-        <HeartIcon className="w-5 h-5" /> <span>Add sponsor</span>
+        <StarIcon className="w-5 h-5" /> <span>Add star</span>
       </button>
 
       {/* view */}
