@@ -379,7 +379,7 @@ export function Editor(
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2 flex items-center gap-2 transition-colors rounded-t-md border-t border-x 
+      className={`px-2 sm:px-4 py-2 flex items-center gap-2 transition-colors rounded-t-md border-t border-x 
       ${
         isActive
           ? isDark
@@ -391,7 +391,7 @@ export function Editor(
       }`}
     >
       {icon}
-      <span className="text-sm">{label}</span>
+      <span className="hidden sm:inline text-sm">{label}</span>
     </button>
   );
 
