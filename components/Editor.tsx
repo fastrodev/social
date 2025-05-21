@@ -33,7 +33,14 @@ export function Editor(
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null); // ADD this line
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Simplify the initialization useEffect to avoid dependency on postContent
+  useEffect(() => {
+    // Only reset the editor state when the component mounts
+    setIsEditing(false);
+    setIsEditorActive(false);
+  }, [setIsEditorActive]);
 
   const themeStyles = {
     background: isDark ? "#0f172a" : "#f8fafc",
@@ -125,19 +132,26 @@ export function Editor(
 
   const handleChange = (e: { currentTarget: { value: string } }) => {
     setPostContent(e.currentTarget.value);
-    setIsEditing(!!e.currentTarget.value.trim());
-    setIsEditorActive(!!e.currentTarget.value.trim());
+    const hasContent = !!e.currentTarget.value.trim();
+
+    // Only update these states if they're changing to avoid unnecessary rerenders
+    if (hasContent !== isEditing) {
+      setIsEditing(hasContent);
+    }
+
+    setIsEditorActive(hasContent);
   };
 
   const handleTextareaFocus = () => {
+    // Always set editing mode and editor active on focus, regardless of content
     setIsEditing(true);
-    setIsEditorActive(true); // Add this line to hide posts when textarea is focused
+    setIsEditorActive(true);
   };
 
   const handleTextareaBlur = () => {
     if (!postContent.trim()) {
       setIsEditing(false);
-      setIsEditorActive(false); // Add this line to show posts when textarea is empty and loses focus
+      setIsEditorActive(false);
     }
   };
 
@@ -569,6 +583,91 @@ export function Editor(
     </svg>
   );
 
+  // Add this icon component after the other icon components
+  const HeadingIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-heading"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M7 12h10" />
+      <path d="M7 4v16" />
+      <path d="M17 4v16" />
+    </svg>
+  );
+
+  // Add this function after handleMarkdownFormatting
+  const handleHeadingFormatting = (level: "h1" | "h2" | "h3" | "normal") => {
+    if (showPreviewMode || !textareaRef.current) return;
+
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    const lines = textarea.value.split("\n");
+    let currentLineStart = 0;
+
+    // Find the start of the current line
+    for (let i = 0; i < lines.length; i++) {
+      const lineLength = lines[i].length + 1; // +1 for newline character
+      if (currentLineStart + lineLength > start) {
+        break;
+      }
+      currentLineStart += lineLength;
+    }
+
+    const currentLine = textarea.value.substring(
+      currentLineStart,
+      textarea.value.indexOf("\n", start) === -1
+        ? textarea.value.length
+        : textarea.value.indexOf("\n", start),
+    );
+
+    // Remove existing heading markup if any
+    const cleanLine = currentLine.replace(/^#{1,3}\s/, "");
+
+    let newLine;
+    switch (level) {
+      case "h1":
+        newLine = `# ${cleanLine}`;
+        break;
+      case "h2":
+        newLine = `## ${cleanLine}`;
+        break;
+      case "h3":
+        newLine = `### ${cleanLine}`;
+        break;
+      case "normal":
+        newLine = cleanLine;
+        break;
+    }
+
+    const newText = textarea.value.substring(0, currentLineStart) +
+      newLine +
+      textarea.value.substring(
+        currentLineStart + currentLine.length,
+        textarea.value.length,
+      );
+
+    setPostContent(newText);
+
+    // Maintain cursor position
+    setTimeout(() => {
+      textarea.focus();
+      const cursorPosition = currentLineStart + newLine.length;
+      textarea.selectionStart = cursorPosition;
+      textarea.selectionEnd = cursorPosition;
+    }, 0);
+  };
+
   return (
     <>
       {isSubmitting ? <EditorSkeleton /> : (
@@ -615,15 +714,15 @@ export function Editor(
                     </div>
 
                     {/* REPLACE the Markdown Help link with formatting buttons */}
-                    <div className="flex items-center gap-0">
+                    <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto max-w-[70%] sm:max-w-none pr-1">
                       <button
                         type="button"
                         onClick={() => handleMarkdownFormatting("bold")}
-                        className={`px-2 py-1 rounded text-sm ${
+                        className={`p-1.5 sm:px-1 rounded text-sm ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
                             : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                        } transition-colors disabled:opacity-50`}
+                        } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
                         title="Bold (**text**)"
                         disabled={showPreviewMode}
                       >
@@ -632,11 +731,11 @@ export function Editor(
                       <button
                         type="button"
                         onClick={() => handleMarkdownFormatting("italic")}
-                        className={`px-2 py-1 rounded text-sm ${
+                        className={`p-1.5 sm:px-1 rounded text-sm ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
                             : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                        } transition-colors disabled:opacity-50`}
+                        } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
                         title="Italic (*text*)"
                         disabled={showPreviewMode}
                       >
@@ -645,24 +744,84 @@ export function Editor(
                       <button
                         type="button"
                         onClick={() => handleMarkdownFormatting("underline")}
-                        className={`px-2 py-1 rounded text-sm underline ${
+                        className={`p-1.5 sm:px-1 rounded text-sm underline ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
                             : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                        } transition-colors disabled:opacity-50`}
+                        } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
                         title="Underline (<u>text</u>)"
                         disabled={showPreviewMode}
                       >
                         <UnderlineIcon />
                       </button>
+
+                      {/* Add the new dropdown here */}
+                      <div className="relative inline-block">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            const dropdown = e.currentTarget.nextElementSibling;
+                            if (dropdown) {
+                              dropdown.classList.toggle("hidden");
+                            }
+                          }}
+                          className={`p-1.5 sm:px-1 rounded text-sm ${
+                            isDark
+                              ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                              : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                          } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
+                          disabled={showPreviewMode}
+                        >
+                          <HeadingIcon />
+                        </button>
+                        <div
+                          className={`hidden absolute z-50 mt-1 py-1 w-40 rounded-md shadow-lg ${
+                            isDark
+                              ? "bg-gray-800 border border-gray-700"
+                              : "bg-white border border-gray-200"
+                          } ring-1 ring-black ring-opacity-5 right-0 sm:right-auto`}
+                        >
+                          {[
+                            { label: "Heading 1", value: "h1" },
+                            { label: "Heading 2", value: "h2" },
+                            { label: "Heading 3", value: "h3" },
+                            { label: "Normal text", value: "normal" },
+                          ].map((item) => (
+                            <button
+                              key={item.value}
+                              type="button"
+                              onClick={(e) => {
+                                handleHeadingFormatting(
+                                  item.value as "h1" | "h2" | "h3" | "normal",
+                                );
+                                const dropdown =
+                                  (e.currentTarget as HTMLElement).closest(
+                                    "div.absolute",
+                                  );
+                                if (dropdown) {
+                                  dropdown.classList.add("hidden");
+                                }
+                              }}
+                              className={`block w-full text-left px-4 py-2 text-sm ${
+                                isDark
+                                  ? "text-gray-300 hover:bg-gray-700 hover:text-purple-400"
+                                  : "text-gray-700 hover:bg-gray-100 hover:text-purple-600"
+                              }`}
+                            >
+                              {item.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
                       <button
                         type="button"
                         onClick={() => handleMarkdownFormatting("ordered-list")}
-                        className={`px-2 py-1 rounded text-sm ${
+                        className={`p-1.5 sm:px-1 rounded text-sm ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
                             : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                        } transition-colors disabled:opacity-50`}
+                        } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
                         title="Ordered List (1. item)"
                         disabled={showPreviewMode}
                       >
@@ -672,11 +831,11 @@ export function Editor(
                         type="button"
                         onClick={() =>
                           handleMarkdownFormatting("unordered-list")}
-                        className={`px-2 py-1 rounded text-sm ${
+                        className={`p-1.5 sm:px-1 rounded text-sm ${
                           isDark
                             ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
                             : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                        } transition-colors disabled:opacity-50`}
+                        } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
                         title="Unordered List (- item)"
                         disabled={showPreviewMode}
                       >
@@ -719,7 +878,7 @@ export function Editor(
                 )
                 : (
                   <textarea
-                    ref={textareaRef} // ADD ref to the textarea
+                    ref={textareaRef}
                     placeholder={isEditing
                       ? "Write your post here...\n\nTip: You can use Markdown formatting and #hashtags in the end of your post."
                       : "Share your thoughts..."}
@@ -727,12 +886,13 @@ export function Editor(
                     onInput={handleChange}
                     onFocus={handleTextareaFocus}
                     onBlur={handleTextareaBlur}
+                    onClick={handleTextareaFocus} // Add onClick handler to ensure activation on click
                     required
                     spellcheck={true}
                     autoFocus
                     className={`w-full px-4 py-3 border ${themeStyles.input} 
         resize-none outline-none
-        rounded-b-lg
+        ${isEditing ? "rounded-b-lg" : "rounded-lg"}
         ${
                       isEditing
                         ? isMobile
@@ -759,7 +919,7 @@ export function Editor(
 
               {!isEditing && (
                 <div
-                  className={`text-xs text-right italic ${themeStyles.footer} mt-2`} // Changed from mt-[2px]
+                  className={`text-xs text-right italic ${themeStyles.footer} mt-2`} // Changed from mt-3
                 >
                   Posts disappear after 7 days unless you sign up.
                 </div>
