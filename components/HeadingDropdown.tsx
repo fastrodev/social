@@ -82,7 +82,7 @@ export function HeadingDropdown({
       {open && (
         <div
           ref={dropdownRef}
-          className={`absolute left-0 mt-1 w-40 rounded-md shadow-lg ${
+          className={`absolute left-0 mt-[2px] w-40 rounded-md shadow-lg ${
             isDark
               ? "bg-gray-800 border border-gray-700"
               : "bg-white border border-gray-200"

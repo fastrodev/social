@@ -722,6 +722,12 @@ export function Editor(
 
                     {/* REPLACE the Markdown Help link with formatting buttons */}
                     <div className="flex items-center gap-0.5 sm:gap-1 overflow-x-auto max-w-[70%] sm:max-w-none pr-1">
+                      {/* Replace the dropdown implementation */}
+                      <HeadingDropdown
+                        isDark={isDark}
+                        showPreviewMode={showPreviewMode}
+                        handleHeadingFormatting={handleHeadingFormatting}
+                      />
                       <button
                         type="button"
                         onClick={() => handleMarkdownFormatting("bold")}
@@ -761,13 +767,6 @@ export function Editor(
                       >
                         <UnderlineIcon />
                       </button>
-
-                      {/* Replace the dropdown implementation */}
-                      <HeadingDropdown
-                        isDark={isDark}
-                        showPreviewMode={showPreviewMode}
-                        handleHeadingFormatting={handleHeadingFormatting}
-                      />
 
                       <button
                         type="button"
@@ -888,8 +887,10 @@ export function Editor(
                       onClick={handleAttachmentClick}
                       className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
                         isDark
-                          ? "text-gray-400 bg-gray-700/30 hover:text-gray-200 hover:bg-gray-600/30"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/30"
+                          ? "text-gray-300 hover:text-red-400 hover:bg-gray-700/50"
+                          : "text-gray-600 hover:text-red-600 hover:bg-gray-100"
+                      } border ${
+                        isDark ? "border-gray-700" : "border-gray-300"
                       } transition-colors`}
                       aria-label="Add attachment"
                       disabled={uploadingImage || showPreviewMode}
