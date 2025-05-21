@@ -33,6 +33,7 @@ export function Editor(
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null); // ADD this line
 
   const themeStyles = {
     background: isDark ? "#0f172a" : "#f8fafc",
@@ -379,6 +380,195 @@ export function Editor(
     </button>
   );
 
+  // First, update the handleMarkdownFormatting function to include list types
+  const handleMarkdownFormatting = (
+    type: "bold" | "italic" | "underline" | "ordered-list" | "unordered-list",
+  ) => {
+    if (showPreviewMode || !textareaRef.current) return;
+
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+
+    let prefix = "";
+    let suffix = "";
+    let textToInsert = selectedText;
+    let selectionOffsetStart = 0;
+    let selectionOffsetEnd = 0;
+
+    if (type === "bold") {
+      prefix = "**";
+      suffix = "**";
+      if (!selectedText) textToInsert = "bold text";
+    } else if (type === "italic") {
+      prefix = "*";
+      suffix = "*";
+      if (!selectedText) textToInsert = "italic text";
+    } else if (type === "underline") {
+      prefix = "<u>";
+      suffix = "</u>";
+      if (!selectedText) textToInsert = "underlined text";
+    } else if (type === "ordered-list" || type === "unordered-list") {
+      // For lists, we need to handle each line separately
+      const listPrefix = type === "ordered-list" ? "1. " : "- ";
+
+      if (!selectedText) {
+        // If no text is selected, just insert a list item
+        prefix = listPrefix;
+        textToInsert = "List item";
+        selectionOffsetStart = listPrefix.length;
+        selectionOffsetEnd = listPrefix.length + textToInsert.length;
+      } else {
+        // For selected text, add list prefix to each line
+        const lines = selectedText.split("\n");
+        const formattedLines = lines.map((line, index) => {
+          // For ordered lists, increment the number for each line
+          const linePrefix = type === "ordered-list"
+            ? `${index + 1}. `
+            : listPrefix;
+          return linePrefix + line;
+        });
+        textToInsert = formattedLines.join("\n");
+        selectionOffsetStart = 0;
+        selectionOffsetEnd = textToInsert.length;
+      }
+      prefix = "";
+      suffix = "";
+    }
+
+    const newText = textarea.value.substring(0, start) +
+      prefix +
+      textToInsert +
+      suffix +
+      textarea.value.substring(end);
+
+    setPostContent(newText);
+
+    // Set cursor position after the operation
+    setTimeout(() => {
+      textarea.focus();
+      if (type === "ordered-list" || type === "unordered-list") {
+        textarea.selectionStart = start + selectionOffsetStart;
+        textarea.selectionEnd = start + selectionOffsetEnd;
+      } else if (selectedText) {
+        textarea.selectionStart = start + prefix.length;
+        textarea.selectionEnd = start + prefix.length + selectedText.length;
+      } else {
+        // Place cursor after the inserted text
+        const newPosition = start + prefix.length + textToInsert.length;
+        textarea.selectionStart = newPosition;
+        textarea.selectionEnd = newPosition;
+      }
+    }, 0);
+  };
+
+  // Then add the list icon components (add these with the other icon imports at the top)
+  const OrderedListIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-list-numbers"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M11 6h9" />
+      <path d="M11 12h9" />
+      <path d="M12 18h8" />
+      <path d="M4 16a2 2 0 1 1 4 0c0 .591 -.5 1 -1 1.5l-3 2.5h4" />
+      <path d="M6 10v-6l-2 2" />
+    </svg>
+  );
+
+  const UnorderedListIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-list"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M9 6l11 0" />
+      <path d="M9 12l11 0" />
+      <path d="M9 18l11 0" />
+      <path d="M5 6l0 .01" />
+      <path d="M5 12l0 .01" />
+      <path d="M5 18l0 .01" />
+    </svg>
+  );
+
+  // First, create a BoldIcon component to match the style of other icons
+  const BoldIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-bold"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M7 5h6a3.5 3.5 0 0 1 0 7h-6z" />
+      <path d="M13 12h1a3.5 3.5 0 0 1 0 7h-7v-7" />
+    </svg>
+  );
+
+  // Create an ItalicIcon component to match the style of the BoldIcon
+  const ItalicIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-italic"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M11 5l6 0" />
+      <path d="M7 19l6 0" />
+      <path d="M14 5l-4 14" />
+    </svg>
+  );
+
+  const UnderlineIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="icon icon-tabler icons-tabler-outline icon-tabler-underline"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M7 5v5a5 5 0 0 0 10 0v-5" />
+      <path d="M5 19h14" />
+    </svg>
+  );
+
   return (
     <>
       {isSubmitting ? <EditorSkeleton /> : (
@@ -423,14 +613,76 @@ export function Editor(
                         label="Preview"
                       />
                     </div>
-                    <a
-                      href="https://www.markdownguide.org/cheat-sheet/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`text-xs ${themeStyles.link} mb-2`}
-                    >
-                      Markdown Help
-                    </a>
+
+                    {/* REPLACE the Markdown Help link with formatting buttons */}
+                    <div className="flex items-center gap-0">
+                      <button
+                        type="button"
+                        onClick={() => handleMarkdownFormatting("bold")}
+                        className={`px-2 py-1 rounded text-sm ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                            : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                        } transition-colors disabled:opacity-50`}
+                        title="Bold (**text**)"
+                        disabled={showPreviewMode}
+                      >
+                        <BoldIcon />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkdownFormatting("italic")}
+                        className={`px-2 py-1 rounded text-sm ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                            : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                        } transition-colors disabled:opacity-50`}
+                        title="Italic (*text*)"
+                        disabled={showPreviewMode}
+                      >
+                        <ItalicIcon />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkdownFormatting("underline")}
+                        className={`px-2 py-1 rounded text-sm underline ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                            : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                        } transition-colors disabled:opacity-50`}
+                        title="Underline (<u>text</u>)"
+                        disabled={showPreviewMode}
+                      >
+                        <UnderlineIcon />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMarkdownFormatting("ordered-list")}
+                        className={`px-2 py-1 rounded text-sm ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                            : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                        } transition-colors disabled:opacity-50`}
+                        title="Ordered List (1. item)"
+                        disabled={showPreviewMode}
+                      >
+                        <OrderedListIcon />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleMarkdownFormatting("unordered-list")}
+                        className={`px-2 py-1 rounded text-sm ${
+                          isDark
+                            ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
+                            : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
+                        } transition-colors disabled:opacity-50`}
+                        title="Unordered List (- item)"
+                        disabled={showPreviewMode}
+                      >
+                        <UnorderedListIcon />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -467,6 +719,7 @@ export function Editor(
                 )
                 : (
                   <textarea
+                    ref={textareaRef} // ADD ref to the textarea
                     placeholder={isEditing
                       ? "Write your post here...\n\nTip: You can use Markdown formatting and #hashtags in the end of your post."
                       : "Share your thoughts..."}
