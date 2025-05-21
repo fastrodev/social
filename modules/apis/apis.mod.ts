@@ -4,6 +4,14 @@ import {
   generateSignedUrl,
 } from "../../utils/signed-url.ts";
 
+// Create a helper function for CORS headers
+const corsHeaders = new Headers({
+  "Access-Control-Allow-Origin": "https://social.fastro.dev", // Specific origin instead of *
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Max-Age": "86400",
+});
+
 export default function apisModule(s: Fastro) {
   s.post("/api/signed-url", async (req, res) => {
     try {
@@ -11,14 +19,22 @@ export default function apisModule(s: Fastro) {
       const { filename, contentType } = body;
 
       if (!filename || typeof filename !== "string") {
-        return res.send({
-          error: "Invalid request: filename is required",
-        });
+        return res.send(
+          {
+            error: "Invalid request: filename is required",
+          },
+          400,
+          corsHeaders,
+        );
       }
       if (!contentType || typeof contentType !== "string") {
-        return res.status(400).send({
-          error: "Invalid request: contentType is required",
-        });
+        return res.status(400).send(
+          {
+            error: "Invalid request: contentType is required",
+          },
+          400,
+          corsHeaders,
+        );
       }
 
       const signedUrlResponse = await generateSignedUrl(filename, contentType);
@@ -28,32 +44,22 @@ export default function apisModule(s: Fastro) {
           signedUrl: signedUrlResponse.signedUrl,
         },
         200,
-        new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        }),
+        corsHeaders,
       );
     } catch (error) {
       console.error("Error generating signed URL:", error);
-      return res.send({
-        error: "Failed to generate signed URL",
-      }, 500);
+      return res.send(
+        {
+          error: "Failed to generate signed URL",
+        },
+        500,
+        corsHeaders,
+      );
     }
   });
 
   s.options("/api/signed-url", (_req, res) => {
-    return res.send(
-      null,
-      204,
-      new Headers({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400",
-      }),
-    );
+    return res.send(null, 204, corsHeaders);
   });
 
   s.post("/api/delete-signed-url", async (req, res) => {
