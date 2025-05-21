@@ -6,8 +6,8 @@ import {
 
 // Create a helper function for CORS headers
 const corsHeaders = new Headers({
-  "Access-Control-Allow-Origin": "https://social.fastro.dev", // Specific origin instead of *
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Origin": "https://social.fastro.dev",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400",
 });
@@ -62,87 +62,70 @@ export default function apisModule(s: Fastro) {
     return res.send(null, 204, corsHeaders);
   });
 
+  // Update delete-signed-url endpoint
   s.post("/api/delete-signed-url", async (req, res) => {
     try {
       const body = await req.json();
       const { filename } = body;
 
       if (!filename || typeof filename !== "string") {
-        return res.status(400).send({
-          error: "Invalid request: filename is required",
-        });
+        return res.send(
+          {
+            error: "Invalid request: filename is required",
+          },
+          400,
+          corsHeaders,
+        );
       }
 
       const deleteUrlResponse = await generateDeleteSignedUrl(filename);
-
-      return res.send(
-        deleteUrlResponse,
-        200,
-        new Headers({
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        }),
-      ); // Send { signedUrl: "..." }
+      return res.send(deleteUrlResponse, 200, corsHeaders);
     } catch (error) {
       console.error("Error generating delete signed URL:", error);
-
-      return res.send({
-        error: "Failed to generate delete signed URL",
-        details: error,
-      }, 500);
+      return res.send(
+        {
+          error: "Failed to generate delete signed URL",
+          details: error,
+        },
+        500,
+        corsHeaders,
+      );
     }
   });
 
-  // Add OPTIONS handler for delete-signed-url
+  // Update delete-signed-url OPTIONS handler
   s.options("/api/delete-signed-url", (_req, res) => {
-    return res.send(
-      null,
-      204,
-      new Headers({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400",
-      }),
-    );
+    return res.send(null, 204, corsHeaders);
   });
 
-  s.get("/api/healthcheck", (_req, ctx) => {
+  // Update healthcheck endpoint
+  s.get("/api/healthcheck", (_req, _ctx) => {
     try {
       return new Response("API is healthy", {
         status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        },
+        headers: corsHeaders,
       });
     } catch (error) {
       console.error("Healthcheck failed:", error);
-      return ctx.send({
-        error: "Healthcheck failed",
-        details: error,
-      }, 500);
+      return new Response(
+        JSON.stringify({
+          error: "Healthcheck failed",
+          details: error,
+        }),
+        {
+          status: 500,
+          headers: corsHeaders,
+        },
+      );
     }
   });
 
-  // Add OPTIONS handler for healthcheck
+  // Update healthcheck OPTIONS handler
   s.options("/api/healthcheck", (_req, res) => {
-    return res.send(
-      null,
-      204,
-      new Headers({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400",
-      }),
-    );
+    return res.send(null, 204, corsHeaders);
   });
 
+  // Update avatar endpoint
   s.get("/api/avatar/:seed", (req) => {
     const seed = req.params?.seed ? req.params.seed : "avatar";
 
@@ -220,27 +203,13 @@ export default function apisModule(s: Fastro) {
 
     return new Response(svg, {
       status: 200,
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
+      headers: corsHeaders,
     });
   });
 
-  // Add OPTIONS handler for avatar
+  // Update avatar OPTIONS handler
   s.options("/api/avatar/:seed", (_req, res) => {
-    return res.send(
-      null,
-      204,
-      new Headers({
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "86400",
-      }),
-    );
+    return res.send(null, 204, corsHeaders);
   });
 
   return s;
