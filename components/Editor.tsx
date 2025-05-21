@@ -12,6 +12,7 @@ import { renderMarkdownWithHashtags } from "../utils/markdown.ts";
 import { extractTags } from "@app/utils/tags.ts";
 import { getRandomImage } from "@app/utils/random.ts";
 import { Post } from "@app/modules/index/type.ts";
+import { HeadingDropdown } from "./HeadingDropdown.tsx";
 
 // Update Props interface
 interface Props {
@@ -394,6 +395,16 @@ export function Editor(
     </button>
   );
 
+  // Add this function to ensure preview mode stays active and shows the proper message
+  const handlePreviewModeToggle = (previewEnabled: boolean) => {
+    // Always maintain editing mode regardless of content
+    setShowPreviewMode(previewEnabled);
+
+    // Ensure editor remains in editing mode even with empty content
+    setIsEditing(true);
+    setIsEditorActive(true);
+  };
+
   // First, update the handleMarkdownFormatting function to include list types
   const handleMarkdownFormatting = (
     type: "bold" | "italic" | "underline" | "ordered-list" | "unordered-list",
@@ -477,7 +488,7 @@ export function Editor(
     }, 0);
   };
 
-  // Then add the list icon components (add these with the other icon imports at the top)
+  // Define all the icon components in one place to avoid duplication
   const OrderedListIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -523,7 +534,6 @@ export function Editor(
     </svg>
   );
 
-  // First, create a BoldIcon component to match the style of other icons
   const BoldIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -543,7 +553,6 @@ export function Editor(
     </svg>
   );
 
-  // Create an ItalicIcon component to match the style of the BoldIcon
   const ItalicIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -583,7 +592,6 @@ export function Editor(
     </svg>
   );
 
-  // Add this icon component after the other icon components
   const HeadingIcon = () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -604,7 +612,6 @@ export function Editor(
     </svg>
   );
 
-  // Add this function after handleMarkdownFormatting
   const handleHeadingFormatting = (level: "h1" | "h2" | "h3" | "normal") => {
     if (showPreviewMode || !textareaRef.current) return;
 
@@ -701,13 +708,13 @@ export function Editor(
                     <div className="flex gap-0 relative z-10">
                       <Tab
                         isActive={!showPreviewMode}
-                        onClick={() => setShowPreviewMode(false)}
+                        onClick={() => handlePreviewModeToggle(false)}
                         icon={<EditIcon />}
                         label="Edit"
                       />
                       <Tab
                         isActive={showPreviewMode}
-                        onClick={() => setShowPreviewMode(true)}
+                        onClick={() => handlePreviewModeToggle(true)}
                         icon={<ViewIcon />}
                         label="Preview"
                       />
@@ -755,64 +762,12 @@ export function Editor(
                         <UnderlineIcon />
                       </button>
 
-                      {/* Add the new dropdown here */}
-                      <div className="relative inline-block">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            const dropdown = e.currentTarget.nextElementSibling;
-                            if (dropdown) {
-                              dropdown.classList.toggle("hidden");
-                            }
-                          }}
-                          className={`p-1.5 sm:px-1 rounded text-sm ${
-                            isDark
-                              ? "text-gray-300 hover:bg-gray-700/50 hover:text-purple-400"
-                              : "text-gray-600 hover:bg-gray-200 hover:text-purple-600"
-                          } transition-colors disabled:opacity-50 flex items-center justify-center min-w-[28px]`}
-                          disabled={showPreviewMode}
-                        >
-                          <HeadingIcon />
-                        </button>
-                        <div
-                          className={`hidden absolute z-50 mt-1 py-1 w-40 rounded-md shadow-lg ${
-                            isDark
-                              ? "bg-gray-800 border border-gray-700"
-                              : "bg-white border border-gray-200"
-                          } ring-1 ring-black ring-opacity-5 right-0 sm:right-auto`}
-                        >
-                          {[
-                            { label: "Heading 1", value: "h1" },
-                            { label: "Heading 2", value: "h2" },
-                            { label: "Heading 3", value: "h3" },
-                            { label: "Normal text", value: "normal" },
-                          ].map((item) => (
-                            <button
-                              key={item.value}
-                              type="button"
-                              onClick={(e) => {
-                                handleHeadingFormatting(
-                                  item.value as "h1" | "h2" | "h3" | "normal",
-                                );
-                                const dropdown =
-                                  (e.currentTarget as HTMLElement).closest(
-                                    "div.absolute",
-                                  );
-                                if (dropdown) {
-                                  dropdown.classList.add("hidden");
-                                }
-                              }}
-                              className={`block w-full text-left px-4 py-2 text-sm ${
-                                isDark
-                                  ? "text-gray-300 hover:bg-gray-700 hover:text-purple-400"
-                                  : "text-gray-700 hover:bg-gray-100 hover:text-purple-600"
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      {/* Replace the dropdown implementation */}
+                      <HeadingDropdown
+                        isDark={isDark}
+                        showPreviewMode={showPreviewMode}
+                        handleHeadingFormatting={handleHeadingFormatting}
+                      />
 
                       <button
                         type="button"
@@ -853,14 +808,12 @@ export function Editor(
                       isDark
                         ? "bg-gray-700/30 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                         : "bg-gray-100/70 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                    } ${getPreviewBoxHeight(isEditing, isMobile)}`} // Added height classes
-                    style={{ // Added explicit height style
-                      height: isEditing
-                        ? isMobile ? "200px" : "300px"
-                        : "100px",
+                    } ${getPreviewBoxHeight(true, isMobile)}`} // Always use editing height in preview mode
+                    style={{
+                      height: isMobile ? "200px" : "300px", // Always use editing height
                     }}
                   >
-                    {postContent
+                    {postContent.trim()
                       ? (
                         <div
                           className={`markdown-body ${themeStyles.text}`}
@@ -871,7 +824,7 @@ export function Editor(
                       )
                       : (
                         <div className="opacity-70 text-sm">
-                          Nothing to preview yet.
+                          Empty post.
                         </div>
                       )}
                   </div>
