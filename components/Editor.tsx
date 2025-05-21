@@ -444,26 +444,40 @@ export function Editor(
                 : (
                   <textarea
                     placeholder={isEditing
-                      ? "# [Enter Your Post Title Here]\n\n\n[Your post content goes here. Replace this text with your own writing.]\n\n\n#[your-tag-here]"
-                      : "What's on your mind?"}
+                      ? "Write your post here...\n\nTip: You can use Markdown formatting and #hashtags in the end of your post."
+                      : "Share your thoughts..."}
                     value={postContent}
                     onInput={handleChange}
                     onFocus={handleTextareaFocus}
                     onBlur={handleTextareaBlur}
                     required
-                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} resize-none ${
+                    spellcheck={true}
+                    autoFocus
+                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} 
+                      resize-none outline-none
+                      ${
                       isEditing
-                        ? isMobile
-                          ? "min-h-[150px] h-[200px]"
-                          : "min-h-[300px] h-[400px]"
+                        ? isMobile ? "min-h-[150px]" : "min-h-[200px]"
                         : isMobile
-                        ? "min-h-[55px] h-[45px]"
-                        : "min-h-[65px] h-[55px]"
-                    } max-h-[600px] focus:ring-2 focus:ring-blue-500 focus:border-transparent scrollbar-thin scrollbar-track-transparent transition-all duration-300 ${
+                        ? "min-h-[45px]"
+                        : "min-h-[50px]"
+                    }
+                      transition-all duration-300 ease-in-out
+                      focus:ring-0 focus:ring-purple-500/50 focus:border-purple-500/50
+                      scrollbar-thin scrollbar-track-transparent
+                      ${
                       isDark
                         ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                         : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
                     }`}
+                    style={{
+                      height: isEditing ? isMobile ? "200px" : "400px" : "auto",
+                      minHeight: isEditing
+                        ? isMobile ? "150px" : "200px"
+                        : isMobile
+                        ? "45px"
+                        : "50px",
+                    }}
                   />
                 )}
 
