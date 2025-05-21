@@ -11,6 +11,7 @@ import { PostDetail } from "@app/components/PostDetail.tsx";
 import { PostModal } from "@app/components/PostModal.tsx";
 import { TagSelector } from "@app/components/TagSelector.tsx";
 import { Advertisement } from "@app/components/Advertisement.tsx";
+import { SquareIcon } from "../../components/icons/square.tsx";
 
 // Add this function to read specific cookie
 const getCookie = (name: string): string | null => {
@@ -107,7 +108,7 @@ export default function Index({ data }: PageProps<{
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
       {/* Background hexagon pattern */}
       <div className="fixed inset-0 z-0 opacity-20">
-        <HexaIcon />
+        <SquareIcon />
       </div>
 
       {/* Modal should be outside the transformed container */}
