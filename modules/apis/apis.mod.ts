@@ -144,26 +144,29 @@ export default function apisModule(s: Fastro) {
     }
 
     function generatePattern(seed: string) {
-      const size = 5; // 5x5 grid
+      const size = 5;
       const center = Math.floor(size / 2);
-      const pattern: boolean[][] = Array(size).fill(0).map(() =>
-        Array(size).fill(false)
-      );
+      const pattern: boolean[][] = Array(size)
+        .fill(null)
+        .map(() => Array(size).fill(false));
 
-      // Create a simple hash function based on the seed
+      // More stable hash function
       let hash = 0;
       for (let i = 0; i < seed.length; i++) {
-        hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash = hash & hash; // Convert to 32-bit integer
       }
 
-      // Generate half of the pattern randomly (we'll mirror for symmetry)
+      // Use a fixed seed value to ensure consistent patterns
+      const seedValue = Math.abs(hash);
+
       for (let y = 0; y < size; y++) {
         for (let x = 0; x <= center; x++) {
-          // Use the hash to deterministically decide if this cell is filled
-          const val = (hash >> ((y * size + x) % 31)) & 1;
-          pattern[y][x] = val === 1;
+          // More deterministic pattern generation
+          const val = ((seedValue >> ((y * 3 + x) % 32)) & 1) === 1;
+          pattern[y][x] = val;
 
-          // Mirror horizontally (except for center column)
+          // Mirror horizontally
           if (x !== center) {
             pattern[y][size - 1 - x] = pattern[y][x];
           }
@@ -173,26 +176,26 @@ export default function apisModule(s: Fastro) {
       return pattern;
     }
 
-    // Generate different colors for background and pattern
-    const fgColor = stringToColor(seed || "avatar");
-    const bgColor = stringToColor(seed || "avatar", "background");
+    // Generate SVG
+    const fgColor = stringToColor(seed, "foreground");
+    const bgColor = stringToColor(seed, "background");
     const cellSize = 16;
     const margin = 8;
     const pattern = generatePattern(seed);
     const size = pattern.length;
     const svgSize = cellSize * size + margin * 2;
 
-    // Generate SVG content from the pattern
-    let cells = "";
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        if (pattern[y][x]) {
-          cells += `<rect x="${margin + x * cellSize}" y="${
-            margin + y * cellSize
-          }" width="${cellSize}" height="${cellSize}" fill="${fgColor}" />`;
-        }
-      }
-    }
+    const cells = pattern
+      .flatMap((row, y) =>
+        row.map((cell, x) =>
+          cell
+            ? `<rect x="${margin + x * cellSize}" y="${
+              margin + y * cellSize
+            }" width="${cellSize}" height="${cellSize}" fill="${fgColor}"/>`
+            : ""
+        )
+      )
+      .join("");
 
     const svg = `
       <svg width="${svgSize}" height="${svgSize}" viewBox="0 0 ${svgSize} ${svgSize}" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -203,7 +206,10 @@ export default function apisModule(s: Fastro) {
 
     return new Response(svg, {
       status: 200,
-      headers: corsHeaders,
+      headers: new Headers({
+        ...corsHeaders,
+        "Content-Type": "image/svg+xml",
+      }),
     });
   });
 
