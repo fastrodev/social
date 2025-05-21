@@ -43,6 +43,19 @@ export default function apisModule(s: Fastro) {
     }
   });
 
+  s.options("/api/signed-url", (_req, res) => {
+    return res.send(
+      null,
+      204,
+      new Headers({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      }),
+    );
+  });
+
   s.post("/api/delete-signed-url", async (req, res) => {
     try {
       const body = await req.json();
