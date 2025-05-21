@@ -89,6 +89,20 @@ export default function apisModule(s: Fastro) {
     }
   });
 
+  // Add OPTIONS handler for delete-signed-url
+  s.options("/api/delete-signed-url", (_req, res) => {
+    return res.send(
+      null,
+      204,
+      new Headers({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      }),
+    );
+  });
+
   s.get("/api/healthcheck", (_req, ctx) => {
     try {
       return new Response("API is healthy", {
@@ -107,6 +121,20 @@ export default function apisModule(s: Fastro) {
         details: error,
       }, 500);
     }
+  });
+
+  // Add OPTIONS handler for healthcheck
+  s.options("/api/healthcheck", (_req, res) => {
+    return res.send(
+      null,
+      204,
+      new Headers({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      }),
+    );
   });
 
   s.get("/api/avatar/:seed", (req) => {
@@ -193,6 +221,20 @@ export default function apisModule(s: Fastro) {
         "Access-Control-Allow-Headers": "Content-Type",
       },
     });
+  });
+
+  // Add OPTIONS handler for avatar
+  s.options("/api/avatar/:seed", (_req, res) => {
+    return res.send(
+      null,
+      204,
+      new Headers({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      }),
+    );
   });
 
   return s;
