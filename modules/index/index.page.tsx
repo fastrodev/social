@@ -106,7 +106,6 @@ export default function Index({ data }: PageProps<{
 
   return (
     <main className="min-h-screen flex flex-col bg-gray-950 relative overflow-hidden">
-      {/* Background hexagon pattern */}
       <div className="fixed inset-0 z-0 opacity-20">
         <SquareIcon />
       </div>
