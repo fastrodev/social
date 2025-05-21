@@ -74,9 +74,11 @@ export function Editor(
 
   function getPreviewBoxHeight(isEditing: boolean, isMobile: boolean) {
     if (isEditing) {
-      return isMobile ? "min-h-[150px] h-[200px]" : "min-h-[200px] h-[400px]";
+      return isMobile
+        ? "min-h-[200px] max-h-[300px]" // Mobile editing mode
+        : "min-h-[300px] max-h-[500px]"; // Desktop editing mode
     } else {
-      return isMobile ? "min-h-[60px] h-[100px]" : "min-h-[80px] h-[120px]";
+      return "min-h-[100px] max-h-[200px]"; // Consistent collapsed height
     }
   }
 
@@ -346,6 +348,37 @@ export function Editor(
     </div>
   );
 
+  // Update the Tab component style
+  const Tab = ({
+    isActive,
+    onClick,
+    icon,
+    label,
+  }: {
+    isActive: boolean;
+    onClick: () => void;
+    icon: JSX.Element;
+    label: string;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-4 py-2 flex items-center gap-2 transition-colors rounded-t-md border-t border-x 
+      ${
+        isActive
+          ? isDark
+            ? "bg-gray-700/30 text-purple-400 border-gray-700"
+            : "bg-gray-100/70 text-purple-600 border-gray-300"
+          : isDark
+          ? "text-gray-400 hover:text-gray-300 border-transparent"
+          : "text-gray-600 hover:text-gray-700 border-transparent"
+      }`}
+    >
+      {icon}
+      <span className="text-sm">{label}</span>
+    </button>
+  );
+
   return (
     <>
       {isSubmitting ? <EditorSkeleton /> : (
@@ -372,63 +405,54 @@ export function Editor(
               </div>
             )}
 
-            <div className="relative flex flex-col gap-y-3">
+            <div className="relative flex flex-col gap-y-0">
               {isEditing && (
-                <div className="flex justify-between items-center">
-                  <div className={`flex items-center ${themeStyles.text}`}>
-                    <button
-                      type="button"
-                      onClick={() => setShowPreviewMode(!showPreviewMode)}
-                      className={`px-4 py-1.5 rounded-lg flex items-center gap-2 ${
-                        isDark
-                          ? "text-gray-300 hover:bg-gray-600/30 bg-gray-700/30"
-                          : "text-gray-700 hover:bg-gray-200/30"
-                      }`}
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center">
+                    <div className="flex gap-0 relative z-10">
+                      <Tab
+                        isActive={!showPreviewMode}
+                        onClick={() => setShowPreviewMode(false)}
+                        icon={<EditIcon />}
+                        label="Edit"
+                      />
+                      <Tab
+                        isActive={showPreviewMode}
+                        onClick={() => setShowPreviewMode(true)}
+                        icon={<ViewIcon />}
+                        label="Preview"
+                      />
+                    </div>
+                    <a
+                      href="https://www.markdownguide.org/cheat-sheet/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-xs ${themeStyles.link} mb-2`}
                     >
-                      {showPreviewMode
-                        ? (
-                          <>
-                            <EditIcon />
-                            <span className="text-sm">Edit</span>
-                          </>
-                        )
-                        : (
-                          <>
-                            <ViewIcon />
-                            <span className="text-sm">Preview</span>
-                          </>
-                        )}
-                    </button>
+                      Markdown Help
+                    </a>
                   </div>
-
-                  <a
-                    href="https://www.markdownguide.org/cheat-sheet/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`text-xs ${themeStyles.link}`}
-                  >
-                    Markdown Help
-                  </a>
                 </div>
               )}
 
               {showPreviewMode
                 ? (
                   <div
-                    className={`w-full rounded-lg border ${themeStyles.cardBorder} ${themeStyles.text} 
-                          ${
-                      getPreviewBoxHeight(isEditing, isMobile)
-                    } max-h-[600px] overflow-y-auto p-3
-                          ${
+                    className={`w-full border ${themeStyles.cardBorder} ${themeStyles.text} overflow-y-auto px-4 py-3 rounded-b-lg scrollbar-thin scrollbar-track-transparent transition-all duration-300 ${
                       isDark
-                        ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
-                        : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
-                    } scrollbar-thin scrollbar-track-transparent transition-all duration-300`}
+                        ? "bg-gray-700/30 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
+                        : "bg-gray-100/70 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
+                    } ${getPreviewBoxHeight(isEditing, isMobile)}`} // Added height classes
+                    style={{ // Added explicit height style
+                      height: isEditing
+                        ? isMobile ? "200px" : "300px"
+                        : "100px",
+                    }}
                   >
                     {postContent
                       ? (
                         <div
-                          className={`markdown-body prose prose-sm dark:prose-invert max-w-none ${themeStyles.text}`}
+                          className={`markdown-body ${themeStyles.text}`}
                           dangerouslySetInnerHTML={renderMarkdown(
                             postContent,
                           )}
@@ -453,37 +477,36 @@ export function Editor(
                     required
                     spellcheck={true}
                     autoFocus
-                    className={`w-full ps-4 py-2 sm:p-3 rounded-lg border ${themeStyles.input} 
-                      resize-none outline-none
-                      ${
+                    className={`w-full px-4 py-3 border ${themeStyles.input} 
+        resize-none outline-none
+        rounded-b-lg
+        ${
                       isEditing
-                        ? isMobile ? "min-h-[150px]" : "min-h-[200px]"
-                        : isMobile
-                        ? "min-h-[45px]"
-                        : "min-h-[50px]"
+                        ? isMobile
+                          ? "min-h-[200px] max-h-[300px]"
+                          : "min-h-[300px] max-h-[500px]"
+                        : "min-h-[100px] max-h-[200px]"
                     }
-                      transition-all duration-300 ease-in-out
-                      focus:ring-0 focus:ring-purple-500/50 focus:border-purple-500/50
-                      scrollbar-thin scrollbar-track-transparent
-                      ${
+        transition-all duration-300 ease-in-out
+        focus:ring-0 focus:ring-purple-500/50 focus:border-purple-500/50
+        scrollbar-thin scrollbar-track-transparent
+        ${
                       isDark
                         ? "scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500"
                         : "scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400"
                     }`}
                     style={{
-                      height: isEditing ? isMobile ? "200px" : "400px" : "auto",
-                      minHeight: isEditing
-                        ? isMobile ? "150px" : "200px"
-                        : isMobile
-                        ? "45px"
-                        : "50px",
+                      height: isEditing
+                        ? isMobile ? "200px" : "300px"
+                        : "100px",
+                      marginTop: 0, // Remove extra margin
                     }}
                   />
                 )}
 
               {!isEditing && (
                 <div
-                  className={`text-xs text-right italic ${themeStyles.footer} -mt-1`}
+                  className={`text-xs text-right italic ${themeStyles.footer} mt-2`} // Changed from mt-[2px]
                 >
                   Posts disappear after 7 days unless you sign up.
                 </div>
@@ -491,7 +514,8 @@ export function Editor(
 
               {/* Fixed positioning with consistent margin */}
               {isEditing && (
-                <div className="h-10 flex justify-between items-center">
+                <div className="h-10 flex justify-between items-center mt-2">
+                  {/* Changed from mt-3 */}
                   <div>
                     <button
                       type="button"
