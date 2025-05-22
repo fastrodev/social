@@ -140,6 +140,12 @@ jobs:
           # Now deploy to Firebase hosting
           firebase deploy --only hosting --token "$FIREBASE_TOKEN"
 
+      - name: Show generated firebase.json
+        run: cat firebase.json
+
+      - name: Show generated .firebaserc
+        run: cat .firebaserc
+
       - name: Clean up old images
         if: success()
         run: |
