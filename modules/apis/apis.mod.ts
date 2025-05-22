@@ -7,10 +7,22 @@ import {
 // Create a helper function for CORS headers
 const corsHeaders = new Headers({
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, DELETE",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE, PUT",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400",
 });
+
+const optionsHandler = function (_req: Request) {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE, PUT",
+      "Access-Control-Max-Age": "86400",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    },
+  });
+};
 
 export default function apisModule(s: Fastro) {
   s.post("/api/signed-url", async (req, res) => {
@@ -58,9 +70,7 @@ export default function apisModule(s: Fastro) {
     }
   });
 
-  s.options("/api/signed-url", (_req, res) => {
-    return res.send(null, 204, corsHeaders);
-  });
+  s.options("/api/signed-url", optionsHandler);
 
   // Update delete-signed-url endpoint
   s.post("/api/delete-signed-url", async (req, res) => {
@@ -94,9 +104,7 @@ export default function apisModule(s: Fastro) {
   });
 
   // Update delete-signed-url OPTIONS handler
-  s.options("/api/delete-signed-url", (_req, res) => {
-    return res.send(null, 204, corsHeaders);
-  });
+  s.options("/api/delete-signed-url", optionsHandler);
 
   // Update healthcheck endpoint
   s.get("/api/healthcheck", (_req, _ctx) => {
@@ -121,9 +129,7 @@ export default function apisModule(s: Fastro) {
   });
 
   // Update healthcheck OPTIONS handler
-  s.options("/api/healthcheck", (_req, res) => {
-    return res.send(null, 204, corsHeaders);
-  });
+  s.options("/api/healthcheck", optionsHandler);
 
   // Update avatar endpoint
   s.get("/api/avatar/:seed", (req) => {
@@ -214,9 +220,7 @@ export default function apisModule(s: Fastro) {
   });
 
   // Update avatar OPTIONS handler
-  s.options("/api/avatar/:seed", (_req, res) => {
-    return res.send(null, 204, corsHeaders);
-  });
+  s.options("/api/avatar/:seed", optionsHandler);
 
   return s;
 }
