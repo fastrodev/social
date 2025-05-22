@@ -6,7 +6,7 @@ import {
 
 // Create a helper function for CORS headers
 const corsHeaders = new Headers({
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://social.fastro.dev",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS, DELETE, PUT",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400",
