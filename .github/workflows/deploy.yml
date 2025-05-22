@@ -94,7 +94,7 @@ jobs:
             }
           }' > .firebaserc
 
-          # Create firebase.json file dynamically with custom domain and redirects
+          # Create firebase.json file dynamically with custom domain, redirects, and CORS headers
           echo '{
             "hosting": {
               "public": "public",
@@ -102,6 +102,17 @@ jobs:
                 "firebase.json",
                 "**/.*",
                 "**/node_modules/**"
+              ],
+              "headers": [
+                {
+                  "source": "/api/**",
+                  "headers": [
+                    { "key": "Access-Control-Allow-Origin", "value": "https://social.fastro.dev" },
+                    { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS, DELETE, PUT" },
+                    { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" },
+                    { "key": "Access-Control-Max-Age", "value": "86400" }
+                  ]
+                }
               ],
               "redirects": [
                 {
