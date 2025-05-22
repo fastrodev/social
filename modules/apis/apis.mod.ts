@@ -51,12 +51,25 @@ export default function apisModule(s: Fastro) {
 
       const signedUrlResponse = await generateSignedUrl(filename, contentType);
 
-      return res.send(
-        {
+      // return res.send(
+      //   {
+      //     signedUrl: signedUrlResponse.signedUrl,
+      //   },
+      //   200,
+      //   corsHeaders,
+      // );
+
+      return new Response(
+        JSON.stringify({
           signedUrl: signedUrlResponse.signedUrl,
+        }),
+        {
+          status: 200,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
         },
-        200,
-        corsHeaders,
       );
     } catch (error) {
       console.error("Error generating signed URL:", error);
