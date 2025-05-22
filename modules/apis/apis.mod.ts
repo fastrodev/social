@@ -59,16 +59,16 @@ export default function apisModule(s: Fastro) {
       //   corsHeaders,
       // );
 
+      const responseHeaders = new Headers(corsHeaders); // Create a new Headers object, copying from corsHeaders
+      responseHeaders.set("Content-Type", "application/json"); // Set the Content-Type
+
       return new Response(
         JSON.stringify({
           signedUrl: signedUrlResponse.signedUrl,
         }),
         {
           status: 200,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
+          headers: responseHeaders, // Use the correctly constructed Headers object
         },
       );
     } catch (error) {
